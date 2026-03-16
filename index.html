@@ -770,9 +770,19 @@
 
     function formatDate(value) {
       if (!value) return '—';
-      const d = new Date(value);
-      if (!isNaN(d.getTime())) return d.toLocaleDateString();
-      return String(value);
+
+      const str = String(value);
+
+      if (str.includes('T')) {
+        return str.split('T')[0];
+      }
+
+      const d = new Date(str);
+      if (!isNaN(d.getTime())) {
+        return d.toLocaleDateString();
+      }
+
+      return str;
     }
 
     function todayDateString() {
