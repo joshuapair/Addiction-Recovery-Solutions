@@ -374,9 +374,9 @@
               <div class="field"><label class="label">Phone</label><input id="phone"></div>
               <div class="field"><label class="label">Email</label><input id="email" type="email"></div>
               <div class="field"><label class="label">Admission Date</label><input id="admissionDate" type="date"></div>
-              <div class="field"><label class="label">Primary Substance</label><input id="primarySubstance" placeholder="Alcohol, Methamphetamine, Opioids..."></div>
+              <div class="field"><label class="label">Primary Substance</label><input id="primarySubstance" ></div>
               <div class="field"><label class="label">Secondary Substance</label><input id="secondarySubstance"></div>
-              <div class="field"><label class="label">Diagnosis</label><input id="diagnosis" placeholder="Example: F15.20 Stimulant Use Disorder, Severe"></div>
+              <div class="field"><label class="label">Diagnosis</label><input id="diagnosis" ></div>
               <div class="field"><label class="label">Stage of Change</label>
                 <select id="stageOfChange">
                   <option>Precontemplation</option>
@@ -403,9 +403,9 @@
               </div>
             </div>
             <div class="field"><label class="label">Presenting Problem</label><textarea id="presentingProblem"></textarea></div>
-            <div class="field"><label class="label">Goals</label><textarea id="goals" placeholder="Example: Maintain abstinence, improve coping skills, comply with RTD requirements..."></textarea></div>
+            <div class="field"><label class="label">Goals</label><textarea id="goals" ></textarea></div>
             <div class="field"><label class="label">Supports / Recovery Capital</label><textarea id="supports"></textarea></div>
-            <div class="field"><label class="label">Alerts / Safety Notes</label><textarea id="alerts" placeholder="Suicide risk, overdose history, medical concerns, legal issues, transportation barriers..."></textarea></div>
+            <div class="field"><label class="label">Alerts / Safety Notes</label><textarea id="alerts" ></textarea></div>
             <div class="row-actions">
               <button class="primary-btn" type="submit">Save Client</button>
               <button class="secondary-btn" type="button" id="clearClientFormBtn">Clear</button>
@@ -432,9 +432,9 @@
                 </select>
               </div>
             </div>
-            <div class="field"><label class="label">Data / Presentation</label><textarea id="noteData" required placeholder="Mood, appearance, participation, cravings, reported use, events since last session..."></textarea></div>
-            <div class="field"><label class="label">Assessment / Clinical Impression</label><textarea id="noteAssessment" required placeholder="Insight, stage of change, risk, barriers, response to intervention..."></textarea></div>
-            <div class="field"><label class="label">Plan / Next Steps</label><textarea id="notePlan" required placeholder="Homework, referrals, relapse prevention tasks, follow-up date, testing coordination..."></textarea></div>
+            <div class="field"><label class="label">Data / Presentation</label><textarea id="noteData" required ></textarea></div>
+            <div class="field"><label class="label">Assessment / Clinical Impression</label><textarea id="noteAssessment" required ></textarea></div>
+            <div class="field"><label class="label">Plan / Next Steps</label><textarea id="notePlan" required ></textarea></div>
             <div class="row-actions">
               <button class="primary-btn" type="submit">Save Note</button>
             </div>
@@ -455,10 +455,10 @@
               <div class="field"><label class="label">Client</label><select id="planClient"></select></div>
               <div class="field"><label class="label">Review Date</label><input id="planReviewDate" type="date"></div>
             </div>
-            <div class="field"><label class="label">Problem</label><textarea id="planProblem" required placeholder="Example: Continued methamphetamine use despite legal and family consequences"></textarea></div>
-            <div class="field"><label class="label">Goal</label><textarea id="planGoal" required placeholder="Example: Achieve sustained abstinence and increase relapse prevention skills"></textarea></div>
-            <div class="field"><label class="label">Objectives</label><textarea id="planObjectives" required placeholder="Example: Attend weekly counseling, identify 5 triggers, complete relapse prevention plan..."></textarea></div>
-            <div class="field"><label class="label">Interventions</label><textarea id="planInterventions" required placeholder="MI, CBT, psychoeducation, referral coordination, random testing, family sessions..."></textarea></div>
+            <div class="field"><label class="label">Problem</label><textarea id="planProblem" required ></textarea></div>
+            <div class="field"><label class="label">Goal</label><textarea id="planGoal" required ></textarea></div>
+            <div class="field"><label class="label">Objectives</label><textarea id="planObjectives" required ></textarea></div>
+            <div class="field"><label class="label">Interventions</label><textarea id="planInterventions" required ></textarea></div>
             <div class="row-actions">
               <button class="primary-btn" type="submit">Save Plan</button>
             </div>
@@ -492,9 +492,9 @@
               </div>
               <div class="field"><label class="label">Date</label><input id="documentDate" type="date"></div>
             </div>
-            <div class="field"><label class="label">Title</label><input id="documentTitle" placeholder="Example: Intake Packet or Signed ROI"></div>
+            <div class="field"><label class="label">Title</label><input id="documentTitle" ></div>
             <div class="field"><label class="label">Choose File</label><input id="documentFile" type="file" accept=".pdf,.doc,.docx,.jpg,.jpeg,.png,.txt"></div>
-            <div class="field"><label class="label">Notes</label><textarea id="documentNotes" placeholder="Optional description or context"></textarea></div>
+            <div class="field"><label class="label">Notes</label><textarea id="documentNotes" ></textarea></div>
             <div class="row-actions">
               <button class="primary-btn" type="submit">Save Document</button>
             </div>
@@ -557,4 +557,522 @@
             id: makeId(),
             name: 'Jane Smith',
             mrn: 'ARS-1002',
-            dob: '1992
+            dob: '1992-11-02',
+            phone: '555-222-9988',
+            email: 'jane@example.com',
+            admissionDate: '2026-02-21',
+            primarySubstance: 'Alcohol',
+            secondarySubstance: '',
+            diagnosis: 'F10.20 Alcohol Use Disorder, Moderate',
+            stageOfChange: 'Action',
+            riskLevel: 'Moderate',
+            status: 'Active',
+            presentingProblem: 'Alcohol use escalating with legal and family consequences.',
+            goals: 'Improve accountability, prevent relapse, develop refusal skills.',
+            supports: 'Mother, peer group, employer support.',
+            alerts: 'DWI history. No current SI/HI reported.',
+            createdAt: new Date().toISOString()
+          }
+        ],
+        notes: [],
+        plans: [],
+        documents: []
+      };
+    }
+
+    function makeId() {
+      return 'id-' + Date.now() + '-' + Math.random().toString(36).slice(2, 9);
+    }
+
+    function loadState() {
+      const raw = localStorage.getItem(STORAGE_KEY);
+      if (!raw) {
+        const seed = demoData();
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(seed));
+        return seed;
+      }
+      try {
+        return JSON.parse(raw);
+      } catch (err) {
+        return demoData();
+      }
+    }
+
+    function saveState() {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+    }
+
+    function escapeHtml(str) {
+      return String(str || '')
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#039;');
+    }
+
+    function badgeClass(value) {
+      if (value === 'High' || value === 'Discharged') return 'badge badge-red';
+      if (value === 'Moderate' || value === 'Pending') return 'badge badge-yellow';
+      if (value === 'Active' || value === 'Action' || value === 'Maintenance') return 'badge badge-green';
+      return 'badge badge-purple';
+    }
+
+    function showView(viewId) {
+      document.querySelectorAll('main section').forEach(function(el) {
+        el.classList.add('hidden');
+      });
+      const section = document.getElementById(viewId);
+      if (section) section.classList.remove('hidden');
+
+      document.querySelectorAll('.nav-btn').forEach(function(btn) {
+        btn.classList.remove('active');
+        if (btn.dataset.view === viewId) btn.classList.add('active');
+      });
+    }
+
+    function populateClientSelects() {
+      const options = state.clients.map(function(c) {
+        return '<option value="' + c.id + '">' + escapeHtml(c.name) + ' (' + escapeHtml(c.mrn) + ')</option>';
+      }).join('');
+      document.getElementById('noteClient').innerHTML = options;
+      document.getElementById('planClient').innerHTML = options;
+      document.getElementById('documentClient').innerHTML = options;
+    }
+
+    function renderDashboard() {
+      document.getElementById('statClients').textContent = state.clients.filter(function(c) { return c.status === 'Active'; }).length;
+      document.getElementById('statHighRisk').textContent = state.clients.filter(function(c) { return c.riskLevel === 'High'; }).length;
+      document.getElementById('statNotes').textContent = state.notes.length;
+
+      const recent = state.clients.slice().sort(function(a, b) {
+        return new Date(b.createdAt) - new Date(a.createdAt);
+      }).slice(0, 5);
+
+      document.getElementById('recentClients').innerHTML = recent.length
+        ? recent.map(function(c) {
+            return '<div class="mini-item"><strong>' + escapeHtml(c.name) + '</strong><br><span class="small">' + escapeHtml(c.mrn) + ' • ' + escapeHtml(c.primarySubstance || '—') + '</span></div>';
+          }).join('')
+        : '<div class="empty">No client records yet.</div>';
+    }
+
+    function renderClients() {
+      const q = (document.getElementById('clientSearch').value || '').toLowerCase();
+      const results = state.clients.filter(function(c) {
+        return [c.name, c.mrn, c.primarySubstance, c.secondarySubstance, c.status, c.diagnosis].join(' ').toLowerCase().includes(q);
+      });
+
+      const wrap = document.getElementById('clientList');
+      if (!results.length) {
+        wrap.innerHTML = '<div class="empty">No matching clients found.</div>';
+        document.getElementById('clientDetail').innerHTML = '<div class="empty">Select a client to view details.</div>';
+        return;
+      }
+
+      if (!selectedClientId || !results.some(function(c) { return c.id === selectedClientId; })) {
+        selectedClientId = results[0].id;
+      }
+
+      wrap.innerHTML = results.map(function(c) {
+        return '<div class="client-item" data-client-id="' + c.id + '">' +
+          '<div><div style="font-weight:700;">' + escapeHtml(c.name) + '</div><div class="small">' + escapeHtml(c.mrn) + ' • ' + escapeHtml(c.primarySubstance || 'No substance listed') + '</div></div>' +
+          '<div style="text-align:right;">' +
+            '<div class="' + badgeClass(c.status) + '">' + escapeHtml(c.status) + '</div>' +
+            '<div style="height:6px;"></div>' +
+            '<div class="' + badgeClass(c.riskLevel) + '">' + escapeHtml(c.riskLevel) + ' Risk</div>' +
+          '</div>' +
+        '</div>';
+      }).join('');
+
+      document.querySelectorAll('.client-item').forEach(function(item) {
+        item.addEventListener('click', function() {
+          selectedClientId = item.dataset.clientId;
+          renderClientDetail();
+        });
+      });
+
+      renderClientDetail();
+    }
+
+    function renderClientDetail() {
+      const c = state.clients.find(function(x) { return x.id === selectedClientId; });
+      const box = document.getElementById('clientDetail');
+      if (!c) {
+        box.innerHTML = '<div class="empty">Select a client to view details.</div>';
+        return;
+      }
+
+      const notes = state.notes.filter(function(n) { return n.clientId === c.id; });
+      const plans = state.plans.filter(function(p) { return p.clientId === c.id; });
+
+      box.innerHTML = '' +
+        '<div style="margin-bottom:12px;">' +
+          '<div style="font-size:22px; font-weight:700;">' + escapeHtml(c.name) + '</div>' +
+          '<div class="small">' + escapeHtml(c.mrn) + (c.dob ? ' • DOB ' + escapeHtml(c.dob) : '') + '</div>' +
+        '</div>' +
+        '<div class="chip-row" style="margin-bottom:14px;">' +
+          '<div class="chip">Primary: ' + escapeHtml(c.primarySubstance || '—') + '</div>' +
+          '<div class="chip">Secondary: ' + escapeHtml(c.secondarySubstance || '—') + '</div>' +
+          '<div class="chip">Stage: ' + escapeHtml(c.stageOfChange || '—') + '</div>' +
+        '</div>' +
+        '<div class="mini-list">' +
+          '<div class="mini-item"><strong>Diagnosis:</strong><br>' + escapeHtml(c.diagnosis || '—') + '</div>' +
+          '<div class="mini-item"><strong>Presenting Problem:</strong><br>' + escapeHtml(c.presentingProblem || '—') + '</div>' +
+          '<div class="mini-item"><strong>Goals:</strong><br>' + escapeHtml(c.goals || '—') + '</div>' +
+          '<div class="mini-item"><strong>Supports:</strong><br>' + escapeHtml(c.supports || '—') + '</div>' +
+          '<div class="mini-item"><strong>Alerts / Safety Notes:</strong><br>' + escapeHtml(c.alerts || '—') + '</div>' +
+          '<div class="mini-item"><strong>Counts:</strong><br>' + notes.length + ' notes • ' + plans.length + ' plans</div>' +
+        '</div>' +
+        '<div class="row-actions">' +
+          '<button class="primary-btn" id="exportIntakeBtn">Export Intake PDF</button>' +
+          '<button class="danger-btn" id="deleteClientBtn">Delete Client</button>' +
+        '</div>';
+
+      document.getElementById('exportIntakeBtn').addEventListener('click', function() {
+        exportClientIntakePDF(c.id);
+      });
+      document.getElementById('deleteClientBtn').addEventListener('click', function() {
+        deleteClient(c.id);
+      });
+    }
+
+    function saveClient(e) {
+      e.preventDefault();
+      const client = {
+        id: makeId(),
+        name: document.getElementById('name').value,
+        mrn: document.getElementById('mrn').value,
+        dob: document.getElementById('dob').value,
+        phone: document.getElementById('phone').value,
+        email: document.getElementById('email').value,
+        admissionDate: document.getElementById('admissionDate').value,
+        primarySubstance: document.getElementById('primarySubstance').value,
+        secondarySubstance: document.getElementById('secondarySubstance').value,
+        diagnosis: document.getElementById('diagnosis').value,
+        stageOfChange: document.getElementById('stageOfChange').value,
+        riskLevel: document.getElementById('riskLevel').value,
+        status: document.getElementById('status').value,
+        presentingProblem: document.getElementById('presentingProblem').value,
+        goals: document.getElementById('goals').value,
+        supports: document.getElementById('supports').value,
+        alerts: document.getElementById('alerts').value,
+        createdAt: new Date().toISOString()
+      };
+
+      state.clients.unshift(client);
+      selectedClientId = client.id;
+      saveState();
+      document.getElementById('newClientForm').reset();
+      refreshAll();
+      showView('clientsView');
+    }
+
+    function deleteClient(id) {
+      if (!confirm('Delete this client and related notes/plans?')) return;
+      state.clients = state.clients.filter(function(c) { return c.id !== id; });
+      state.notes = state.notes.filter(function(n) { return n.clientId !== id; });
+      state.plans = state.plans.filter(function(p) { return p.clientId !== id; });
+      state.documents = state.documents.filter(function(d) { return d.clientId !== id; });
+      selectedClientId = state.clients.length ? state.clients[0].id : null;
+      saveState();
+      refreshAll();
+    }
+
+    function saveNote(e) {
+      e.preventDefault();
+      const note = {
+        id: makeId(),
+        clientId: document.getElementById('noteClient').value,
+        date: document.getElementById('noteDate').value,
+        type: document.getElementById('noteType').value,
+        data: document.getElementById('noteData').value,
+        assessment: document.getElementById('noteAssessment').value,
+        plan: document.getElementById('notePlan').value,
+        createdAt: new Date().toISOString()
+      };
+      state.notes.unshift(note);
+      saveState();
+      document.getElementById('noteForm').reset();
+      document.getElementById('noteDate').valueAsDate = new Date();
+      refreshAll();
+    }
+
+    function renderNotes() {
+      const box = document.getElementById('notesList');
+      if (!state.notes.length) {
+        box.innerHTML = '<div class="empty">No notes saved yet.</div>';
+        return;
+      }
+
+      box.innerHTML = state.notes.map(function(n) {
+        const c = state.clients.find(function(x) { return x.id === n.clientId; });
+        return '<div class="mini-item">' +
+          '<div style="display:flex; justify-content:space-between; gap:10px; flex-wrap:wrap;">' +
+            '<strong>' + escapeHtml(c ? c.name : 'Unknown Client') + '</strong>' +
+            '<span class="small">' + escapeHtml(n.date) + ' • ' + escapeHtml(n.type) + '</span>' +
+          '</div>' +
+          '<div style="margin-top:8px;"><strong>Data:</strong> ' + escapeHtml(n.data) + '</div>' +
+          '<div style="margin-top:8px;"><strong>Assessment:</strong> ' + escapeHtml(n.assessment) + '</div>' +
+          '<div style="margin-top:8px;"><strong>Plan:</strong> ' + escapeHtml(n.plan) + '</div>' +
+          '<div class="row-actions">' +
+            '<button class="primary-btn export-note-btn" data-note-id="' + n.id + '">Export Note PDF</button>' +
+            '<button class="danger-btn delete-note-btn" data-note-id="' + n.id + '">Delete</button>' +
+          '</div>' +
+        '</div>';
+      }).join('');
+
+      document.querySelectorAll('.export-note-btn').forEach(function(btn) {
+        btn.addEventListener('click', function() {
+          exportNotePDF(btn.dataset.noteId);
+        });
+      });
+      document.querySelectorAll('.delete-note-btn').forEach(function(btn) {
+        btn.addEventListener('click', function() {
+          deleteNote(btn.dataset.noteId);
+        });
+      });
+    }
+
+    function deleteNote(id) {
+      state.notes = state.notes.filter(function(n) { return n.id !== id; });
+      saveState();
+      refreshAll();
+    }
+
+    function savePlan(e) {
+      e.preventDefault();
+      const plan = {
+        id: makeId(),
+        clientId: document.getElementById('planClient').value,
+        reviewDate: document.getElementById('planReviewDate').value,
+        problem: document.getElementById('planProblem').value,
+        goal: document.getElementById('planGoal').value,
+        objectives: document.getElementById('planObjectives').value,
+        interventions: document.getElementById('planInterventions').value,
+        createdAt: new Date().toISOString()
+      };
+      state.plans.unshift(plan);
+      saveState();
+      document.getElementById('planForm').reset();
+      refreshAll();
+    }
+
+    function renderPlans() {
+      const box = document.getElementById('plansList');
+      if (!state.plans.length) {
+        box.innerHTML = '<div class="empty">No treatment plans saved yet.</div>';
+        return;
+      }
+
+      box.innerHTML = state.plans.map(function(p) {
+        const c = state.clients.find(function(x) { return x.id === p.clientId; });
+        return '<div class="mini-item">' +
+          '<div style="display:flex; justify-content:space-between; gap:10px; flex-wrap:wrap;">' +
+            '<strong>' + escapeHtml(c ? c.name : 'Unknown Client') + '</strong>' +
+            '<span class="small">Review: ' + escapeHtml(p.reviewDate || '—') + '</span>' +
+          '</div>' +
+          '<div style="margin-top:8px;"><strong>Problem:</strong> ' + escapeHtml(p.problem) + '</div>' +
+          '<div style="margin-top:8px;"><strong>Goal:</strong> ' + escapeHtml(p.goal) + '</div>' +
+          '<div style="margin-top:8px;"><strong>Objectives:</strong> ' + escapeHtml(p.objectives) + '</div>' +
+          '<div style="margin-top:8px;"><strong>Interventions:</strong> ' + escapeHtml(p.interventions) + '</div>' +
+          '<div class="row-actions">' +
+            '<button class="primary-btn export-plan-btn" data-plan-id="' + p.id + '">Export Plan PDF</button>' +
+            '<button class="danger-btn delete-plan-btn" data-plan-id="' + p.id + '">Delete</button>' +
+          '</div>' +
+        '</div>';
+      }).join('');
+
+      document.querySelectorAll('.export-plan-btn').forEach(function(btn) {
+        btn.addEventListener('click', function() {
+          exportPlanPDF(btn.dataset.planId);
+        });
+      });
+      document.querySelectorAll('.delete-plan-btn').forEach(function(btn) {
+        btn.addEventListener('click', function() {
+          deletePlan(btn.dataset.planId);
+        });
+      });
+    }
+
+    function deletePlan(id) {
+      state.plans = state.plans.filter(function(p) { return p.id !== id; });
+      saveState();
+      refreshAll();
+    }
+
+    function renderReports() {
+      const byStatus = {};
+      const bySubstance = {};
+      state.clients.forEach(function(c) {
+        byStatus[c.status] = (byStatus[c.status] || 0) + 1;
+        const substance = c.primarySubstance || 'Unspecified';
+        bySubstance[substance] = (bySubstance[substance] || 0) + 1;
+      });
+
+      document.getElementById('statusReport').innerHTML = Object.keys(byStatus).length
+        ? Object.keys(byStatus).map(function(k) {
+            return '<div class="mini-item">' + escapeHtml(k) + ': <strong>' + byStatus[k] + '</strong></div>';
+          }).join('')
+        : '<div class="empty">No data yet.</div>';
+
+      document.getElementById('substanceReport').innerHTML = Object.keys(bySubstance).length
+        ? Object.keys(bySubstance).map(function(k) {
+            return '<div class="mini-item">' + escapeHtml(k) + ': <strong>' + bySubstance[k] + '</strong></div>';
+          }).join('')
+        : '<div class="empty">No data yet.</div>';
+    }
+
+    function printDocument(title, bodyHtml) {
+      const w = window.open('', '_blank');
+      if (!w) {
+        alert('Pop-up blocked. Allow pop-ups for PDF export.');
+        return;
+      }
+
+      const html = '<!DOCTYPE html><html><head><meta charset="UTF-8"><title>' + escapeHtml(title) + '</title>' +
+        '<style>' +
+        'body{font-family:Arial,Helvetica,sans-serif;color:#111827;margin:36px;line-height:1.45;}' +
+        'h1{font-size:24px;margin:0 0 8px;}' +
+        'h2{font-size:16px;margin:22px 0 8px;border-bottom:1px solid #cbd5e1;padding-bottom:6px;}' +
+        '.meta{color:#475569;font-size:13px;margin-bottom:18px;}' +
+        '.block{margin-bottom:14px;}' +
+        '.label{font-weight:700;display:block;margin-bottom:4px;}' +
+        '.box{border:1px solid #cbd5e1;border-radius:8px;padding:10px 12px;white-space:pre-wrap;}' +
+        '.grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;}' +
+        '</style></head><body>' + bodyHtml + '</body></html>';
+
+      w.document.open();
+      w.document.write(html);
+      w.document.close();
+      w.focus();
+      setTimeout(function() { w.print(); }, 250);
+    }
+
+    function exportClientIntakePDF(clientId) {
+      const c = state.clients.find(function(x) { return x.id === clientId; });
+      if (!c) return;
+      const html = '' +
+        '<h1>Client Intake Summary</h1>' +
+        '<div class="meta">' + escapeHtml(c.name) + ' • ' + escapeHtml(c.mrn) + ' • Generated ' + escapeHtml(new Date().toLocaleString()) + '</div>' +
+        '<div class="grid">' +
+          '<div class="block"><span class="label">Client Name</span><div class="box">' + escapeHtml(c.name) + '</div></div>' +
+          '<div class="block"><span class="label">MRN / Client ID</span><div class="box">' + escapeHtml(c.mrn) + '</div></div>' +
+          '<div class="block"><span class="label">Date of Birth</span><div class="box">' + escapeHtml(c.dob || '—') + '</div></div>' +
+          '<div class="block"><span class="label">Admission Date</span><div class="box">' + escapeHtml(c.admissionDate || '—') + '</div></div>' +
+          '<div class="block"><span class="label">Phone</span><div class="box">' + escapeHtml(c.phone || '—') + '</div></div>' +
+          '<div class="block"><span class="label">Email</span><div class="box">' + escapeHtml(c.email || '—') + '</div></div>' +
+          '<div class="block"><span class="label">Primary Substance</span><div class="box">' + escapeHtml(c.primarySubstance || '—') + '</div></div>' +
+          '<div class="block"><span class="label">Secondary Substance</span><div class="box">' + escapeHtml(c.secondarySubstance || '—') + '</div></div>' +
+          '<div class="block"><span class="label">Diagnosis</span><div class="box">' + escapeHtml(c.diagnosis || '—') + '</div></div>' +
+          '<div class="block"><span class="label">Stage of Change</span><div class="box">' + escapeHtml(c.stageOfChange || '—') + '</div></div>' +
+          '<div class="block"><span class="label">Risk Level</span><div class="box">' + escapeHtml(c.riskLevel || '—') + '</div></div>' +
+          '<div class="block"><span class="label">Status</span><div class="box">' + escapeHtml(c.status || '—') + '</div></div>' +
+        '</div>' +
+        '<h2>Presenting Problem</h2><div class="box">' + escapeHtml(c.presentingProblem || '—') + '</div>' +
+        '<h2>Goals</h2><div class="box">' + escapeHtml(c.goals || '—') + '</div>' +
+        '<h2>Supports / Recovery Capital</h2><div class="box">' + escapeHtml(c.supports || '—') + '</div>' +
+        '<h2>Alerts / Safety Notes</h2><div class="box">' + escapeHtml(c.alerts || '—') + '</div>';
+
+      printDocument('Intake - ' + c.name, html);
+    }
+
+    function exportNotePDF(noteId) {
+      const n = state.notes.find(function(x) { return x.id === noteId; });
+      if (!n) return;
+      const c = state.clients.find(function(x) { return x.id === n.clientId; });
+      const html = '' +
+        '<h1>Progress Note</h1>' +
+        '<div class="meta">' + escapeHtml(c ? c.name : 'Unknown Client') + ' • ' + escapeHtml(c ? c.mrn : '—') + ' • ' + escapeHtml(n.date || '—') + ' • ' + escapeHtml(n.type || '—') + '</div>' +
+        '<h2>Data / Presentation</h2><div class="box">' + escapeHtml(n.data || '—') + '</div>' +
+        '<h2>Assessment / Clinical Impression</h2><div class="box">' + escapeHtml(n.assessment || '—') + '</div>' +
+        '<h2>Plan / Next Steps</h2><div class="box">' + escapeHtml(n.plan || '—') + '</div>';
+      printDocument('Note - ' + (c ? c.name : 'Client'), html);
+    }
+
+    function exportPlanPDF(planId) {
+      const p = state.plans.find(function(x) { return x.id === planId; });
+      if (!p) return;
+      const c = state.clients.find(function(x) { return x.id === p.clientId; });
+      const html = '' +
+        '<h1>Treatment Plan</h1>' +
+        '<div class="meta">' + escapeHtml(c ? c.name : 'Unknown Client') + ' • ' + escapeHtml(c ? c.mrn : '—') + ' • Review ' + escapeHtml(p.reviewDate || '—') + '</div>' +
+        '<h2>Problem</h2><div class="box">' + escapeHtml(p.problem || '—') + '</div>' +
+        '<h2>Goal</h2><div class="box">' + escapeHtml(p.goal || '—') + '</div>' +
+        '<h2>Objectives</h2><div class="box">' + escapeHtml(p.objectives || '—') + '</div>' +
+        '<h2>Interventions</h2><div class="box">' + escapeHtml(p.interventions || '—') + '</div>';
+      printDocument('Treatment Plan - ' + (c ? c.name : 'Client'), html);
+    }
+
+    function exportData() {
+      const blob = new Blob([JSON.stringify(state, null, 2)], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'recovery-ehr-backup.json';
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+    }
+
+    function importData(event) {
+      const file = event.target.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = function() {
+        try {
+          const parsed = JSON.parse(reader.result);
+          if (!parsed.clients || !parsed.notes || !parsed.plans) throw new Error('Invalid structure');
+          if (!parsed.documents) parsed.documents = [];
+          state = parsed;
+          selectedClientId = state.clients.length ? state.clients[0].id : null;
+          saveState();
+          refreshAll();
+          alert('Backup imported successfully.');
+        } catch (err) {
+          alert('Invalid JSON backup file.');
+        }
+      };
+      reader.readAsText(file);
+    }
+
+    function resetDemo() {
+      if (!confirm('Reset all data to demo records?')) return;
+      state = demoData();
+      selectedClientId = state.clients[0].id;
+      saveState();
+      refreshAll();
+    }
+
+    function refreshAll() {
+      populateClientSelects();
+      renderDashboard();
+      renderClients();
+      renderNotes();
+      renderPlans();
+      renderReports();
+    }
+
+    document.querySelectorAll('.nav-btn').forEach(function(btn) {
+      btn.addEventListener('click', function() {
+        showView(btn.dataset.view);
+      });
+    });
+
+    document.getElementById('exportBackupBtn').addEventListener('click', exportData);
+    document.getElementById('importFileInput').addEventListener('change', importData);
+    document.getElementById('resetDemoBtn').addEventListener('click', resetDemo);
+    document.getElementById('clientSearch').addEventListener('input', renderClients);
+    document.getElementById('newClientForm').addEventListener('submit', saveClient);
+    document.getElementById('clearClientFormBtn').addEventListener('click', function() {
+      document.getElementById('newClientForm').reset();
+    });
+    document.getElementById('noteForm').addEventListener('submit', saveNote);
+    document.getElementById('planForm').addEventListener('submit', savePlan);
+
+    document.getElementById('noteDate').valueAsDate = new Date();
+    selectedClientId = state.clients.length ? state.clients[0].id : null;
+    refreshAll();
+  </script>
+</body>
+</html>
