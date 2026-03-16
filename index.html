@@ -18,6 +18,7 @@
     }
 
     * { box-sizing: border-box; }
+
     body {
       margin: 0;
       font-family: Arial, Helvetica, sans-serif;
@@ -135,7 +136,10 @@
       color: #111827;
     }
 
-    textarea { min-height: 100px; resize: vertical; }
+    textarea {
+      min-height: 100px;
+      resize: vertical;
+    }
 
     .search {
       min-width: 260px;
@@ -253,7 +257,8 @@
       margin-top: 12px;
     }
 
-    .row-actions button {
+    .row-actions button,
+    .row-actions a {
       width: auto;
       margin-bottom: 0;
     }
@@ -289,7 +294,7 @@
       <div class="subtitle">Google-backed prototype</div>
 
       <div class="warning">
-        This version saves to a Google backend instead of browser-only storage. You still need proper Workspace/Cloud configuration, access controls, and compliance steps before using PHI in production.
+        This version saves to a Google backend instead of browser-only storage. It still needs proper Google Workspace setup, access controls, and compliance steps before production use with PHI.
       </div>
 
       <button class="nav-btn active" data-view="dashboardView">Dashboard</button>
@@ -518,7 +523,7 @@
   </div>
 
   <script>
-    const APP_SCRIPT_URL = 'YOUR_APPS_SCRIPT_WEB_APP_URL';
+    const APP_SCRIPT_URL = 'https://script.google.com/a/macros/addictionrecoverysolutions.org/s/AKfycbwS4yzK4DA96PBkqXddLSZHytYmUXv-W-NZKCIrVbTmdjbshY8cWfJGRjZqO0AZ3cSgeQ/exec';
 
     let state = {
       clients: [],
@@ -535,6 +540,7 @@
 
     async function apiRequest(action, payload) {
       setStatus('Working...');
+
       const res = await fetch(APP_SCRIPT_URL, {
         method: 'POST',
         headers: { 'Content-Type': 'text/plain;charset=utf-8' },
@@ -571,6 +577,7 @@
       document.querySelectorAll('main section').forEach(function(el) {
         el.classList.add('hidden');
       });
+
       const section = document.getElementById(viewId);
       if (section) section.classList.remove('hidden');
 
@@ -591,8 +598,14 @@
     }
 
     function renderDashboard() {
-      document.getElementById('statClients').textContent = state.clients.filter(function(c) { return c.status === 'Active'; }).length;
-      document.getElementById('statHighRisk').textContent = state.clients.filter(function(c) { return c.riskLevel === 'High'; }).length;
+      document.getElementById('statClients').textContent = state.clients.filter(function(c) {
+        return c.status === 'Active';
+      }).length;
+
+      document.getElementById('statHighRisk').textContent = state.clients.filter(function(c) {
+        return c.riskLevel === 'High';
+      }).length;
+
       document.getElementById('statNotes').textContent = state.notes.length;
 
       const recent = state.clients.slice().sort(function(a, b) {
