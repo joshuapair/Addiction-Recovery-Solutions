@@ -774,7 +774,15 @@
       const str = String(value);
 
       if (str.includes('T')) {
-        return str.split('T')[0];
+        const plain = str.split('T')[0];
+        const parts = plain.split('-');
+        if (parts.length === 3) return parts[1] + '/' + parts[2] + '/' + parts[0];
+        return plain;
+      }
+
+      if (/^\d{4}-\d{2}-\d{2}$/.test(str)) {
+        const parts = str.split('-');
+        return parts[1] + '/' + parts[2] + '/' + parts[0];
       }
 
       const d = new Date(str);
@@ -786,7 +794,11 @@
     }
 
     function todayDateString() {
-      return new Date().toISOString().split('T')[0];
+      const now = new Date();
+      const year = now.getFullYear();
+      const month = String(now.getMonth() + 1).padStart(2, '0');
+      const day = String(now.getDate()).padStart(2, '0');
+      return `${year}-${month}-${day}`;
     }
 
     function showApp() {
@@ -928,8 +940,16 @@
       let drawing = false;
       let signedAt = '';
 
+      function currentLocalDateString() {
+        const now = new Date();
+        const year = now.getFullYear();
+        const month = String(now.getMonth() + 1).padStart(2, '0');
+        const day = String(now.getDate()).padStart(2, '0');
+        return `${year}-${month}-${day}`;
+      }
+
       function setLabel() {
-        if (label) label.textContent = 'Signature date: ' + (signedAt || 'today');
+        if (label) label.textContent = 'Signature date: ' + (signedAt ? formatDate(signedAt) : 'today');
       }
 
       function sizeCanvas() {
@@ -968,8 +988,12 @@
 
       function start(e) {
         drawing = true;
-        if (!signedAt) signedAt = todayDateString();
-        setLabel();
+
+        if (!signedAt) {
+          signedAt = currentLocalDateString();
+          setLabel();
+        }
+
         const pos = getPos(e);
         ctx.beginPath();
         ctx.moveTo(pos.x, pos.y);
