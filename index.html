@@ -791,6 +791,14 @@
       return str;
     }
 
+    function todayDateString() {
+      const now = new Date();
+      const year = now.getFullYear();
+      const month = String(now.getMonth() + 1).padStart(2, '0');
+      const day = String(now.getDate()).padStart(2, '0');
+      return `${year}-${month}-${day}`;
+    }
+
     function showApp() {
       document.getElementById('loginScreen').classList.add('hidden');
       document.getElementById('appShell').classList.remove('hidden');
@@ -1482,7 +1490,8 @@
         '.label{font-weight:700;display:block;margin-bottom:4px;}' +
         '.box{border:1px solid #cbd5e1;border-radius:8px;padding:10px 12px;white-space:pre-wrap;}' +
         '.grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;}' +
-        '.sigdate{margin-top:8px;color:#475569;font-size:13px;}' +
+        '.signature-row{display:flex;align-items:flex-end;justify-content:space-between;gap:18px;}' +
+        '.signature-meta{min-width:140px;text-align:right;color:#475569;font-size:13px;}' +
         '</style></head><body>' + bodyHtml + '</body></html>';
 
       w.document.open();
@@ -1492,20 +1501,30 @@
       setTimeout(function() { w.print(); }, 250);
     }
 
+    function buildSignatureBlock(signatureData, signatureDate) {
+      if (!signatureData) return '';
+      return '' +
+        '<h2>Signature</h2>' +
+        '<div class="box">' +
+          '<div class="signature-row">' +
+            '<div><img src="' + signatureData + '" style="max-width:320px; max-height:120px;"></div>' +
+            '<div class="signature-meta">' +
+              (signatureDate ? '<div><strong>Date Signed:</strong><br>' + escapeHtml(formatDate(signatureDate)) + '</div>' : '') +
+            '</div>' +
+          '</div>' +
+        '</div>';
+    }
+
     function exportClientIntakePDF(clientId) {
       const c = state.clients.find(function(x) { return x.id === clientId; });
       if (!c) return;
 
-      const sigDate = c.signatureDate || '';
-      const signatureHtml = c.signature
-        ? '<h2>Signature</h2><div class="box"><img src="' + c.signature + '" style="max-width:320px; max-height:120px;">' +
-          (sigDate ? '<div class="sigdate">Signed: ' + escapeHtml(formatDate(sigDate)) + '</div>' : '') +
-          '</div>'
-        : '';
+      const sessionDate = c.admissionDate || '';
+      const signatureHtml = buildSignatureBlock(c.signature, c.signatureDate || '');
 
       const html =
         '<h1>Client Intake Summary</h1>' +
-        '<div class="meta">' + escapeHtml(c.name) + ' • Generated ' + escapeHtml(formatDate(todayDateString())) + '</div>' +
+        '<div class="meta">' + escapeHtml(c.name) + (sessionDate ? ' • Intake Date: ' + escapeHtml(formatDate(sessionDate)) : '') + '</div>' +
         '<div class="grid">' +
           '<div class="block"><span class="label">Client Name</span><div class="box">' + escapeHtml(c.name) + '</div></div>' +
           '<div class="block"><span class="label">MRN / Client ID</span><div class="box">' + escapeHtml(c.mrn) + '</div></div>' +
@@ -1534,16 +1553,12 @@
       if (!n) return;
       const c = state.clients.find(function(x) { return x.id === n.clientId; });
 
-      const sigDate = n.signatureDate || '';
-      const signatureHtml = n.signature
-        ? '<h2>Signature</h2><div class="box"><img src="' + n.signature + '" style="max-width:320px; max-height:120px;">' +
-          (sigDate ? '<div class="sigdate">Signed: ' + escapeHtml(formatDate(sigDate)) + '</div>' : '') +
-          '</div>'
-        : '';
+      const sessionDate = n.date || '';
+      const signatureHtml = buildSignatureBlock(n.signature, n.signatureDate || '');
 
       const html =
         '<h1>Progress Note</h1>' +
-        '<div class="meta">' + escapeHtml(c ? c.name : 'Unknown Client') + ' • ' + escapeHtml(formatDate(n.date)) + ' • ' + escapeHtml(n.type || '—') + '</div>' +
+        '<div class="meta">' + escapeHtml(c ? c.name : 'Unknown Client') + (sessionDate ? ' • Session Date: ' + escapeHtml(formatDate(sessionDate)) : '') + (n.type ? ' • ' + escapeHtml(n.type) : '') + '</div>' +
         '<h2>Data / Presentation</h2><div class="box">' + escapeHtml(n.data || '—') + '</div>' +
         '<h2>Assessment / Clinical Impression</h2><div class="box">' + escapeHtml(n.assessment || '—') + '</div>' +
         '<h2>Plan / Next Steps</h2><div class="box">' + escapeHtml(n.plan || '—') + '</div>' +
@@ -1557,16 +1572,12 @@
       if (!p) return;
       const c = state.clients.find(function(x) { return x.id === p.clientId; });
 
-      const sigDate = p.signatureDate || '';
-      const signatureHtml = p.signature
-        ? '<h2>Signature</h2><div class="box"><img src="' + p.signature + '" style="max-width:320px; max-height:120px;">' +
-          (sigDate ? '<div class="sigdate">Signed: ' + escapeHtml(formatDate(sigDate)) + '</div>' : '') +
-          '</div>'
-        : '';
+      const sessionDate = p.reviewDate || '';
+      const signatureHtml = buildSignatureBlock(p.signature, p.signatureDate || '');
 
       const html =
         '<h1>Treatment Plan</h1>' +
-        '<div class="meta">' + escapeHtml(c ? c.name : 'Unknown Client') + ' • Review ' + escapeHtml(formatDate(p.reviewDate)) + '</div>' +
+        '<div class="meta">' + escapeHtml(c ? c.name : 'Unknown Client') + (sessionDate ? ' • Review Date: ' + escapeHtml(formatDate(sessionDate)) : '') + '</div>' +
         '<h2>Problem</h2><div class="box">' + escapeHtml(p.problem || '—') + '</div>' +
         '<h2>Goal</h2><div class="box">' + escapeHtml(p.goal || '—') + '</div>' +
         '<h2>Objectives</h2><div class="box">' + escapeHtml(p.objectives || '—') + '</div>' +
