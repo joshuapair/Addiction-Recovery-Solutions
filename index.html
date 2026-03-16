@@ -699,10 +699,23 @@
         '</div>' +
         '<div class="row-actions">' +
           '<button class="primary-btn" id="exportIntakeBtn">Export Intake PDF</button>' +
+          '<button class="danger-btn" id="deleteClientBtn">Delete Client</button>' +
         '</div>';
 
       document.getElementById('exportIntakeBtn').addEventListener('click', function() {
         exportClientIntakePDF(c.id);
+      });
+
+      document.getElementById('deleteClientBtn').addEventListener('click', async function() {
+        if (!confirm('Delete this client and all related notes, plans, and documents?')) return;
+        try {
+          await apiRequest('deleteClient', { id: c.id });
+          selectedClientId = null;
+          await loadAllDataFromServer();
+        } catch (err) {
+          setStatus('Error');
+          alert(err.message);
+        }
       });
     }
 
@@ -849,6 +862,7 @@
           '<div style="margin-top:8px;"><strong>Plan:</strong> ' + escapeHtml(n.plan) + '</div>' +
           '<div class="row-actions">' +
             '<button class="primary-btn export-note-btn" data-note-id="' + n.id + '">Export Note PDF</button>' +
+            '<button class="danger-btn delete-note-btn" data-note-id="' + n.id + '">Delete</button>' +
           '</div>' +
         '</div>';
       }).join('');
@@ -856,6 +870,19 @@
       document.querySelectorAll('.export-note-btn').forEach(function(btn) {
         btn.addEventListener('click', function() {
           exportNotePDF(btn.dataset.noteId);
+        });
+      });
+
+      document.querySelectorAll('.delete-note-btn').forEach(function(btn) {
+        btn.addEventListener('click', async function() {
+          if (!confirm('Delete this note?')) return;
+          try {
+            await apiRequest('deleteNote', { id: btn.dataset.noteId });
+            await loadAllDataFromServer();
+          } catch (err) {
+            setStatus('Error');
+            alert(err.message);
+          }
         });
       });
     }
@@ -882,6 +909,7 @@
           '<div style="margin-top:8px;"><strong>Interventions:</strong> ' + escapeHtml(p.interventions) + '</div>' +
           '<div class="row-actions">' +
             '<button class="primary-btn export-plan-btn" data-plan-id="' + p.id + '">Export Plan PDF</button>' +
+            '<button class="danger-btn delete-plan-btn" data-plan-id="' + p.id + '">Delete</button>' +
           '</div>' +
         '</div>';
       }).join('');
@@ -889,6 +917,19 @@
       document.querySelectorAll('.export-plan-btn').forEach(function(btn) {
         btn.addEventListener('click', function() {
           exportPlanPDF(btn.dataset.planId);
+        });
+      });
+
+      document.querySelectorAll('.delete-plan-btn').forEach(function(btn) {
+        btn.addEventListener('click', async function() {
+          if (!confirm('Delete this plan?')) return;
+          try {
+            await apiRequest('deletePlan', { id: btn.dataset.planId });
+            await loadAllDataFromServer();
+          } catch (err) {
+            setStatus('Error');
+            alert(err.message);
+          }
         });
       });
     }
@@ -914,9 +955,23 @@
           '<div style="margin-top:8px;"><strong>Notes:</strong> ' + escapeHtml(d.notes || '—') + '</div>' +
           '<div class="row-actions">' +
             (d.fileUrl ? '<a class="primary-btn" style="text-decoration:none; display:inline-block;" href="' + escapeHtml(d.fileUrl) + '" target="_blank">Open</a>' : '') +
+            '<button class="danger-btn delete-document-btn" data-document-id="' + d.id + '">Delete</button>' +
           '</div>' +
         '</div>';
       }).join('');
+
+      document.querySelectorAll('.delete-document-btn').forEach(function(btn) {
+        btn.addEventListener('click', async function() {
+          if (!confirm('Delete this document?')) return;
+          try {
+            await apiRequest('deleteDocument', { id: btn.dataset.documentId });
+            await loadAllDataFromServer();
+          } catch (err) {
+            setStatus('Error');
+            alert(err.message);
+          }
+        });
+      });
     }
 
     function renderReports() {
