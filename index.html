@@ -1324,6 +1324,10 @@
       const c = state.clients.find(function(x) { return x.id === clientId; });
       if (!c) return;
 
+      const signatureHtml = c.signature
+        ? '<h2>Signature</h2><div class="box"><img src="' + c.signature + '" style="max-width:320px; max-height:120px;"></div>'
+        : '';
+
       const html =
         '<h1>Client Intake Summary</h1>' +
         '<div class="meta">' + escapeHtml(c.name) + ' • ' + escapeHtml(c.mrn) + ' • Generated ' + escapeHtml(new Date().toLocaleString()) + '</div>' +
@@ -1344,7 +1348,8 @@
         '<h2>Presenting Problem</h2><div class="box">' + escapeHtml(c.presentingProblem || '—') + '</div>' +
         '<h2>Goals</h2><div class="box">' + escapeHtml(c.goals || '—') + '</div>' +
         '<h2>Supports / Recovery Capital</h2><div class="box">' + escapeHtml(c.supports || '—') + '</div>' +
-        '<h2>Alerts / Safety Notes</h2><div class="box">' + escapeHtml(c.alerts || '—') + '</div>';
+        '<h2>Alerts / Safety Notes</h2><div class="box">' + escapeHtml(c.alerts || '—') + '</div>' +
+        signatureHtml;
 
       printDocument('Intake - ' + c.name, html);
     }
@@ -1354,12 +1359,17 @@
       if (!n) return;
       const c = state.clients.find(function(x) { return x.id === n.clientId; });
 
+      const signatureHtml = n.signature
+        ? '<h2>Signature</h2><div class="box"><img src="' + n.signature + '" style="max-width:320px; max-height:120px;"></div>'
+        : '';
+
       const html =
         '<h1>Progress Note</h1>' +
         '<div class="meta">' + escapeHtml(c ? c.name : 'Unknown Client') + ' • ' + escapeHtml(c ? c.mrn : '—') + ' • ' + escapeHtml(n.date || '—') + ' • ' + escapeHtml(n.type || '—') + '</div>' +
         '<h2>Data / Presentation</h2><div class="box">' + escapeHtml(n.data || '—') + '</div>' +
         '<h2>Assessment / Clinical Impression</h2><div class="box">' + escapeHtml(n.assessment || '—') + '</div>' +
-        '<h2>Plan / Next Steps</h2><div class="box">' + escapeHtml(n.plan || '—') + '</div>';
+        '<h2>Plan / Next Steps</h2><div class="box">' + escapeHtml(n.plan || '—') + '</div>' +
+        signatureHtml;
 
       printDocument('Note - ' + (c ? c.name : 'Client'), html);
     }
@@ -1369,13 +1379,18 @@
       if (!p) return;
       const c = state.clients.find(function(x) { return x.id === p.clientId; });
 
+      const signatureHtml = p.signature
+        ? '<h2>Signature</h2><div class="box"><img src="' + p.signature + '" style="max-width:320px; max-height:120px;"></div>'
+        : '';
+
       const html =
         '<h1>Treatment Plan</h1>' +
         '<div class="meta">' + escapeHtml(c ? c.name : 'Unknown Client') + ' • ' + escapeHtml(c ? c.mrn : '—') + ' • Review ' + escapeHtml(p.reviewDate || '—') + '</div>' +
         '<h2>Problem</h2><div class="box">' + escapeHtml(p.problem || '—') + '</div>' +
         '<h2>Goal</h2><div class="box">' + escapeHtml(p.goal || '—') + '</div>' +
         '<h2>Objectives</h2><div class="box">' + escapeHtml(p.objectives || '—') + '</div>' +
-        '<h2>Interventions</h2><div class="box">' + escapeHtml(p.interventions || '—') + '</div>';
+        '<h2>Interventions</h2><div class="box">' + escapeHtml(p.interventions || '—') + '</div>' +
+        signatureHtml;
 
       printDocument('Treatment Plan - ' + (c ? c.name : 'Client'), html);
     }
