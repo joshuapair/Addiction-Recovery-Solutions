@@ -280,6 +280,23 @@
 
     .hidden { display: none; }
 
+    .signature-wrap {
+      border: 1px solid #cbd5e1;
+      border-radius: 12px;
+      background: #fff;
+      padding: 10px;
+    }
+
+    .signature-canvas {
+      width: 100%;
+      height: 180px;
+      border: 1px dashed #94a3b8;
+      border-radius: 8px;
+      background: #fff;
+      touch-action: none;
+      display: block;
+    }
+
     @media (max-width: 1000px) {
       .app { grid-template-columns: 1fr; }
       .sidebar { position: relative; height: auto; }
@@ -294,7 +311,7 @@
       <div class="subtitle">Google-backed prototype</div>
 
       <div class="warning">
-        This version saves to a Google backend instead of browser-only storage. It still needs proper Google Workspace setup, access controls, and compliance steps before production use with PHI.
+        This version saves to your Google Apps Script backend. It still needs proper workspace setup and compliance controls before real PHI use.
       </div>
 
       <button class="nav-btn active" data-view="dashboardView">Dashboard</button>
@@ -373,8 +390,12 @@
               <div class="field"><label class="label">Admission Date</label><input id="admissionDate" type="date"></div>
               <div class="field"><label class="label">Primary Substance</label><input id="primarySubstance"></div>
               <div class="field"><label class="label">Secondary Substance</label><input id="secondarySubstance"></div>
-              <div class="field"><label class="label">Diagnosis</label><input id="diagnosis"></div>
-              <div class="field"><label class="label">Stage of Change</label>
+              <div class="field">
+                <label class="label">Diagnosis</label>
+                <select id="diagnosis"></select>
+              </div>
+              <div class="field">
+                <label class="label">Stage of Change</label>
                 <select id="stageOfChange">
                   <option>Precontemplation</option>
                   <option>Contemplation</option>
@@ -383,14 +404,16 @@
                   <option>Maintenance</option>
                 </select>
               </div>
-              <div class="field"><label class="label">Risk Level</label>
+              <div class="field">
+                <label class="label">Risk Level</label>
                 <select id="riskLevel">
                   <option>Low</option>
                   <option>Moderate</option>
                   <option>High</option>
                 </select>
               </div>
-              <div class="field"><label class="label">Status</label>
+              <div class="field">
+                <label class="label">Status</label>
                 <select id="status">
                   <option>Active</option>
                   <option>Pending</option>
@@ -399,10 +422,22 @@
                 </select>
               </div>
             </div>
+
             <div class="field"><label class="label">Presenting Problem</label><textarea id="presentingProblem"></textarea></div>
             <div class="field"><label class="label">Goals</label><textarea id="goals"></textarea></div>
             <div class="field"><label class="label">Supports / Recovery Capital</label><textarea id="supports"></textarea></div>
             <div class="field"><label class="label">Alerts / Safety Notes</label><textarea id="alerts"></textarea></div>
+
+            <div class="field">
+              <label class="label">Client Signature</label>
+              <div class="signature-wrap">
+                <canvas id="clientSignatureCanvas" class="signature-canvas"></canvas>
+                <div class="row-actions">
+                  <button type="button" class="secondary-btn" id="clearClientSignatureBtn">Clear Signature</button>
+                </div>
+              </div>
+            </div>
+
             <div class="row-actions">
               <button class="primary-btn" type="submit">Save Client</button>
               <button class="secondary-btn" type="button" id="clearClientFormBtn">Clear</button>
@@ -419,7 +454,8 @@
             <div class="grid grid-3">
               <div class="field"><label class="label">Client</label><select id="noteClient"></select></div>
               <div class="field"><label class="label">Date</label><input id="noteDate" type="date" required></div>
-              <div class="field"><label class="label">Service Type</label>
+              <div class="field">
+                <label class="label">Service Type</label>
                 <select id="noteType">
                   <option>Individual Counseling</option>
                   <option>Group Counseling</option>
@@ -429,13 +465,26 @@
                 </select>
               </div>
             </div>
+
             <div class="field"><label class="label">Data / Presentation</label><textarea id="noteData" required></textarea></div>
             <div class="field"><label class="label">Assessment / Clinical Impression</label><textarea id="noteAssessment" required></textarea></div>
             <div class="field"><label class="label">Plan / Next Steps</label><textarea id="notePlan" required></textarea></div>
+
+            <div class="field">
+              <label class="label">Counselor Signature</label>
+              <div class="signature-wrap">
+                <canvas id="noteSignatureCanvas" class="signature-canvas"></canvas>
+                <div class="row-actions">
+                  <button type="button" class="secondary-btn" id="clearNoteSignatureBtn">Clear Signature</button>
+                </div>
+              </div>
+            </div>
+
             <div class="row-actions">
               <button class="primary-btn" type="submit">Save Note</button>
             </div>
           </form>
+
           <div style="margin-top:22px;">
             <div class="section-title" style="font-size:18px;">Saved Notes</div>
             <div id="notesList" class="mini-list" style="margin-top:12px;"></div>
@@ -452,14 +501,58 @@
               <div class="field"><label class="label">Client</label><select id="planClient"></select></div>
               <div class="field"><label class="label">Review Date</label><input id="planReviewDate" type="date"></div>
             </div>
-            <div class="field"><label class="label">Problem</label><textarea id="planProblem" required></textarea></div>
-            <div class="field"><label class="label">Goal</label><textarea id="planGoal" required></textarea></div>
-            <div class="field"><label class="label">Objectives</label><textarea id="planObjectives" required></textarea></div>
-            <div class="field"><label class="label">Interventions</label><textarea id="planInterventions" required></textarea></div>
+
+            <div class="field">
+              <label class="label">Problem Template</label>
+              <select id="planProblemSelect"></select>
+            </div>
+            <div class="field">
+              <label class="label">Problem</label>
+              <textarea id="planProblem" required></textarea>
+            </div>
+
+            <div class="field">
+              <label class="label">Goal Template</label>
+              <select id="planGoalSelect"></select>
+            </div>
+            <div class="field">
+              <label class="label">Goal</label>
+              <textarea id="planGoal" required></textarea>
+            </div>
+
+            <div class="field">
+              <label class="label">Objective Template</label>
+              <select id="planObjectivesSelect"></select>
+            </div>
+            <div class="field">
+              <label class="label">Objectives</label>
+              <textarea id="planObjectives" required></textarea>
+            </div>
+
+            <div class="field">
+              <label class="label">Intervention Template</label>
+              <select id="planInterventionsSelect"></select>
+            </div>
+            <div class="field">
+              <label class="label">Interventions</label>
+              <textarea id="planInterventions" required></textarea>
+            </div>
+
+            <div class="field">
+              <label class="label">Counselor Signature</label>
+              <div class="signature-wrap">
+                <canvas id="planSignatureCanvas" class="signature-canvas"></canvas>
+                <div class="row-actions">
+                  <button type="button" class="secondary-btn" id="clearPlanSignatureBtn">Clear Signature</button>
+                </div>
+              </div>
+            </div>
+
             <div class="row-actions">
               <button class="primary-btn" type="submit">Save Plan</button>
             </div>
           </form>
+
           <div style="margin-top:22px;">
             <div class="section-title" style="font-size:18px;">Saved Plans</div>
             <div id="plansList" class="mini-list" style="margin-top:12px;"></div>
@@ -474,7 +567,8 @@
           <form id="documentForm">
             <div class="grid grid-3">
               <div class="field"><label class="label">Client</label><select id="documentClient"></select></div>
-              <div class="field"><label class="label">Document Type</label>
+              <div class="field">
+                <label class="label">Document Type</label>
                 <select id="documentType">
                   <option>Intake</option>
                   <option>Consent</option>
@@ -489,13 +583,17 @@
               </div>
               <div class="field"><label class="label">Date</label><input id="documentDate" type="date"></div>
             </div>
+
             <div class="field"><label class="label">Title</label><input id="documentTitle"></div>
             <div class="field"><label class="label">Choose File</label><input id="documentFile" type="file" accept=".pdf,.doc,.docx,.jpg,.jpeg,.png,.txt"></div>
+            <div class="small">For best results, keep uploads small. Large files can fail in Apps Script uploads.</div>
             <div class="field"><label class="label">Notes</label><textarea id="documentNotes"></textarea></div>
+
             <div class="row-actions">
               <button class="primary-btn" type="submit">Save Document</button>
             </div>
           </form>
+
           <div style="margin-top:22px;">
             <div class="section-title" style="font-size:18px;">Saved Documents</div>
             <div id="documentsList" class="mini-list" style="margin-top:12px;"></div>
@@ -524,6 +622,7 @@
 
   <script>
     const APP_SCRIPT_URL = 'https://script.google.com/a/macros/addictionrecoverysolutions.org/s/AKfycbwS4yzK4DA96PBkqXddLSZHytYmUXv-W-NZKCIrVbTmdjbshY8cWfJGRjZqO0AZ3cSgeQ/exec';
+    const MAX_FILE_SIZE = 4.5 * 1024 * 1024;
 
     let state = {
       clients: [],
@@ -533,6 +632,87 @@
     };
 
     let selectedClientId = null;
+    let clientSignaturePad = null;
+    let noteSignaturePad = null;
+    let planSignaturePad = null;
+
+    const DIAGNOSIS_OPTIONS = [
+      '',
+      'F10.10 Alcohol Use Disorder, Mild',
+      'F10.20 Alcohol Use Disorder, Moderate/Severe',
+      'F11.10 Opioid Use Disorder, Mild',
+      'F11.20 Opioid Use Disorder, Moderate/Severe',
+      'F12.10 Cannabis Use Disorder, Mild',
+      'F12.20 Cannabis Use Disorder, Moderate/Severe',
+      'F13.10 Sedative, Hypnotic, or Anxiolytic Use Disorder, Mild',
+      'F13.20 Sedative, Hypnotic, or Anxiolytic Use Disorder, Moderate/Severe',
+      'F14.10 Cocaine Use Disorder, Mild',
+      'F14.20 Cocaine Use Disorder, Moderate/Severe',
+      'F15.10 Other Stimulant Use Disorder, Mild',
+      'F15.20 Other Stimulant Use Disorder, Moderate/Severe',
+      'F16.10 Hallucinogen Use Disorder, Mild',
+      'F16.20 Hallucinogen Use Disorder, Moderate/Severe',
+      'F18.10 Inhalant Use Disorder, Mild',
+      'F18.20 Inhalant Use Disorder, Moderate/Severe',
+      'F17.200 Tobacco Use Disorder, Unspecified',
+      'F17.210 Nicotine Dependence, Cigarettes, Uncomplicated',
+      'F19.10 Other Psychoactive Substance Use Disorder, Mild',
+      'F19.20 Other Psychoactive Substance Use Disorder, Moderate/Severe'
+    ];
+
+    const PLAN_PROBLEM_OPTIONS = [
+      '',
+      'Client continues substance use despite negative consequences.',
+      'Client demonstrates limited insight into the severity of substance use.',
+      'Client reports frequent cravings and difficulty managing triggers.',
+      'Client lacks relapse prevention skills.',
+      'Client has unstable recovery supports.',
+      'Client has legal consequences related to substance use.',
+      'Client has occupational impairment related to substance use.',
+      'Client has family / relationship conflict related to substance use.',
+      'Client has co-occurring emotional distress that increases relapse risk.',
+      'Client has inconsistent attendance / participation in treatment.'
+    ];
+
+    const PLAN_GOAL_OPTIONS = [
+      '',
+      'Client will establish and maintain abstinence from all non-prescribed mood-altering substances.',
+      'Client will increase insight into substance use patterns and consequences.',
+      'Client will strengthen relapse prevention skills.',
+      'Client will identify and manage triggers and cravings effectively.',
+      'Client will build and use sober support systems.',
+      'Client will improve emotional regulation without substance use.',
+      'Client will comply with treatment and recovery recommendations.',
+      'Client will reduce risk of relapse and increase recovery stability.'
+    ];
+
+    const PLAN_OBJECTIVE_OPTIONS = [
+      '',
+      'Client will identify at least 5 triggers for substance use.',
+      'Client will identify at least 5 coping skills to manage cravings.',
+      'Client will complete a written relapse prevention plan.',
+      'Client will attend all scheduled counseling sessions.',
+      'Client will participate in at least 1 support meeting weekly.',
+      'Client will verbalize at least 3 negative consequences of substance use.',
+      'Client will identify supportive people and recovery resources.',
+      'Client will demonstrate refusal skills in high-risk situations.',
+      'Client will monitor cravings and high-risk emotions between sessions.',
+      'Client will comply with drug testing / monitoring as required.'
+    ];
+
+    const PLAN_INTERVENTION_OPTIONS = [
+      '',
+      'Counselor will provide psychoeducation regarding addiction, recovery, and relapse prevention.',
+      'Counselor will use motivational interviewing to enhance readiness for change.',
+      'Counselor will use cognitive behavioral interventions to challenge risky thinking.',
+      'Counselor will assist client in identifying triggers, cravings, and warning signs.',
+      'Counselor will help client develop and update a relapse prevention plan.',
+      'Counselor will encourage participation in mutual support / recovery support activities.',
+      'Counselor will reinforce coping skills, refusal skills, and emotional regulation strategies.',
+      'Counselor will monitor treatment compliance and response to interventions.',
+      'Counselor will coordinate referrals and outside services as needed.',
+      'Counselor will review progress toward goals and update the plan as needed.'
+    ];
 
     function setStatus(text) {
       document.getElementById('serverStatus').textContent = text;
@@ -541,15 +721,28 @@
     async function apiRequest(action, payload) {
       setStatus('Working...');
 
-      const res = await fetch(APP_SCRIPT_URL, {
-        method: 'POST',
-        headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-        body: JSON.stringify({ action, payload })
-      });
+      let res;
+      try {
+        res = await fetch(APP_SCRIPT_URL, {
+          method: 'POST',
+          headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+          body: JSON.stringify({ action, payload })
+        });
+      } catch (err) {
+        setStatus('Error');
+        throw new Error('Network request failed.');
+      }
 
-      const data = await res.json();
+      let data;
+      try {
+        data = await res.json();
+      } catch (err) {
+        setStatus('Error');
+        throw new Error('Server did not return valid JSON.');
+      }
 
       if (!res.ok || !data.ok) {
+        setStatus('Error');
         throw new Error(data.error || 'Request failed');
       }
 
@@ -587,6 +780,99 @@
       });
     }
 
+    function populateSelectOptions(selectId, options, labelText) {
+      const select = document.getElementById(selectId);
+      if (!select) return;
+
+      select.innerHTML = options.map(function(opt) {
+        const text = opt || ('Select ' + labelText);
+        return '<option value="' + escapeHtml(opt) + '">' + escapeHtml(text) + '</option>';
+      }).join('');
+    }
+
+    function wireTemplateSelect(selectId, textareaId) {
+      const select = document.getElementById(selectId);
+      const textarea = document.getElementById(textareaId);
+      if (!select || !textarea) return;
+
+      select.addEventListener('change', function() {
+        if (select.value) textarea.value = select.value;
+      });
+    }
+
+    function setupSignaturePad(canvasId, clearBtnId) {
+      const canvas = document.getElementById(canvasId);
+      const clearBtn = document.getElementById(clearBtnId);
+      if (!canvas) return null;
+
+      const ctx = canvas.getContext('2d');
+      let drawing = false;
+
+      function resizeCanvas() {
+        const rect = canvas.getBoundingClientRect();
+        canvas.width = rect.width;
+        canvas.height = rect.height;
+        ctx.lineWidth = 2;
+        ctx.lineCap = 'round';
+        ctx.strokeStyle = '#111827';
+      }
+
+      function getPos(e) {
+        const rect = canvas.getBoundingClientRect();
+        const touch = e.touches && e.touches[0];
+        const clientX = touch ? touch.clientX : e.clientX;
+        const clientY = touch ? touch.clientY : e.clientY;
+        return { x: clientX - rect.left, y: clientY - rect.top };
+      }
+
+      function start(e) {
+        e.preventDefault();
+        drawing = true;
+        const pos = getPos(e);
+        ctx.beginPath();
+        ctx.moveTo(pos.x, pos.y);
+      }
+
+      function move(e) {
+        if (!drawing) return;
+        e.preventDefault();
+        const pos = getPos(e);
+        ctx.lineTo(pos.x, pos.y);
+        ctx.stroke();
+      }
+
+      function end() {
+        drawing = false;
+      }
+
+      resizeCanvas();
+      window.addEventListener('resize', resizeCanvas);
+
+      canvas.addEventListener('mousedown', start);
+      canvas.addEventListener('mousemove', move);
+      canvas.addEventListener('mouseup', end);
+      canvas.addEventListener('mouseleave', end);
+
+      canvas.addEventListener('touchstart', start, { passive: false });
+      canvas.addEventListener('touchmove', move, { passive: false });
+      canvas.addEventListener('touchend', end);
+
+      if (clearBtn) {
+        clearBtn.addEventListener('click', function() {
+          ctx.clearRect(0, 0, canvas.width, canvas.height);
+        });
+      }
+
+      return {
+        getDataUrl: function() {
+          return canvas.toDataURL('image/png');
+        },
+        clear: function() {
+          ctx.clearRect(0, 0, canvas.width, canvas.height);
+        }
+      };
+    }
+
     function populateClientSelects() {
       const options = state.clients.map(function(c) {
         return '<option value="' + c.id + '">' + escapeHtml(c.name) + ' (' + escapeHtml(c.mrn) + ')</option>';
@@ -609,7 +895,7 @@
       document.getElementById('statNotes').textContent = state.notes.length;
 
       const recent = state.clients.slice().sort(function(a, b) {
-        return new Date(b.createdAt || b.created_at || 0) - new Date(a.createdAt || a.created_at || 0);
+        return new Date(b.createdAt || 0) - new Date(a.createdAt || 0);
       }).slice(0, 5);
 
       document.getElementById('recentClients').innerHTML = recent.length
@@ -738,12 +1024,14 @@
         presentingProblem: document.getElementById('presentingProblem').value,
         goals: document.getElementById('goals').value,
         supports: document.getElementById('supports').value,
-        alerts: document.getElementById('alerts').value
+        alerts: document.getElementById('alerts').value,
+        signature: clientSignaturePad ? clientSignaturePad.getDataUrl() : ''
       };
 
       try {
         await apiRequest('saveClient', client);
         document.getElementById('newClientForm').reset();
+        if (clientSignaturePad) clientSignaturePad.clear();
         await loadAllDataFromServer();
         showView('clientsView');
       } catch (err) {
@@ -761,13 +1049,15 @@
         type: document.getElementById('noteType').value,
         data: document.getElementById('noteData').value,
         assessment: document.getElementById('noteAssessment').value,
-        plan: document.getElementById('notePlan').value
+        plan: document.getElementById('notePlan').value,
+        signature: noteSignaturePad ? noteSignaturePad.getDataUrl() : ''
       };
 
       try {
         await apiRequest('saveNote', note);
         document.getElementById('noteForm').reset();
         document.getElementById('noteDate').valueAsDate = new Date();
+        if (noteSignaturePad) noteSignaturePad.clear();
         await loadAllDataFromServer();
       } catch (err) {
         setStatus('Error');
@@ -784,12 +1074,14 @@
         problem: document.getElementById('planProblem').value,
         goal: document.getElementById('planGoal').value,
         objectives: document.getElementById('planObjectives').value,
-        interventions: document.getElementById('planInterventions').value
+        interventions: document.getElementById('planInterventions').value,
+        signature: planSignaturePad ? planSignaturePad.getDataUrl() : ''
       };
 
       try {
         await apiRequest('savePlan', plan);
         document.getElementById('planForm').reset();
+        if (planSignaturePad) planSignaturePad.clear();
         await loadAllDataFromServer();
       } catch (err) {
         setStatus('Error');
@@ -817,6 +1109,11 @@
         return;
       }
 
+      if (file.size > MAX_FILE_SIZE) {
+        alert('That file is too large for this upload method. Try a smaller PDF or image.');
+        return;
+      }
+
       try {
         const base64 = await fileToBase64(file);
 
@@ -837,7 +1134,7 @@
         await loadAllDataFromServer();
       } catch (err) {
         setStatus('Error');
-        alert(err.message);
+        alert('Document save failed: ' + err.message);
       }
     }
 
@@ -1119,10 +1416,26 @@
     document.getElementById('newClientForm').addEventListener('submit', saveClient);
     document.getElementById('clearClientFormBtn').addEventListener('click', function() {
       document.getElementById('newClientForm').reset();
+      if (clientSignaturePad) clientSignaturePad.clear();
     });
     document.getElementById('noteForm').addEventListener('submit', saveNote);
     document.getElementById('planForm').addEventListener('submit', savePlan);
     document.getElementById('documentForm').addEventListener('submit', saveDocument);
+
+    populateSelectOptions('diagnosis', DIAGNOSIS_OPTIONS, 'diagnosis');
+    populateSelectOptions('planProblemSelect', PLAN_PROBLEM_OPTIONS, 'problem');
+    populateSelectOptions('planGoalSelect', PLAN_GOAL_OPTIONS, 'goal');
+    populateSelectOptions('planObjectivesSelect', PLAN_OBJECTIVE_OPTIONS, 'objective');
+    populateSelectOptions('planInterventionsSelect', PLAN_INTERVENTION_OPTIONS, 'intervention');
+
+    wireTemplateSelect('planProblemSelect', 'planProblem');
+    wireTemplateSelect('planGoalSelect', 'planGoal');
+    wireTemplateSelect('planObjectivesSelect', 'planObjectives');
+    wireTemplateSelect('planInterventionsSelect', 'planInterventions');
+
+    clientSignaturePad = setupSignaturePad('clientSignatureCanvas', 'clearClientSignatureBtn');
+    noteSignaturePad = setupSignaturePad('noteSignatureCanvas', 'clearNoteSignatureBtn');
+    planSignaturePad = setupSignaturePad('planSignatureCanvas', 'clearPlanSignatureBtn');
 
     document.getElementById('noteDate').valueAsDate = new Date();
     document.getElementById('documentDate').valueAsDate = new Date();
