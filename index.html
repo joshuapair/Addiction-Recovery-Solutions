@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Recovery EHR Starter</title>
+  <title>Recovery EHR</title>
   <style>
     :root {
       --panel: #111827;
@@ -118,7 +118,7 @@
       margin-bottom: 22px;
     }
 
-    .toolbar .left, .toolbar .right {
+    .toolbar .left {
       display: flex;
       gap: 10px;
       flex-wrap: wrap;
@@ -286,10 +286,10 @@
   <div class="app">
     <aside class="sidebar">
       <div class="brand">Recovery EHR</div>
-      <div class="subtitle">HTML prototype for substance use counseling workflows</div>
+      <div class="subtitle">Google-backed prototype</div>
 
       <div class="warning">
-        Prototype only. This local browser version is <strong>not HIPAA-compliant</strong> and should not be used for real PHI without secure hosting, encryption, user authentication, audit logs, backups, a BAA-ready environment, and legal/compliance review.
+        This version saves to a Google backend instead of browser-only storage. You still need proper Workspace/Cloud configuration, access controls, and compliance steps before using PHI in production.
       </div>
 
       <button class="nav-btn active" data-view="dashboardView">Dashboard</button>
@@ -302,12 +302,7 @@
 
       <hr style="border-color:#334155; opacity:.35; margin:18px 0;">
 
-      <button class="primary-btn" id="exportBackupBtn">Export JSON Backup</button>
-      <label class="secondary-btn" style="display:block; text-align:center; cursor:pointer;">
-        Import JSON Backup
-        <input id="importFileInput" type="file" accept="application/json" style="display:none;">
-      </label>
-      <button class="danger-btn" id="resetDemoBtn">Reset Demo Data</button>
+      <button class="primary-btn" id="reloadBtn">Reload from Server</button>
     </aside>
 
     <main class="content">
@@ -325,17 +320,14 @@
         <div class="grid grid-2" style="margin-top:16px;">
           <div class="card">
             <div class="section-title">Recent Clients</div>
-            <div class="section-subtitle">Most recently added records</div>
+            <div class="section-subtitle">Most recently loaded records</div>
             <div id="recentClients" class="mini-list"></div>
           </div>
           <div class="card">
-            <div class="section-title">Clinical Reminders</div>
-            <div class="section-subtitle">Manual planning prompts for your workflow</div>
+            <div class="section-title">Status</div>
+            <div class="section-subtitle">Current app state</div>
             <div class="mini-list">
-              <div class="mini-item">Review treatment plan every 30 days or per program policy.</div>
-              <div class="mini-item">Document cravings, triggers, relapse risk, supports, and stage of change.</div>
-              <div class="mini-item">Track attendance, referrals, testing coordination, and discharge planning.</div>
-              <div class="mini-item">Separate psychotherapy notes from the legal record if needed by your workflow.</div>
+              <div class="mini-item" id="serverStatus">Ready</div>
             </div>
           </div>
         </div>
@@ -345,7 +337,7 @@
         <div class="toolbar">
           <div class="left">
             <h1 style="margin:0; font-size:30px;">Clients</h1>
-            <input id="clientSearch" class="search" type="text" placeholder="Search name, MRN, substance, status...">
+            <input id="clientSearch" class="search" type="text" placeholder="Search">
           </div>
         </div>
         <div class="detail-grid">
@@ -356,7 +348,7 @@
           </div>
           <div class="card">
             <div class="section-title">Client Details</div>
-            <div class="section-subtitle">Intake summary, diagnosis, risk, and supports</div>
+            <div class="section-subtitle">Intake summary</div>
             <div id="clientDetail"></div>
           </div>
         </div>
@@ -365,7 +357,7 @@
       <section id="newClientView" class="hidden">
         <div class="card">
           <div class="section-title">New Intake</div>
-          <div class="section-subtitle">Create a basic substance use client record</div>
+          <div class="section-subtitle">Save directly to Google Sheets</div>
           <form id="newClientForm">
             <div class="grid grid-2">
               <div class="field"><label class="label">Client Name</label><input id="name" required></div>
@@ -374,9 +366,9 @@
               <div class="field"><label class="label">Phone</label><input id="phone"></div>
               <div class="field"><label class="label">Email</label><input id="email" type="email"></div>
               <div class="field"><label class="label">Admission Date</label><input id="admissionDate" type="date"></div>
-              <div class="field"><label class="label">Primary Substance</label><input id="primarySubstance" ></div>
+              <div class="field"><label class="label">Primary Substance</label><input id="primarySubstance"></div>
               <div class="field"><label class="label">Secondary Substance</label><input id="secondarySubstance"></div>
-              <div class="field"><label class="label">Diagnosis</label><input id="diagnosis" ></div>
+              <div class="field"><label class="label">Diagnosis</label><input id="diagnosis"></div>
               <div class="field"><label class="label">Stage of Change</label>
                 <select id="stageOfChange">
                   <option>Precontemplation</option>
@@ -403,9 +395,9 @@
               </div>
             </div>
             <div class="field"><label class="label">Presenting Problem</label><textarea id="presentingProblem"></textarea></div>
-            <div class="field"><label class="label">Goals</label><textarea id="goals" ></textarea></div>
+            <div class="field"><label class="label">Goals</label><textarea id="goals"></textarea></div>
             <div class="field"><label class="label">Supports / Recovery Capital</label><textarea id="supports"></textarea></div>
-            <div class="field"><label class="label">Alerts / Safety Notes</label><textarea id="alerts" ></textarea></div>
+            <div class="field"><label class="label">Alerts / Safety Notes</label><textarea id="alerts"></textarea></div>
             <div class="row-actions">
               <button class="primary-btn" type="submit">Save Client</button>
               <button class="secondary-btn" type="button" id="clearClientFormBtn">Clear</button>
@@ -417,7 +409,7 @@
       <section id="notesView" class="hidden">
         <div class="card">
           <div class="section-title">Session Notes</div>
-          <div class="section-subtitle">Simple DAP/BIRP-style progress note entry</div>
+          <div class="section-subtitle">Saved to Google Sheets</div>
           <form id="noteForm">
             <div class="grid grid-3">
               <div class="field"><label class="label">Client</label><select id="noteClient"></select></div>
@@ -432,9 +424,9 @@
                 </select>
               </div>
             </div>
-            <div class="field"><label class="label">Data / Presentation</label><textarea id="noteData" required ></textarea></div>
-            <div class="field"><label class="label">Assessment / Clinical Impression</label><textarea id="noteAssessment" required ></textarea></div>
-            <div class="field"><label class="label">Plan / Next Steps</label><textarea id="notePlan" required ></textarea></div>
+            <div class="field"><label class="label">Data / Presentation</label><textarea id="noteData" required></textarea></div>
+            <div class="field"><label class="label">Assessment / Clinical Impression</label><textarea id="noteAssessment" required></textarea></div>
+            <div class="field"><label class="label">Plan / Next Steps</label><textarea id="notePlan" required></textarea></div>
             <div class="row-actions">
               <button class="primary-btn" type="submit">Save Note</button>
             </div>
@@ -449,16 +441,16 @@
       <section id="plansView" class="hidden">
         <div class="card">
           <div class="section-title">Treatment Plans</div>
-          <div class="section-subtitle">Track problem, goal, objectives, and interventions</div>
+          <div class="section-subtitle">Saved to Google Sheets</div>
           <form id="planForm">
             <div class="grid grid-2">
               <div class="field"><label class="label">Client</label><select id="planClient"></select></div>
               <div class="field"><label class="label">Review Date</label><input id="planReviewDate" type="date"></div>
             </div>
-            <div class="field"><label class="label">Problem</label><textarea id="planProblem" required ></textarea></div>
-            <div class="field"><label class="label">Goal</label><textarea id="planGoal" required ></textarea></div>
-            <div class="field"><label class="label">Objectives</label><textarea id="planObjectives" required ></textarea></div>
-            <div class="field"><label class="label">Interventions</label><textarea id="planInterventions" required ></textarea></div>
+            <div class="field"><label class="label">Problem</label><textarea id="planProblem" required></textarea></div>
+            <div class="field"><label class="label">Goal</label><textarea id="planGoal" required></textarea></div>
+            <div class="field"><label class="label">Objectives</label><textarea id="planObjectives" required></textarea></div>
+            <div class="field"><label class="label">Interventions</label><textarea id="planInterventions" required></textarea></div>
             <div class="row-actions">
               <button class="primary-btn" type="submit">Save Plan</button>
             </div>
@@ -473,7 +465,7 @@
       <section id="documentsView" class="hidden">
         <div class="card">
           <div class="section-title">Documents</div>
-          <div class="section-subtitle">Upload and store client PDFs and other files in this browser</div>
+          <div class="section-subtitle">Metadata in Sheets, files in Drive</div>
           <form id="documentForm">
             <div class="grid grid-3">
               <div class="field"><label class="label">Client</label><select id="documentClient"></select></div>
@@ -492,9 +484,9 @@
               </div>
               <div class="field"><label class="label">Date</label><input id="documentDate" type="date"></div>
             </div>
-            <div class="field"><label class="label">Title</label><input id="documentTitle" ></div>
+            <div class="field"><label class="label">Title</label><input id="documentTitle"></div>
             <div class="field"><label class="label">Choose File</label><input id="documentFile" type="file" accept=".pdf,.doc,.docx,.jpg,.jpeg,.png,.txt"></div>
-            <div class="field"><label class="label">Notes</label><textarea id="documentNotes" ></textarea></div>
+            <div class="field"><label class="label">Notes</label><textarea id="documentNotes"></textarea></div>
             <div class="row-actions">
               <button class="primary-btn" type="submit">Save Document</button>
             </div>
@@ -509,7 +501,7 @@
       <section id="reportsView" class="hidden">
         <div class="card">
           <div class="section-title">Reports</div>
-          <div class="section-subtitle">Simple summaries from saved records</div>
+          <div class="section-subtitle">Simple summaries</div>
           <div class="grid grid-2">
             <div>
               <div class="label">Clients by Status</div>
@@ -526,80 +518,37 @@
   </div>
 
   <script>
-    const STORAGE_KEY = 'recovery-ehr-starter-v2';
-    let state = loadState();
+    const APP_SCRIPT_URL = 'YOUR_APPS_SCRIPT_WEB_APP_URL';
+
+    let state = {
+      clients: [],
+      notes: [],
+      plans: [],
+      documents: []
+    };
+
     let selectedClientId = null;
 
-    function demoData() {
-      return {
-        clients: [
-          {
-            id: makeId(),
-            name: 'John Doe',
-            mrn: 'ARS-1001',
-            dob: '1988-03-14',
-            phone: '555-123-4567',
-            email: 'john@example.com',
-            admissionDate: '2026-03-01',
-            primarySubstance: 'Methamphetamine',
-            secondarySubstance: 'Alcohol',
-            diagnosis: 'F15.20 Stimulant Use Disorder, Severe',
-            stageOfChange: 'Preparation',
-            riskLevel: 'High',
-            status: 'Active',
-            presentingProblem: 'Client reports relapse after interpersonal stress and job instability.',
-            goals: 'Maintain abstinence, strengthen coping, attend counseling weekly.',
-            supports: 'Sponsor, spouse, church support, stable housing.',
-            alerts: 'Overdose history denied. Reports strong cravings under stress.',
-            createdAt: new Date().toISOString()
-          },
-          {
-            id: makeId(),
-            name: 'Jane Smith',
-            mrn: 'ARS-1002',
-            dob: '1992-11-02',
-            phone: '555-222-9988',
-            email: 'jane@example.com',
-            admissionDate: '2026-02-21',
-            primarySubstance: 'Alcohol',
-            secondarySubstance: '',
-            diagnosis: 'F10.20 Alcohol Use Disorder, Moderate',
-            stageOfChange: 'Action',
-            riskLevel: 'Moderate',
-            status: 'Active',
-            presentingProblem: 'Alcohol use escalating with legal and family consequences.',
-            goals: 'Improve accountability, prevent relapse, develop refusal skills.',
-            supports: 'Mother, peer group, employer support.',
-            alerts: 'DWI history. No current SI/HI reported.',
-            createdAt: new Date().toISOString()
-          }
-        ],
-        notes: [],
-        plans: [],
-        documents: []
-      };
+    function setStatus(text) {
+      document.getElementById('serverStatus').textContent = text;
     }
 
-    function makeId() {
-      return 'id-' + Date.now() + '-' + Math.random().toString(36).slice(2, 9);
-    }
+    async function apiRequest(action, payload) {
+      setStatus('Working...');
+      const res = await fetch(APP_SCRIPT_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+        body: JSON.stringify({ action, payload })
+      });
 
-    function loadState() {
-      const raw = localStorage.getItem(STORAGE_KEY);
-      if (!raw) {
-        const seed = demoData();
-        localStorage.setItem(STORAGE_KEY, JSON.stringify(seed));
-        return seed;
+      const data = await res.json();
+
+      if (!res.ok || !data.ok) {
+        throw new Error(data.error || 'Request failed');
       }
-      try {
-        return JSON.parse(raw);
-      } catch (err) {
-        return demoData();
-      }
-    }
 
-    function saveState() {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+      setStatus('Ready');
+      return data.result;
     }
 
     function escapeHtml(str) {
@@ -635,6 +584,7 @@
       const options = state.clients.map(function(c) {
         return '<option value="' + c.id + '">' + escapeHtml(c.name) + ' (' + escapeHtml(c.mrn) + ')</option>';
       }).join('');
+
       document.getElementById('noteClient').innerHTML = options;
       document.getElementById('planClient').innerHTML = options;
       document.getElementById('documentClient').innerHTML = options;
@@ -646,7 +596,7 @@
       document.getElementById('statNotes').textContent = state.notes.length;
 
       const recent = state.clients.slice().sort(function(a, b) {
-        return new Date(b.createdAt) - new Date(a.createdAt);
+        return new Date(b.createdAt || b.created_at || 0) - new Date(a.createdAt || a.created_at || 0);
       }).slice(0, 5);
 
       document.getElementById('recentClients').innerHTML = recent.length
@@ -658,11 +608,20 @@
 
     function renderClients() {
       const q = (document.getElementById('clientSearch').value || '').toLowerCase();
+
       const results = state.clients.filter(function(c) {
-        return [c.name, c.mrn, c.primarySubstance, c.secondarySubstance, c.status, c.diagnosis].join(' ').toLowerCase().includes(q);
+        return [
+          c.name,
+          c.mrn,
+          c.primarySubstance,
+          c.secondarySubstance,
+          c.status,
+          c.diagnosis
+        ].join(' ').toLowerCase().includes(q);
       });
 
       const wrap = document.getElementById('clientList');
+
       if (!results.length) {
         wrap.innerHTML = '<div class="empty">No matching clients found.</div>';
         document.getElementById('clientDetail').innerHTML = '<div class="empty">Select a client to view details.</div>';
@@ -697,6 +656,7 @@
     function renderClientDetail() {
       const c = state.clients.find(function(x) { return x.id === selectedClientId; });
       const box = document.getElementById('clientDetail');
+
       if (!c) {
         box.innerHTML = '<div class="empty">Select a client to view details.</div>';
         return;
@@ -704,8 +664,9 @@
 
       const notes = state.notes.filter(function(n) { return n.clientId === c.id; });
       const plans = state.plans.filter(function(p) { return p.clientId === c.id; });
+      const docs = state.documents.filter(function(d) { return d.clientId === c.id; });
 
-      box.innerHTML = '' +
+      box.innerHTML =
         '<div style="margin-bottom:12px;">' +
           '<div style="font-size:22px; font-weight:700;">' + escapeHtml(c.name) + '</div>' +
           '<div class="small">' + escapeHtml(c.mrn) + (c.dob ? ' • DOB ' + escapeHtml(c.dob) : '') + '</div>' +
@@ -721,25 +682,21 @@
           '<div class="mini-item"><strong>Goals:</strong><br>' + escapeHtml(c.goals || '—') + '</div>' +
           '<div class="mini-item"><strong>Supports:</strong><br>' + escapeHtml(c.supports || '—') + '</div>' +
           '<div class="mini-item"><strong>Alerts / Safety Notes:</strong><br>' + escapeHtml(c.alerts || '—') + '</div>' +
-          '<div class="mini-item"><strong>Counts:</strong><br>' + notes.length + ' notes • ' + plans.length + ' plans</div>' +
+          '<div class="mini-item"><strong>Counts:</strong><br>' + notes.length + ' notes • ' + plans.length + ' plans • ' + docs.length + ' documents</div>' +
         '</div>' +
         '<div class="row-actions">' +
           '<button class="primary-btn" id="exportIntakeBtn">Export Intake PDF</button>' +
-          '<button class="danger-btn" id="deleteClientBtn">Delete Client</button>' +
         '</div>';
 
       document.getElementById('exportIntakeBtn').addEventListener('click', function() {
         exportClientIntakePDF(c.id);
       });
-      document.getElementById('deleteClientBtn').addEventListener('click', function() {
-        deleteClient(c.id);
-      });
     }
 
-    function saveClient(e) {
+    async function saveClient(e) {
       e.preventDefault();
+
       const client = {
-        id: makeId(),
         name: document.getElementById('name').value,
         mrn: document.getElementById('mrn').value,
         dob: document.getElementById('dob').value,
@@ -755,50 +712,112 @@
         presentingProblem: document.getElementById('presentingProblem').value,
         goals: document.getElementById('goals').value,
         supports: document.getElementById('supports').value,
-        alerts: document.getElementById('alerts').value,
-        createdAt: new Date().toISOString()
+        alerts: document.getElementById('alerts').value
       };
 
-      state.clients.unshift(client);
-      selectedClientId = client.id;
-      saveState();
-      document.getElementById('newClientForm').reset();
-      refreshAll();
-      showView('clientsView');
+      try {
+        await apiRequest('saveClient', client);
+        document.getElementById('newClientForm').reset();
+        await loadAllDataFromServer();
+        showView('clientsView');
+      } catch (err) {
+        setStatus('Error');
+        alert(err.message);
+      }
     }
 
-    function deleteClient(id) {
-      if (!confirm('Delete this client and related notes/plans?')) return;
-      state.clients = state.clients.filter(function(c) { return c.id !== id; });
-      state.notes = state.notes.filter(function(n) { return n.clientId !== id; });
-      state.plans = state.plans.filter(function(p) { return p.clientId !== id; });
-      state.documents = state.documents.filter(function(d) { return d.clientId !== id; });
-      selectedClientId = state.clients.length ? state.clients[0].id : null;
-      saveState();
-      refreshAll();
-    }
-
-    function saveNote(e) {
+    async function saveNote(e) {
       e.preventDefault();
+
       const note = {
-        id: makeId(),
         clientId: document.getElementById('noteClient').value,
         date: document.getElementById('noteDate').value,
         type: document.getElementById('noteType').value,
         data: document.getElementById('noteData').value,
         assessment: document.getElementById('noteAssessment').value,
-        plan: document.getElementById('notePlan').value,
-        createdAt: new Date().toISOString()
+        plan: document.getElementById('notePlan').value
       };
-      state.notes.unshift(note);
-      saveState();
-      document.getElementById('noteForm').reset();
-      document.getElementById('noteDate').valueAsDate = new Date();
-      refreshAll();
+
+      try {
+        await apiRequest('saveNote', note);
+        document.getElementById('noteForm').reset();
+        document.getElementById('noteDate').valueAsDate = new Date();
+        await loadAllDataFromServer();
+      } catch (err) {
+        setStatus('Error');
+        alert(err.message);
+      }
+    }
+
+    async function savePlan(e) {
+      e.preventDefault();
+
+      const plan = {
+        clientId: document.getElementById('planClient').value,
+        reviewDate: document.getElementById('planReviewDate').value,
+        problem: document.getElementById('planProblem').value,
+        goal: document.getElementById('planGoal').value,
+        objectives: document.getElementById('planObjectives').value,
+        interventions: document.getElementById('planInterventions').value
+      };
+
+      try {
+        await apiRequest('savePlan', plan);
+        document.getElementById('planForm').reset();
+        await loadAllDataFromServer();
+      } catch (err) {
+        setStatus('Error');
+        alert(err.message);
+      }
+    }
+
+    function fileToBase64(file) {
+      return new Promise(function(resolve, reject) {
+        const reader = new FileReader();
+        reader.onload = function() {
+          resolve(reader.result.split(',')[1]);
+        };
+        reader.onerror = reject;
+        reader.readAsDataURL(file);
+      });
+    }
+
+    async function saveDocument(e) {
+      e.preventDefault();
+
+      const file = document.getElementById('documentFile').files[0];
+      if (!file) {
+        alert('Please choose a file.');
+        return;
+      }
+
+      try {
+        const base64 = await fileToBase64(file);
+
+        const payload = {
+          clientId: document.getElementById('documentClient').value,
+          type: document.getElementById('documentType').value,
+          date: document.getElementById('documentDate').value,
+          title: document.getElementById('documentTitle').value || file.name,
+          notes: document.getElementById('documentNotes').value,
+          fileName: file.name,
+          mimeType: file.type || 'application/octet-stream',
+          base64: base64
+        };
+
+        await apiRequest('saveDocument', payload);
+        document.getElementById('documentForm').reset();
+        document.getElementById('documentDate').valueAsDate = new Date();
+        await loadAllDataFromServer();
+      } catch (err) {
+        setStatus('Error');
+        alert(err.message);
+      }
     }
 
     function renderNotes() {
       const box = document.getElementById('notesList');
+
       if (!state.notes.length) {
         box.innerHTML = '<div class="empty">No notes saved yet.</div>';
         return;
@@ -806,6 +825,7 @@
 
       box.innerHTML = state.notes.map(function(n) {
         const c = state.clients.find(function(x) { return x.id === n.clientId; });
+
         return '<div class="mini-item">' +
           '<div style="display:flex; justify-content:space-between; gap:10px; flex-wrap:wrap;">' +
             '<strong>' + escapeHtml(c ? c.name : 'Unknown Client') + '</strong>' +
@@ -816,7 +836,6 @@
           '<div style="margin-top:8px;"><strong>Plan:</strong> ' + escapeHtml(n.plan) + '</div>' +
           '<div class="row-actions">' +
             '<button class="primary-btn export-note-btn" data-note-id="' + n.id + '">Export Note PDF</button>' +
-            '<button class="danger-btn delete-note-btn" data-note-id="' + n.id + '">Delete</button>' +
           '</div>' +
         '</div>';
       }).join('');
@@ -826,39 +845,11 @@
           exportNotePDF(btn.dataset.noteId);
         });
       });
-      document.querySelectorAll('.delete-note-btn').forEach(function(btn) {
-        btn.addEventListener('click', function() {
-          deleteNote(btn.dataset.noteId);
-        });
-      });
-    }
-
-    function deleteNote(id) {
-      state.notes = state.notes.filter(function(n) { return n.id !== id; });
-      saveState();
-      refreshAll();
-    }
-
-    function savePlan(e) {
-      e.preventDefault();
-      const plan = {
-        id: makeId(),
-        clientId: document.getElementById('planClient').value,
-        reviewDate: document.getElementById('planReviewDate').value,
-        problem: document.getElementById('planProblem').value,
-        goal: document.getElementById('planGoal').value,
-        objectives: document.getElementById('planObjectives').value,
-        interventions: document.getElementById('planInterventions').value,
-        createdAt: new Date().toISOString()
-      };
-      state.plans.unshift(plan);
-      saveState();
-      document.getElementById('planForm').reset();
-      refreshAll();
     }
 
     function renderPlans() {
       const box = document.getElementById('plansList');
+
       if (!state.plans.length) {
         box.innerHTML = '<div class="empty">No treatment plans saved yet.</div>';
         return;
@@ -866,6 +857,7 @@
 
       box.innerHTML = state.plans.map(function(p) {
         const c = state.clients.find(function(x) { return x.id === p.clientId; });
+
         return '<div class="mini-item">' +
           '<div style="display:flex; justify-content:space-between; gap:10px; flex-wrap:wrap;">' +
             '<strong>' + escapeHtml(c ? c.name : 'Unknown Client') + '</strong>' +
@@ -877,7 +869,6 @@
           '<div style="margin-top:8px;"><strong>Interventions:</strong> ' + escapeHtml(p.interventions) + '</div>' +
           '<div class="row-actions">' +
             '<button class="primary-btn export-plan-btn" data-plan-id="' + p.id + '">Export Plan PDF</button>' +
-            '<button class="danger-btn delete-plan-btn" data-plan-id="' + p.id + '">Delete</button>' +
           '</div>' +
         '</div>';
       }).join('');
@@ -887,22 +878,38 @@
           exportPlanPDF(btn.dataset.planId);
         });
       });
-      document.querySelectorAll('.delete-plan-btn').forEach(function(btn) {
-        btn.addEventListener('click', function() {
-          deletePlan(btn.dataset.planId);
-        });
-      });
     }
 
-    function deletePlan(id) {
-      state.plans = state.plans.filter(function(p) { return p.id !== id; });
-      saveState();
-      refreshAll();
+    function renderDocuments() {
+      const box = document.getElementById('documentsList');
+
+      if (!state.documents.length) {
+        box.innerHTML = '<div class="empty">No documents saved yet.</div>';
+        return;
+      }
+
+      box.innerHTML = state.documents.map(function(d) {
+        const c = state.clients.find(function(x) { return x.id === d.clientId; });
+
+        return '<div class="mini-item">' +
+          '<div style="display:flex; justify-content:space-between; gap:10px; flex-wrap:wrap;">' +
+            '<strong>' + escapeHtml(d.title || d.fileName) + '</strong>' +
+            '<span class="small">' + escapeHtml(d.date || '—') + ' • ' + escapeHtml(d.type || '—') + '</span>' +
+          '</div>' +
+          '<div style="margin-top:8px;"><strong>Client:</strong> ' + escapeHtml(c ? c.name : 'Unknown Client') + '</div>' +
+          '<div style="margin-top:8px;"><strong>File:</strong> ' + escapeHtml(d.fileName || '—') + '</div>' +
+          '<div style="margin-top:8px;"><strong>Notes:</strong> ' + escapeHtml(d.notes || '—') + '</div>' +
+          '<div class="row-actions">' +
+            (d.fileUrl ? '<a class="primary-btn" style="text-decoration:none; display:inline-block;" href="' + escapeHtml(d.fileUrl) + '" target="_blank">Open</a>' : '') +
+          '</div>' +
+        '</div>';
+      }).join('');
     }
 
     function renderReports() {
       const byStatus = {};
       const bySubstance = {};
+
       state.clients.forEach(function(c) {
         byStatus[c.status] = (byStatus[c.status] || 0) + 1;
         const substance = c.primarySubstance || 'Unspecified';
@@ -951,7 +958,8 @@
     function exportClientIntakePDF(clientId) {
       const c = state.clients.find(function(x) { return x.id === clientId; });
       if (!c) return;
-      const html = '' +
+
+      const html =
         '<h1>Client Intake Summary</h1>' +
         '<div class="meta">' + escapeHtml(c.name) + ' • ' + escapeHtml(c.mrn) + ' • Generated ' + escapeHtml(new Date().toLocaleString()) + '</div>' +
         '<div class="grid">' +
@@ -980,12 +988,14 @@
       const n = state.notes.find(function(x) { return x.id === noteId; });
       if (!n) return;
       const c = state.clients.find(function(x) { return x.id === n.clientId; });
-      const html = '' +
+
+      const html =
         '<h1>Progress Note</h1>' +
         '<div class="meta">' + escapeHtml(c ? c.name : 'Unknown Client') + ' • ' + escapeHtml(c ? c.mrn : '—') + ' • ' + escapeHtml(n.date || '—') + ' • ' + escapeHtml(n.type || '—') + '</div>' +
         '<h2>Data / Presentation</h2><div class="box">' + escapeHtml(n.data || '—') + '</div>' +
         '<h2>Assessment / Clinical Impression</h2><div class="box">' + escapeHtml(n.assessment || '—') + '</div>' +
         '<h2>Plan / Next Steps</h2><div class="box">' + escapeHtml(n.plan || '—') + '</div>';
+
       printDocument('Note - ' + (c ? c.name : 'Client'), html);
     }
 
@@ -993,55 +1003,31 @@
       const p = state.plans.find(function(x) { return x.id === planId; });
       if (!p) return;
       const c = state.clients.find(function(x) { return x.id === p.clientId; });
-      const html = '' +
+
+      const html =
         '<h1>Treatment Plan</h1>' +
         '<div class="meta">' + escapeHtml(c ? c.name : 'Unknown Client') + ' • ' + escapeHtml(c ? c.mrn : '—') + ' • Review ' + escapeHtml(p.reviewDate || '—') + '</div>' +
         '<h2>Problem</h2><div class="box">' + escapeHtml(p.problem || '—') + '</div>' +
         '<h2>Goal</h2><div class="box">' + escapeHtml(p.goal || '—') + '</div>' +
         '<h2>Objectives</h2><div class="box">' + escapeHtml(p.objectives || '—') + '</div>' +
         '<h2>Interventions</h2><div class="box">' + escapeHtml(p.interventions || '—') + '</div>';
+
       printDocument('Treatment Plan - ' + (c ? c.name : 'Client'), html);
     }
 
-    function exportData() {
-      const blob = new Blob([JSON.stringify(state, null, 2)], { type: 'application/json' });
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = 'recovery-ehr-backup.json';
-      document.body.appendChild(a);
-      a.click();
-      document.body.removeChild(a);
-      URL.revokeObjectURL(url);
-    }
-
-    function importData(event) {
-      const file = event.target.files[0];
-      if (!file) return;
-      const reader = new FileReader();
-      reader.onload = function() {
-        try {
-          const parsed = JSON.parse(reader.result);
-          if (!parsed.clients || !parsed.notes || !parsed.plans) throw new Error('Invalid structure');
-          if (!parsed.documents) parsed.documents = [];
-          state = parsed;
-          selectedClientId = state.clients.length ? state.clients[0].id : null;
-          saveState();
-          refreshAll();
-          alert('Backup imported successfully.');
-        } catch (err) {
-          alert('Invalid JSON backup file.');
+    async function loadAllDataFromServer() {
+      try {
+        const result = await apiRequest('getAllData', {});
+        state = result || { clients: [], notes: [], plans: [], documents: [] };
+        if (!state.documents) state.documents = [];
+        if (!selectedClientId && state.clients.length) {
+          selectedClientId = state.clients[0].id;
         }
-      };
-      reader.readAsText(file);
-    }
-
-    function resetDemo() {
-      if (!confirm('Reset all data to demo records?')) return;
-      state = demoData();
-      selectedClientId = state.clients[0].id;
-      saveState();
-      refreshAll();
+        refreshAll();
+      } catch (err) {
+        setStatus('Error');
+        alert(err.message);
+      }
     }
 
     function refreshAll() {
@@ -1050,6 +1036,7 @@
       renderClients();
       renderNotes();
       renderPlans();
+      renderDocuments();
       renderReports();
     }
 
@@ -1059,9 +1046,7 @@
       });
     });
 
-    document.getElementById('exportBackupBtn').addEventListener('click', exportData);
-    document.getElementById('importFileInput').addEventListener('change', importData);
-    document.getElementById('resetDemoBtn').addEventListener('click', resetDemo);
+    document.getElementById('reloadBtn').addEventListener('click', loadAllDataFromServer);
     document.getElementById('clientSearch').addEventListener('input', renderClients);
     document.getElementById('newClientForm').addEventListener('submit', saveClient);
     document.getElementById('clearClientFormBtn').addEventListener('click', function() {
@@ -1069,10 +1054,12 @@
     });
     document.getElementById('noteForm').addEventListener('submit', saveNote);
     document.getElementById('planForm').addEventListener('submit', savePlan);
+    document.getElementById('documentForm').addEventListener('submit', saveDocument);
 
     document.getElementById('noteDate').valueAsDate = new Date();
-    selectedClientId = state.clients.length ? state.clients[0].id : null;
-    refreshAll();
+    document.getElementById('documentDate').valueAsDate = new Date();
+
+    loadAllDataFromServer();
   </script>
 </body>
 </html>
