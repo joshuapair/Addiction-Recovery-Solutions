@@ -670,6 +670,7 @@
           <div class="mini-item"><strong>Counts:</strong><br>${notes.length} notes • ${plans.length} plans</div>
         </div>
         <div class="row-actions">
+          <button class="primary-btn" style="width:auto;" onclick="exportClientIntakePDF('${c.id}')">Export Intake PDF</button>
           <button class="danger-btn" style="width:auto;" onclick="deleteClient('${c.id}')">Delete Client</button>
         </div>
       `;
@@ -727,6 +728,7 @@
             <div style="margin-top:8px;"><strong>Assessment:</strong> ${escapeHtml(n.assessment)}</div>
             <div style="margin-top:8px;"><strong>Plan:</strong> ${escapeHtml(n.plan)}</div>
             <div class="row-actions">
+              <button class="primary-btn" style="width:auto;" onclick="exportNotePDF('${n.id}')">Export Note PDF</button>
               <button class="danger-btn" style="width:auto;" onclick="deleteNote('${n.id}')">Delete</button>
             </div>
           </div>
@@ -777,6 +779,7 @@
             <div style="margin-top:8px;"><strong>Objectives:</strong> ${escapeHtml(p.objectives)}</div>
             <div style="margin-top:8px;"><strong>Interventions:</strong> ${escapeHtml(p.interventions)}</div>
             <div class="row-actions">
+              <button class="primary-btn" style="width:auto;" onclick="exportPlanPDF('${p.id}')">Export Plan PDF</button>
               <button class="danger-btn" style="width:auto;" onclick="deletePlan('${p.id}')">Delete</button>
             </div>
           </div>
@@ -821,7 +824,73 @@
         : '<div class="empty">No data yet.</div>';
     }
 
-    function exportData() {
+    function printDocument(title, bodyHtml) {
+      const w = window.open('', '_blank');
+      if (!w) {
+        alert('Pop-up blocked. Allow pop-ups for PDF export.');
+        return;
+      }
+      w.document.write(`
+        <!DOCTYPE html>
+        <html>
+        <head>
+          <meta charset="UTF-8">
+          <title>${escapeHtml(title)}</title>
+          <style>
+            body { font-family: Arial, Helvetica, sans-serif; color: #111827; margin: 36px; line-height: 1.45; }
+            h1 { font-size: 24px; margin: 0 0 8px; }
+            h2 { font-size: 16px; margin: 22px 0 8px; border-bottom: 1px solid #cbd5e1; padding-bottom: 6px; }
+            .meta { color: #475569; font-size: 13px; margin-bottom: 18px; }
+            .block { margin-bottom: 14px; }
+            .label { font-weight: 700; display: block; margin-bottom: 4px; }
+            .box { border: 1px solid #cbd5e1; border-radius: 8px; padding: 10px 12px; white-space: pre-wrap; }
+            .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+            @media print { body { margin: 24px; } }
+          </style>
+        </head>
+        <body>
+          ${bodyHtml}
+          <script>
+            window.onload = function() { window.print(); };
+          <\/script>
+        </body>
+        </html>
+      `);
+      w.document.close();
+    }
+
+    function exportClientIntakePDF(clientId) {
+      const c = state.clients.find(x => x.id === clientId);
+      if (!c) return;
+      const html = `
+        <h1>Client Intake Summary</h1>
+        <div class="meta">${escapeHtml(c.name)} • ${escapeHtml(c.mrn)} • Generated ${new Date().toLocaleString()}</div>
+        <div class="grid">
+          <div class="block"><span class="label">Client Name</span><div class="box">${escapeHtml(c.name)}</div></div>
+          <div class="block"><span class="label">MRN / Client ID</span><div class="box">${escapeHtml(c.mrn)}</div></div>
+          <div class="block"><span class="label">Date of Birth</span><div class="box">${escapeHtml(c.dob || '—')}</div></div>
+          <div class="block"><span class="label">Admission Date</span><div class="box">${escapeHtml(c.admissionDate || '—')}</div></div>
+          <div class="block"><span class="label">Phone</span><div class="box">${escapeHtml(c.phone || '—')}</div></div>
+          <div class="block"><span class="label">Email</span><div class="box">${escapeHtml(c.email || '—')}</div></div>
+          <div class="block"><span class="label">Primary Substance</span><div class="box">${escapeHtml(c.primarySubstance || '—')}</div></div>
+          <div class="block"><span class="label">Secondary Substance</span><div class="box">${escapeHtml(c.secondarySubstance || '—')}</div></div>
+          <div class="block"><span class="label">Diagnosis</span><div class="box">${escapeHtml(c.diagnosis || '—')}</div></div>
+          <div class="block"><span class="label">Stage of Change</span><div class="box">${escapeHtml(c.stageOfChange || '—')}</div></div>
+          <div class="block"><span class="label">Risk Level</span><div class="box">${escapeHtml(c.riskLevel || '—')}</div></div>
+          <div class="block"><span class="label">Status</span><div class="box">${escapeHtml(c.status || '—')}</div></div>
+        </div>
+        <h2>Presenting Problem</h2><div class="box">${escapeHtml(c.presentingProblem || '—')}</div>
+        <h2>Goals</h2><div class="box">${escapeHtml(c.goals || '—')}</div>
+        <h2>Supports / Recovery Capital</h2><div class="box">${escapeHtml(c.supports || '—')}</div>
+        <h2>Alerts / Safety Notes</h2><div class="box">${escapeHtml(c.alerts || '—')}</div>
+      `;
+      printDocument(`Intake - ${c.name}`, html);
+    }
+
+    function exportNotePDF(noteId) {
+      const n = state.notes.find(x => x.id === noteId);
+      if (!n) return;
+      const c
       const blob = new Blob([JSON.stringify(state, null, 2)], { type: 'application/json' });
       const url = URL.createObjectURL(blob);
       const a = document.createElement('a');
