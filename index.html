@@ -771,19 +771,12 @@
     function formatDate(value) {
       if (!value) return '—';
       const d = new Date(value);
-      if (isNaN(d.getTime())) return String(value);
-      return d.toLocaleDateString();
-    }
-
-    function formatDateTime(value) {
-      if (!value) return '—';
-      const d = new Date(value);
-      if (isNaN(d.getTime())) return String(value);
-      return d.toLocaleString();
+      if (!isNaN(d.getTime())) return d.toLocaleDateString();
+      return String(value);
     }
 
     function todayDateString() {
-      return new Date().toLocaleDateString();
+      return new Date().toISOString().split('T')[0];
     }
 
     function showApp() {
@@ -965,7 +958,7 @@
 
       function start(e) {
         drawing = true;
-        if (!signedAt) signedAt = new Date().toISOString();
+        if (!signedAt) signedAt = todayDateString();
         setLabel();
         const pos = getPos(e);
         ctx.beginPath();
@@ -1481,12 +1474,12 @@
 
       const sigDate = c.signatureDate || c.createdAt || '';
       const signatureHtml = c.signature
-        ? '<h2>Signature</h2><div class="box"><img src="' + c.signature + '" style="max-width:320px; max-height:120px;"><div class="sigdate">Signed: ' + escapeHtml(formatDateTime(sigDate)) + '</div></div>'
+        ? '<h2>Signature</h2><div class="box"><img src="' + c.signature + '" style="max-width:320px; max-height:120px;"><div class="sigdate">Signed: ' + escapeHtml(formatDate(sigDate)) + '</div></div>'
         : '';
 
       const html =
         '<h1>Client Intake Summary</h1>' +
-        '<div class="meta">' + escapeHtml(c.name) + ' • Generated ' + escapeHtml(new Date().toLocaleString()) + '</div>' +
+        '<div class="meta">' + escapeHtml(c.name) + ' • Generated ' + escapeHtml(formatDate(todayDateString())) + '</div>' +
         '<div class="grid">' +
           '<div class="block"><span class="label">Client Name</span><div class="box">' + escapeHtml(c.name) + '</div></div>' +
           '<div class="block"><span class="label">MRN / Client ID</span><div class="box">' + escapeHtml(c.mrn) + '</div></div>' +
@@ -1517,7 +1510,7 @@
 
       const sigDate = n.signatureDate || n.date || '';
       const signatureHtml = n.signature
-        ? '<h2>Signature</h2><div class="box"><img src="' + n.signature + '" style="max-width:320px; max-height:120px;"><div class="sigdate">Signed: ' + escapeHtml(formatDateTime(sigDate)) + '</div></div>'
+        ? '<h2>Signature</h2><div class="box"><img src="' + n.signature + '" style="max-width:320px; max-height:120px;"><div class="sigdate">Signed: ' + escapeHtml(formatDate(sigDate)) + '</div></div>'
         : '';
 
       const html =
@@ -1538,7 +1531,7 @@
 
       const sigDate = p.signatureDate || p.reviewDate || '';
       const signatureHtml = p.signature
-        ? '<h2>Signature</h2><div class="box"><img src="' + p.signature + '" style="max-width:320px; max-height:120px;"><div class="sigdate">Signed: ' + escapeHtml(formatDateTime(sigDate)) + '</div></div>'
+        ? '<h2>Signature</h2><div class="box"><img src="' + p.signature + '" style="max-width:320px; max-height:120px;"><div class="sigdate">Signed: ' + escapeHtml(formatDate(sigDate)) + '</div></div>'
         : '';
 
       const html =
