@@ -890,7 +890,33 @@
     function exportNotePDF(noteId) {
       const n = state.notes.find(x => x.id === noteId);
       if (!n) return;
-      const c
+      const c = state.clients.find(x => x.id === n.clientId);
+      const html = `
+        <h1>Progress Note</h1>
+        <div class="meta">${escapeHtml(c?.name || 'Unknown Client')} • ${escapeHtml(c?.mrn || '—')} • ${escapeHtml(n.date || '—')} • ${escapeHtml(n.type || '—')}</div>
+        <h2>Data / Presentation</h2><div class="box">${escapeHtml(n.data || '—')}</div>
+        <h2>Assessment / Clinical Impression</h2><div class="box">${escapeHtml(n.assessment || '—')}</div>
+        <h2>Plan / Next Steps</h2><div class="box">${escapeHtml(n.plan || '—')}</div>
+      `;
+      printDocument(`Note - ${c?.name || 'Client'} - ${n.date || ''}`, html);
+    }
+
+    function exportPlanPDF(planId) {
+      const p = state.plans.find(x => x.id === planId);
+      if (!p) return;
+      const c = state.clients.find(x => x.id === p.clientId);
+      const html = `
+        <h1>Treatment Plan</h1>
+        <div class="meta">${escapeHtml(c?.name || 'Unknown Client')} • ${escapeHtml(c?.mrn || '—')} • Review ${escapeHtml(p.reviewDate || '—')}</div>
+        <h2>Problem</h2><div class="box">${escapeHtml(p.problem || '—')}</div>
+        <h2>Goal</h2><div class="box">${escapeHtml(p.goal || '—')}</div>
+        <h2>Objectives</h2><div class="box">${escapeHtml(p.objectives || '—')}</div>
+        <h2>Interventions</h2><div class="box">${escapeHtml(p.interventions || '—')}</div>
+      `;
+      printDocument(`Treatment Plan - ${c?.name || 'Client'}`, html);
+    }
+
+    function exportData() {
       const blob = new Blob([JSON.stringify(state, null, 2)], { type: 'application/json' });
       const url = URL.createObjectURL(blob);
       const a = document.createElement('a');
