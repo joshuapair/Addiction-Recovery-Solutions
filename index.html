@@ -786,19 +786,9 @@
       }
 
       const d = new Date(str);
-      if (!isNaN(d.getTime())) {
-        return d.toLocaleDateString();
-      }
+      if (!isNaN(d.getTime())) return d.toLocaleDateString();
 
       return str;
-    }
-
-    function todayDateString() {
-      const now = new Date();
-      const year = now.getFullYear();
-      const month = String(now.getMonth() + 1).padStart(2, '0');
-      const day = String(now.getDate()).padStart(2, '0');
-      return `${year}-${month}-${day}`;
     }
 
     function showApp() {
@@ -1506,9 +1496,11 @@
       const c = state.clients.find(function(x) { return x.id === clientId; });
       if (!c) return;
 
-      const sigDate = c.signatureDate || c.createdAt || '';
+      const sigDate = c.signatureDate || '';
       const signatureHtml = c.signature
-        ? '<h2>Signature</h2><div class="box"><img src="' + c.signature + '" style="max-width:320px; max-height:120px;"><div class="sigdate">Signed: ' + escapeHtml(formatDate(sigDate)) + '</div></div>'
+        ? '<h2>Signature</h2><div class="box"><img src="' + c.signature + '" style="max-width:320px; max-height:120px;">' +
+          (sigDate ? '<div class="sigdate">Signed: ' + escapeHtml(formatDate(sigDate)) + '</div>' : '') +
+          '</div>'
         : '';
 
       const html =
@@ -1542,9 +1534,11 @@
       if (!n) return;
       const c = state.clients.find(function(x) { return x.id === n.clientId; });
 
-      const sigDate = n.signatureDate || n.date || '';
+      const sigDate = n.signatureDate || '';
       const signatureHtml = n.signature
-        ? '<h2>Signature</h2><div class="box"><img src="' + n.signature + '" style="max-width:320px; max-height:120px;"><div class="sigdate">Signed: ' + escapeHtml(formatDate(sigDate)) + '</div></div>'
+        ? '<h2>Signature</h2><div class="box"><img src="' + n.signature + '" style="max-width:320px; max-height:120px;">' +
+          (sigDate ? '<div class="sigdate">Signed: ' + escapeHtml(formatDate(sigDate)) + '</div>' : '') +
+          '</div>'
         : '';
 
       const html =
@@ -1563,9 +1557,11 @@
       if (!p) return;
       const c = state.clients.find(function(x) { return x.id === p.clientId; });
 
-      const sigDate = p.signatureDate || p.reviewDate || '';
+      const sigDate = p.signatureDate || '';
       const signatureHtml = p.signature
-        ? '<h2>Signature</h2><div class="box"><img src="' + p.signature + '" style="max-width:320px; max-height:120px;"><div class="sigdate">Signed: ' + escapeHtml(formatDate(sigDate)) + '</div></div>'
+        ? '<h2>Signature</h2><div class="box"><img src="' + p.signature + '" style="max-width:320px; max-height:120px;">' +
+          (sigDate ? '<div class="sigdate">Signed: ' + escapeHtml(formatDate(sigDate)) + '</div>' : '') +
+          '</div>'
         : '';
 
       const html =
