@@ -298,6 +298,1564 @@
       cursor: crosshair;
     }
 
+    .login-screen {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: linear-gradient(180deg, #0b1220 0%, #111827 100%);
+      padding: 24px;
+    }
+
+    .login-card {
+      width: 100%;
+      max-width: 420px;
+      background: white;
+      color: #111827;
+      border-radius: 18px;
+      padding: 24px;
+      box-shadow: var(--shadow);
+    }
+
+    @media (max-width: 1000px) {
+      .app { grid-template-columns: 1fr; }
+      .sidebar { position: relative; height: auto; }
+      .detail-grid, .grid-2, .grid-3 { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+  <div id="loginScreen" class="login-screen">
+    <div class="login-card">
+      <h1 style="margin:0 0 8px; font-size:28px;">Recovery EHR Login</h1>
+      <p style="margin:0 0 18px; color:#475569;">Enter your username and password.</p>
+
+      <div style="margin-bottom:14px;">
+        <label style="display:block; font-weight:700; margin-bottom:6px;">Username</label>
+        <input id="loginUsername" type="text" autocomplete="username">
+      </div>
+
+      <div style="margin-bottom:14px;">
+        <label style="display:block; font-weight:700; margin-bottom:6px;">Password</label>
+        <input id="loginPassword" type="password" autocomplete="current-password">
+      </div>
+
+      <button id="loginBtn" style="width:100%; border:none; border-radius:12px; padding:12px 14px; background:#7c3aed; color:white; font-weight:700; cursor:pointer;">Login</button>
+      <div id="loginError" style="margin-top:12px; color:#dc2626; font-size:14px;"></div>
+    </div>
+  </div>
+
+  <div class="app hidden" id="appShell">
+    <aside class="sidebar">
+      <div class="brand">Recovery EHR</div>
+      <div class="subtitle">Google-backed prototype</div>
+
+      <div class="warning">
+        This version saves to your Google Apps Script backend. The built-in HTML login is only a simple gate and is not strong security for sensitive records.
+      </div>
+
+      <button class="nav-btn active" data-view="dashboardView" type="button">Dashboard</button>
+      <button class="nav-btn" data-view="clientsView" type="button">Clients</button>
+      <button class="nav-btn" data-view="newClientView" type="button">New Intake</button>
+      <button class="nav-btn" data-view="notesView" type="button">Session Notes</button>
+      <button class="nav-btn" data-view="plansView" type="button">Treatment Plans</button>
+      <button class="nav-btn" data-view="documentsView" type="button">Documents</button>
+      <button class="nav-btn" data-view="reportsView" type="button">Reports</button>
+
+      <hr style="border-color:#334155; opacity:.35; margin:18px 0;">
+
+      <button class="primary-btn" id="reloadBtn" type="button">Reload from Server</button>
+      <button class="secondary-btn" id="logoutBtn" type="button">Logout</button>
+    </aside>
+
+    <main class="content">
+      <section id="dashboardView">
+        <div class="toolbar">
+          <div class="left">
+            <h1 style="margin:0; font-size:30px;">Dashboard</h1>
+          </div>
+        </div>
+        <div class="grid grid-3">
+          <div class="card"><div class="section-title" id="statClients">0</div><div class="section-subtitle">Active Clients</div></div>
+          <div class="card"><div class="section-title" id="statHighRisk">0</div><div class="section-subtitle">High-Risk Alerts</div></div>
+          <div class="card"><div class="section-title" id="statNotes">0</div><div class="section-subtitle">Session Notes</div></div>
+        </div>
+        <div class="grid grid-2" style="margin-top:16px;">
+          <div class="card">
+            <div class="section-title">Recent Clients</div>
+            <div class="section-subtitle">Most recently loaded records</div>
+            <div id="recentClients" class="mini-list"></div>
+          </div>
+          <div class="card">
+            <div class="section-title">Status</div>
+            <div class="section-subtitle">Current app state</div>
+            <div class="mini-list">
+              <div class="mini-item" id="serverStatus">Ready</div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section id="clientsView" class="hidden">
+        <div class="toolbar">
+          <div class="left">
+            <h1 style="margin:0; font-size:30px;">Clients</h1>
+            <input id="clientSearch" class="search" type="text" placeholder="Search">
+          </div>
+        </div>
+        <div class="detail-grid">
+          <div class="card">
+            <div class="section-title">Client List</div>
+            <div class="section-subtitle">Select a client to view details</div>
+            <div id="clientList" class="client-list"></div>
+          </div>
+          <div class="card">
+            <div class="section-title">Client Details</div>
+            <div class="section-subtitle">Intake summary</div>
+            <div id="clientDetail"></div>
+          </div>
+        </div>
+      </section>
+
+      <section id="newClientView" class="hidden">
+        <div class="card">
+          <div class="section-title">New Intake</div>
+          <div class="section-subtitle">Save directly to Google Sheets</div>
+          <form id="newClientForm">
+            <div class="grid grid-2">
+              <div class="field"><label class="label">Client Name</label><input id="name" required></div>
+              <div class="field"><label class="label">MRN / Client ID</label><input id="mrn" required></div>
+              <div class="field"><label class="label">Date of Birth</label><input id="dob" type="date"></div>
+              <div class="field"><label class="label">Phone</label><input id="phone"></div>
+              <div class="field"><label class="label">Email</label><input id="email" type="email"></div>
+              <div class="field"><label class="label">Admission Date</label><input id="admissionDate" type="date"></div>
+              <div class="field"><label class="label">Primary Substance</label><input id="primarySubstance"></div>
+              <div class="field"><label class="label">Secondary Substance</label><input id="secondarySubstance"></div>
+              <div class="field">
+                <label class="label">Diagnosis</label>
+                <select id="diagnosis"></select>
+              </div>
+              <div class="field">
+                <label class="label">Stage of Change</label>
+                <select id="stageOfChange">
+                  <option>Precontemplation</option>
+                  <option>Contemplation</option>
+                  <option>Preparation</option>
+                  <option>Action</option>
+                  <option>Maintenance</option>
+                </select>
+              </div>
+              <div class="field">
+                <label class="label">Risk Level</label>
+                <select id="riskLevel">
+                  <option>Low</option>
+                  <option>Moderate</option>
+                  <option>High</option>
+                </select>
+              </div>
+              <div class="field">
+                <label class="label">Status</label>
+                <select id="status">
+                  <option>Active</option>
+                  <option>Pending</option>
+                  <option>Completed</option>
+                  <option>Discharged</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="field"><label class="label">Presenting Problem</label><textarea id="presentingProblem"></textarea></div>
+            <div class="field"><label class="label">Goals</label><textarea id="goals"></textarea></div>
+            <div class="field"><label class="label">Supports / Recovery Capital</label><textarea id="supports"></textarea></div>
+            <div class="field"><label class="label">Alerts / Safety Notes</label><textarea id="alerts"></textarea></div>
+
+            <div class="field">
+              <label class="label">Client Signature</label>
+              <div class="signature-wrap">
+                <canvas id="clientSignatureCanvas" class="signature-canvas"></canvas>
+                <div class="small" id="clientSignatureDateText">Signature date: today</div>
+                <div class="row-actions">
+                  <button class="secondary-btn" id="clearClientSignatureBtn" type="button">Clear Signature</button>
+                </div>
+              </div>
+            </div>
+
+            <div class="row-actions">
+              <button class="primary-btn" type="submit">Save Client</button>
+              <button class="secondary-btn" type="button" id="clearClientFormBtn">Clear</button>
+            </div>
+          </form>
+        </div>
+      </section>
+
+      <section id="notesView" class="hidden">
+        <div class="card">
+          <div class="section-title">Session Notes</div>
+          <div class="section-subtitle">Saved to Google Sheets</div>
+          <form id="noteForm">
+            <div class="grid grid-3">
+              <div class="field"><label class="label">Client</label><select id="noteClient"></select></div>
+              <div class="field"><label class="label">Date</label><input id="noteDate" type="date" required></div>
+              <div class="field">
+                <label class="label">Service Type</label>
+                <select id="noteType">
+                  <option>Individual Counseling</option>
+                  <option>Group Counseling</option>
+                  <option>Assessment</option>
+                  <option>Case Management</option>
+                  <option>SAP / RTD Support</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="field"><label class="label">Data / Presentation</label><textarea id="noteData" required></textarea></div>
+            <div class="field"><label class="label">Assessment / Clinical Impression</label><textarea id="noteAssessment" required></textarea></div>
+            <div class="field"><label class="label">Plan / Next Steps</label><textarea id="notePlan" required></textarea></div>
+
+            <div class="field">
+              <label class="label">Counselor Signature</label>
+              <div class="signature-wrap">
+                <canvas id="noteSignatureCanvas" class="signature-canvas"></canvas>
+                <div class="small" id="noteSignatureDateText">Signature date: today</div>
+                <div class="row-actions">
+                  <button class="secondary-btn" id="clearNoteSignatureBtn" type="button">Clear Signature</button>
+                </div>
+              </div>
+            </div>
+
+            <div class="row-actions">
+              <button class="primary-btn" type="submit">Save Note</button>
+            </div>
+          </form>
+
+          <div style="margin-top:22px;">
+            <div class="section-title" style="font-size:18px;">Saved Notes</div>
+            <div id="notesList" class="mini-list" style="margin-top:12px;"></div>
+          </div>
+        </div>
+      </section>
+
+      <section id="plansView" class="hidden">
+        <div class="card">
+          <div class="section-title">Treatment Plans</div>
+          <div class="section-subtitle">Saved to Google Sheets</div>
+          <form id="planForm">
+            <div class="grid grid-2">
+              <div class="field"><label class="label">Client</label><select id="planClient"></select></div>
+              <div class="field"><label class="label">Review Date</label><input id="planReviewDate" type="date"></div>
+            </div>
+
+            <div class="field">
+              <label class="label">Problem Template</label>
+              <select id="planProblemSelect"></select>
+            </div>
+            <div class="field">
+              <label class="label">Problem</label>
+              <textarea id="planProblem" required></textarea>
+            </div>
+
+            <div class="field">
+              <label class="label">Goal Template</label>
+              <select id="planGoalSelect"></select>
+            </div>
+            <div class="field">
+              <label class="label">Goal</label>
+              <textarea id="planGoal" required></textarea>
+            </div>
+
+            <div class="field">
+              <label class="label">Objective Template</label>
+              <select id="planObjectivesSelect"></select>
+            </div>
+            <div class="field">
+              <label class="label">Objectives</label>
+              <textarea id="planObjectives" required></textarea>
+            </div>
+
+            <div class="field">
+              <label class="label">Intervention Template</label>
+              <select id="planInterventionsSelect"></select>
+            </div>
+            <div class="field">
+              <label class="label">Interventions</label>
+              <textarea id="planInterventions" required></textarea>
+            </div>
+
+            <div class="field">
+              <label class="label">Counselor Signature</label>
+              <div class="signature-wrap">
+                <canvas id="planSignatureCanvas" class="signature-canvas"></canvas>
+                <div class="small" id="planSignatureDateText">Signature date: today</div>
+                <div class="row-actions">
+                  <button class="secondary-btn" id="clearPlanSignatureBtn" type="button">Clear Signature</button>
+                </div>
+              </div>
+            </div>
+
+            <div class="row-actions">
+              <button class="primary-btn" type="submit">Save Plan</button>
+            </div>
+          </form>
+
+          <div style="margin-top:22px;">
+            <div class="section-title" style="font-size:18px;">Saved Plans</div>
+            <div id="plansList" class="mini-list" style="margin-top:12px;"></div>
+          </div>
+        </div>
+      </section>
+
+      <section id="documentsView" class="hidden">
+        <div class="card">
+          <div class="section-title">Documents</div>
+          <div class="section-subtitle">Metadata in Sheets, files in Drive</div>
+          <form id="documentForm">
+            <div class="grid grid-3">
+              <div class="field"><label class="label">Client</label><select id="documentClient"></select></div>
+              <div class="field">
+                <label class="label">Document Type</label>
+                <select id="documentType">
+                  <option>Intake</option>
+                  <option>Consent</option>
+                  <option>ROI</option>
+                  <option>Assessment</option>
+                  <option>Treatment Plan</option>
+                  <option>Progress Note</option>
+                  <option>Discharge</option>
+                  <option>Lab / Test Result</option>
+                  <option>Other</option>
+                </select>
+              </div>
+              <div class="field"><label class="label">Date</label><input id="documentDate" type="date"></div>
+            </div>
+
+            <div class="field"><label class="label">Title</label><input id="documentTitle"></div>
+            <div class="field"><label class="label">Choose File</label><input id="documentFile" type="file" accept=".pdf,.doc,.docx,.jpg,.jpeg,.png,.txt"></div>
+            <div class="small">For best results, keep uploads small. Large files can fail in Apps Script uploads.</div>
+            <div class="field"><label class="label">Notes</label><textarea id="documentNotes"></textarea></div>
+
+            <div class="row-actions">
+              <button class="primary-btn" type="submit">Save Document</button>
+            </div>
+          </form>
+
+          <div style="margin-top:22px;">
+            <div class="section-title" style="font-size:18px;">Saved Documents</div>
+            <div id="documentsList" class="mini-list" style="margin-top:12px;"></div>
+          </div>
+        </div>
+      </section>
+
+      <section id="reportsView" class="hidden">
+        <div class="card">
+          <div class="section-title">Reports</div>
+          <div class="section-subtitle">Simple summaries</div>
+          <div class="grid grid-2">
+            <div>
+              <div class="label">Clients by Status</div>
+              <div id="statusReport" class="mini-list"></div>
+            </div>
+            <div>
+              <div class="label">Primary Substances</div>
+              <div id="substanceReport" class="mini-list"></div>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <script>
+    const APP_SCRIPT_URL = 'https://script.google.com/a/macros/addictionrecoverysolutions.org/s/AKfycbwS4yzK4DA96PBkqXddLSZHytYmUXv-W-NZKCIrVbTmdjbshY8cWfJGRjZqO0AZ3cSgeQ/exec';
+    const MAX_FILE_SIZE = 4.5 * 1024 * 1024;
+
+    const LOCAL_USERNAME = 'joshuapair';
+    const LOCAL_PASSWORD = 'Annabelle_89';
+    const LOGIN_STORAGE_KEY = 'recovery-ehr-login-ok';
+
+    let state = {
+      clients: [],
+      notes: [],
+      plans: [],
+      documents: []
+    };
+
+    let selectedClientId = null;
+    let clientSignaturePad = null;
+    let noteSignaturePad = null;
+    let planSignaturePad = null;
+
+    const DIAGNOSIS_OPTIONS = [
+      '',
+      'F10.10 Alcohol Use Disorder, Mild',
+      'F10.20 Alcohol Use Disorder, Moderate/Severe',
+      'F11.10 Opioid Use Disorder, Mild',
+      'F11.20 Opioid Use Disorder, Moderate/Severe',
+      'F12.10 Cannabis Use Disorder, Mild',
+      'F12.20 Cannabis Use Disorder, Moderate/Severe',
+      'F13.10 Sedative, Hypnotic, or Anxiolytic Use Disorder, Mild',
+      'F13.20 Sedative, Hypnotic, or Anxiolytic Use Disorder, Moderate/Severe',
+      'F14.10 Cocaine Use Disorder, Mild',
+      'F14.20 Cocaine Use Disorder, Moderate/Severe',
+      'F15.10 Other Stimulant Use Disorder, Mild',
+      'F15.20 Other Stimulant Use Disorder, Moderate/Severe',
+      'F16.10 Hallucinogen Use Disorder, Mild',
+      'F16.20 Hallucinogen Use Disorder, Moderate/Severe',
+      'F18.10 Inhalant Use Disorder, Mild',
+      'F18.20 Inhalant Use Disorder, Moderate/Severe',
+      'F17.200 Tobacco Use Disorder, Unspecified',
+      'F17.210 Nicotine Dependence, Cigarettes, Uncomplicated',
+      'F19.10 Other Psychoactive Substance Use Disorder, Mild',
+      'F19.20 Other Psychoactive Substance Use Disorder, Moderate/Severe'
+    ];
+
+    const PLAN_PROBLEM_OPTIONS = [
+      '',
+      'Client continues substance use despite negative consequences.',
+      'Client demonstrates limited insight into the severity of substance use.',
+      'Client reports frequent cravings and difficulty managing triggers.',
+      'Client lacks relapse prevention skills.',
+      'Client has unstable recovery supports.',
+      'Client has legal consequences related to substance use.',
+      'Client has occupational impairment related to substance use.',
+      'Client has family / relationship conflict related to substance use.',
+      'Client has co-occurring emotional distress that increases relapse risk.',
+      'Client has inconsistent attendance / participation in treatment.'
+    ];
+
+    const PLAN_GOAL_OPTIONS = [
+      '',
+      'Client will establish and maintain abstinence from all non-prescribed mood-altering substances.',
+      'Client will increase insight into substance use patterns and consequences.',
+      'Client will strengthen relapse prevention skills.',
+      'Client will identify and manage triggers and cravings effectively.',
+      'Client will build and use sober support systems.',
+      'Client will improve emotional regulation without substance use.',
+      'Client will comply with treatment and recovery recommendations.',
+      'Client will reduce risk of relapse and increase recovery stability.'
+    ];
+
+    const PLAN_OBJECTIVE_OPTIONS = [
+      '',
+      'Client will identify at least 5 triggers for substance use.',
+      'Client will identify at least 5 coping skills to manage cravings.',
+      'Client will complete a written relapse prevention plan.',
+      'Client will attend all scheduled counseling sessions.',
+      'Client will participate in at least 1 support meeting weekly.',
+      'Client will verbalize at least 3 negative consequences of substance use.',
+      'Client will identify supportive people and recovery resources.',
+      'Client will demonstrate refusal skills in high-risk situations.',
+      'Client will monitor cravings and high-risk emotions between sessions.',
+      'Client will comply with drug testing / monitoring as required.'
+    ];
+
+    const PLAN_INTERVENTION_OPTIONS = [
+      '',
+      'Counselor will provide psychoeducation regarding addiction, recovery, and relapse prevention.',
+      'Counselor will use motivational interviewing to enhance readiness for change.',
+      'Counselor will use cognitive behavioral interventions to challenge risky thinking.',
+      'Counselor will assist client in identifying triggers, cravings, and warning signs.',
+      'Counselor will help client develop and update a relapse prevention plan.',
+      'Counselor will encourage participation in mutual support / recovery support activities.',
+      'Counselor will reinforce coping skills, refusal skills, and emotional regulation strategies.',
+      'Counselor will monitor treatment compliance and response to interventions.',
+      'Counselor will coordinate referrals and outside services as needed.',
+      'Counselor will review progress toward goals and update the plan as needed.'
+    ];
+
+    function setStatus(text) {
+      const el = document.getElementById('serverStatus');
+      if (el) el.textContent = text;
+    }
+
+    function formatDate(value) {
+      if (!value) return '—';
+      const d = new Date(value);
+      if (isNaN(d.getTime())) return String(value);
+      return d.toLocaleDateString();
+    }
+
+    function formatDateTime(value) {
+      if (!value) return '—';
+      const d = new Date(value);
+      if (isNaN(d.getTime())) return String(value);
+      return d.toLocaleString();
+    }
+
+    function todayDateString() {
+      return new Date().toLocaleDateString();
+    }
+
+    function showApp() {
+      document.getElementById('loginScreen').classList.add('hidden');
+      document.getElementById('appShell').classList.remove('hidden');
+    }
+
+    function showLogin() {
+      document.getElementById('loginScreen').classList.remove('hidden');
+      document.getElementById('appShell').classList.add('hidden');
+    }
+
+    function attemptLogin() {
+      const user = document.getElementById('loginUsername').value.trim();
+      const pass = document.getElementById('loginPassword').value;
+      const error = document.getElementById('loginError');
+
+      if (user === LOCAL_USERNAME && pass === LOCAL_PASSWORD) {
+        sessionStorage.setItem(LOGIN_STORAGE_KEY, 'yes');
+        error.textContent = '';
+        showApp();
+        return;
+      }
+
+      error.textContent = 'Incorrect username or password.';
+    }
+
+    function initLogin() {
+      const ok = sessionStorage.getItem(LOGIN_STORAGE_KEY) === 'yes';
+      if (ok) showApp();
+      else showLogin();
+
+      document.getElementById('loginBtn').addEventListener('click', attemptLogin);
+      document.getElementById('loginPassword').addEventListener('keydown', function(e) {
+        if (e.key === 'Enter') attemptLogin();
+      });
+
+      document.getElementById('logoutBtn').addEventListener('click', function() {
+        sessionStorage.removeItem(LOGIN_STORAGE_KEY);
+        showLogin();
+      });
+    }
+
+    async function apiRequest(action, payload) {
+      setStatus('Working...');
+
+      let res;
+      try {
+        res = await fetch(APP_SCRIPT_URL, {
+          method: 'POST',
+          headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+          body: JSON.stringify({ action, payload })
+        });
+      } catch (err) {
+        setStatus('Error');
+        throw new Error('Network request failed.');
+      }
+
+      let data;
+      try {
+        data = await res.json();
+      } catch (err) {
+        setStatus('Error');
+        throw new Error('Server did not return valid JSON.');
+      }
+
+      if (!res.ok || !data.ok) {
+        setStatus('Error');
+        throw new Error(data.error || 'Request failed');
+      }
+
+      setStatus('Ready');
+      return data.result;
+    }
+
+    function escapeHtml(str) {
+      return String(str || '')
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#039;');
+    }
+
+    function badgeClass(value) {
+      if (value === 'High' || value === 'Discharged') return 'badge badge-red';
+      if (value === 'Moderate' || value === 'Pending') return 'badge badge-yellow';
+      if (value === 'Active' || value === 'Action' || value === 'Maintenance') return 'badge badge-green';
+      return 'badge badge-purple';
+    }
+
+    function showView(viewId) {
+      document.querySelectorAll('main section').forEach(function(el) {
+        el.classList.add('hidden');
+      });
+
+      const section = document.getElementById(viewId);
+      if (section) section.classList.remove('hidden');
+
+      document.querySelectorAll('.nav-btn').forEach(function(btn) {
+        btn.classList.remove('active');
+        if (btn.dataset.view === viewId) btn.classList.add('active');
+      });
+
+      requestAnimationFrame(function() {
+        if (viewId === 'newClientView' && clientSignaturePad) clientSignaturePad.resize();
+        if (viewId === 'notesView' && noteSignaturePad) noteSignaturePad.resize();
+        if (viewId === 'plansView' && planSignaturePad) planSignaturePad.resize();
+      });
+    }
+
+    function populateSelectOptions(selectId, options, labelText) {
+      const select = document.getElementById(selectId);
+      if (!select) return;
+
+      select.innerHTML = options.map(function(opt) {
+        const text = opt || ('Select ' + labelText);
+        return '<option value="' + escapeHtml(opt) + '">' + escapeHtml(text) + '</option>';
+      }).join('');
+    }
+
+    function wireTemplateSelect(selectId, textareaId) {
+      const select = document.getElementById(selectId);
+      const textarea = document.getElementById(textareaId);
+      if (!select || !textarea) return;
+
+      select.addEventListener('change', function() {
+        if (select.value) textarea.value = select.value;
+      });
+    }
+
+    function setupSignaturePad(canvasId, clearBtnId, labelId) {
+      const canvas = document.getElementById(canvasId);
+      const clearBtn = document.getElementById(clearBtnId);
+      const label = document.getElementById(labelId);
+      if (!canvas) return null;
+
+      const ctx = canvas.getContext('2d');
+      let drawing = false;
+      let signedAt = '';
+
+      function setLabel() {
+        if (label) label.textContent = 'Signature date: ' + (signedAt || 'today');
+      }
+
+      function sizeCanvas() {
+        const rect = canvas.getBoundingClientRect();
+        if (!rect.width || !rect.height) return;
+
+        const ratio = window.devicePixelRatio || 1;
+        const imageData = canvas.width && canvas.height ? canvas.toDataURL('image/png') : null;
+
+        canvas.width = Math.max(1, Math.floor(rect.width * ratio));
+        canvas.height = Math.max(1, Math.floor(rect.height * ratio));
+
+        ctx.setTransform(1, 0, 0, 1, 0, 0);
+        ctx.scale(ratio, ratio);
+        ctx.lineWidth = 2;
+        ctx.lineCap = 'round';
+        ctx.lineJoin = 'round';
+        ctx.strokeStyle = '#111827';
+
+        if (imageData && imageData !== 'data:,') {
+          const img = new Image();
+          img.onload = function() {
+            ctx.drawImage(img, 0, 0, rect.width, rect.height);
+          };
+          img.src = imageData;
+        }
+      }
+
+      function getPos(e) {
+        const rect = canvas.getBoundingClientRect();
+        return {
+          x: e.clientX - rect.left,
+          y: e.clientY - rect.top
+        };
+      }
+
+      function start(e) {
+        drawing = true;
+        if (!signedAt) signedAt = new Date().toISOString();
+        setLabel();
+        const pos = getPos(e);
+        ctx.beginPath();
+        ctx.moveTo(pos.x, pos.y);
+        e.preventDefault();
+      }
+
+      function move(e) {
+        if (!drawing) return;
+        const pos = getPos(e);
+        ctx.lineTo(pos.x, pos.y);
+        ctx.stroke();
+        e.preventDefault();
+      }
+
+      function end() {
+        drawing = false;
+      }
+
+      canvas.addEventListener('pointerdown', start);
+      canvas.addEventListener('pointermove', move);
+      canvas.addEventListener('pointerup', end);
+      canvas.addEventListener('pointerleave', end);
+      canvas.addEventListener('pointercancel', end);
+
+      if (clearBtn) {
+        clearBtn.addEventListener('click', function() {
+          ctx.clearRect(0, 0, canvas.width, canvas.height);
+          signedAt = '';
+          setLabel();
+        });
+      }
+
+      window.addEventListener('resize', sizeCanvas);
+      setLabel();
+
+      return {
+        getDataUrl: function() {
+          return canvas.toDataURL('image/png');
+        },
+        getSignedAt: function() {
+          return signedAt;
+        },
+        clear: function() {
+          ctx.clearRect(0, 0, canvas.width, canvas.height);
+          signedAt = '';
+          setLabel();
+        },
+        resize: function() {
+          sizeCanvas();
+        }
+      };
+    }
+
+    function populateClientSelects() {
+      const options = state.clients.map(function(c) {
+        return '<option value="' + c.id + '">' + escapeHtml(c.name) + ' (' + escapeHtml(c.mrn) + ')</option>';
+      }).join('');
+
+      const noteClient = document.getElementById('noteClient');
+      const planClient = document.getElementById('planClient');
+      const documentClient = document.getElementById('documentClient');
+
+      if (noteClient) noteClient.innerHTML = options;
+      if (planClient) planClient.innerHTML = options;
+      if (documentClient) documentClient.innerHTML = options;
+    }
+
+    function renderDashboard() {
+      document.getElementById('statClients').textContent = state.clients.filter(function(c) {
+        return c.status === 'Active';
+      }).length;
+
+      document.getElementById('statHighRisk').textContent = state.clients.filter(function(c) {
+        return c.riskLevel === 'High';
+      }).length;
+
+      document.getElementById('statNotes').textContent = state.notes.length;
+
+      const recent = state.clients.slice().sort(function(a, b) {
+        return new Date(b.createdAt || 0) - new Date(a.createdAt || 0);
+      }).slice(0, 5);
+
+      document.getElementById('recentClients').innerHTML = recent.length
+        ? recent.map(function(c) {
+            return '<div class="mini-item"><strong>' + escapeHtml(c.name) + '</strong><br><span class="small">' + escapeHtml(c.primarySubstance || '—') + ' • Added ' + escapeHtml(formatDate(c.createdAt)) + '</span></div>';
+          }).join('')
+        : '<div class="empty">No client records yet.</div>';
+    }
+
+    function renderClients() {
+      const q = (document.getElementById('clientSearch').value || '').toLowerCase();
+
+      const results = state.clients.filter(function(c) {
+        return [
+          c.name,
+          c.mrn,
+          c.primarySubstance,
+          c.secondarySubstance,
+          c.status,
+          c.diagnosis
+        ].join(' ').toLowerCase().includes(q);
+      });
+
+      const wrap = document.getElementById('clientList');
+
+      if (!results.length) {
+        wrap.innerHTML = '<div class="empty">No matching clients found.</div>';
+        document.getElementById('clientDetail').innerHTML = '<div class="empty">Select a client to view details.</div>';
+        return;
+      }
+
+      if (!selectedClientId || !results.some(function(c) { return c.id === selectedClientId; })) {
+        selectedClientId = results[0].id;
+      }
+
+      wrap.innerHTML = results.map(function(c) {
+        return '<div class="client-item" data-client-id="' + c.id + '">' +
+          '<div><div style="font-weight:700;">' + escapeHtml(c.name) + '</div><div class="small">' + escapeHtml(c.primarySubstance || 'No substance listed') + ' • ' + escapeHtml(c.status || '') + '</div></div>' +
+          '<div style="text-align:right;">' +
+            '<div class="' + badgeClass(c.status) + '">' + escapeHtml(c.status) + '</div>' +
+            '<div style="height:6px;"></div>' +
+            '<div class="' + badgeClass(c.riskLevel) + '">' + escapeHtml(c.riskLevel) + ' Risk</div>' +
+          '</div>' +
+        '</div>';
+      }).join('');
+
+      document.querySelectorAll('.client-item').forEach(function(item) {
+        item.addEventListener('click', function() {
+          selectedClientId = item.dataset.clientId;
+          renderClientDetail();
+        });
+      });
+
+      renderClientDetail();
+    }
+
+    function renderClientDetail() {
+      const c = state.clients.find(function(x) { return x.id === selectedClientId; });
+      const box = document.getElementById('clientDetail');
+
+      if (!c) {
+        box.innerHTML = '<div class="empty">Select a client to view details.</div>';
+        return;
+      }
+
+      const notes = state.notes.filter(function(n) { return n.clientId === c.id; });
+      const plans = state.plans.filter(function(p) { return p.clientId === c.id; });
+      const docs = state.documents.filter(function(d) { return d.clientId === c.id; });
+
+      box.innerHTML =
+        '<div style="margin-bottom:12px;">' +
+          '<div style="font-size:22px; font-weight:700;">' + escapeHtml(c.name) + '</div>' +
+          '<div class="small">' + (c.dob ? 'DOB ' + escapeHtml(formatDate(c.dob)) : '') + '</div>' +
+        '</div>' +
+        '<div class="chip-row" style="margin-bottom:14px;">' +
+          '<div class="chip">Primary: ' + escapeHtml(c.primarySubstance || '—') + '</div>' +
+          '<div class="chip">Secondary: ' + escapeHtml(c.secondarySubstance || '—') + '</div>' +
+          '<div class="chip">Stage: ' + escapeHtml(c.stageOfChange || '—') + '</div>' +
+        '</div>' +
+        '<div class="mini-list">' +
+          '<div class="mini-item"><strong>Diagnosis:</strong><br>' + escapeHtml(c.diagnosis || '—') + '</div>' +
+          '<div class="mini-item"><strong>Presenting Problem:</strong><br>' + escapeHtml(c.presentingProblem || '—') + '</div>' +
+          '<div class="mini-item"><strong>Goals:</strong><br>' + escapeHtml(c.goals || '—') + '</div>' +
+          '<div class="mini-item"><strong>Supports:</strong><br>' + escapeHtml(c.supports || '—') + '</div>' +
+          '<div class="mini-item"><strong>Alerts / Safety Notes:</strong><br>' + escapeHtml(c.alerts || '—') + '</div>' +
+          '<div class="mini-item"><strong>Counts:</strong><br>' + notes.length + ' notes • ' + plans.length + ' plans • ' + docs.length + ' documents</div>' +
+        '</div>' +
+        '<div class="row-actions">' +
+          '<button class="primary-btn" id="exportIntakeBtn" type="button">Export Intake PDF</button>' +
+          '<button class="danger-btn" id="deleteClientBtn" type="button">Delete Client</button>' +
+        '</div>';
+
+      document.getElementById('exportIntakeBtn').addEventListener('click', function() {
+        exportClientIntakePDF(c.id);
+      });
+
+      document.getElementById('deleteClientBtn').addEventListener('click', async function() {
+        if (!confirm('Delete this client and all related notes, plans, and documents?')) return;
+        try {
+          await apiRequest('deleteClient', { id: c.id });
+          selectedClientId = null;
+          await loadAllDataFromServer();
+        } catch (err) {
+          setStatus('Error');
+          alert(err.message);
+        }
+      });
+    }
+
+    async function saveClient(e) {
+      e.preventDefault();
+
+      const client = {
+        name: document.getElementById('name').value,
+        mrn: document.getElementById('mrn').value,
+        dob: document.getElementById('dob').value,
+        phone: document.getElementById('phone').value,
+        email: document.getElementById('email').value,
+        admissionDate: document.getElementById('admissionDate').value,
+        primarySubstance: document.getElementById('primarySubstance').value,
+        secondarySubstance: document.getElementById('secondarySubstance').value,
+        diagnosis: document.getElementById('diagnosis').value,
+        stageOfChange: document.getElementById('stageOfChange').value,
+        riskLevel: document.getElementById('riskLevel').value,
+        status: document.getElementById('status').value,
+        presentingProblem: document.getElementById('presentingProblem').value,
+        goals: document.getElementById('goals').value,
+        supports: document.getElementById('supports').value,
+        alerts: document.getElementById('alerts').value,
+        signature: clientSignaturePad ? clientSignaturePad.getDataUrl() : '',
+        signatureDate: clientSignaturePad ? clientSignaturePad.getSignedAt() : ''
+      };
+
+      try {
+        await apiRequest('saveClient', client);
+        document.getElementById('newClientForm').reset();
+        if (clientSignaturePad) clientSignaturePad.clear();
+        await loadAllDataFromServer();
+        showView('clientsView');
+      } catch (err) {
+        setStatus('Error');
+        alert(err.message);
+      }
+    }
+
+    async function saveNote(e) {
+      e.preventDefault();
+
+      const note = {
+        clientId: document.getElementById('noteClient').value,
+        date: document.getElementById('noteDate').value,
+        type: document.getElementById('noteType').value,
+        data: document.getElementById('noteData').value,
+        assessment: document.getElementById('noteAssessment').value,
+        plan: document.getElementById('notePlan').value,
+        signature: noteSignaturePad ? noteSignaturePad.getDataUrl() : '',
+        signatureDate: noteSignaturePad ? noteSignaturePad.getSignedAt() : ''
+      };
+
+      try {
+        await apiRequest('saveNote', note);
+        document.getElementById('noteForm').reset();
+        document.getElementById('noteDate').valueAsDate = new Date();
+        if (noteSignaturePad) noteSignaturePad.clear();
+        await loadAllDataFromServer();
+      } catch (err) {
+        setStatus('Error');
+        alert(err.message);
+      }
+    }
+
+    async function savePlan(e) {
+      e.preventDefault();
+
+      const plan = {
+        clientId: document.getElementById('planClient').value,
+        reviewDate: document.getElementById('planReviewDate').value,
+        problem: document.getElementById('planProblem').value,
+        goal: document.getElementById('planGoal').value,
+        objectives: document.getElementById('planObjectives').value,
+        interventions: document.getElementById('planInterventions').value,
+        signature: planSignaturePad ? planSignaturePad.getDataUrl() : '',
+        signatureDate: planSignaturePad ? planSignaturePad.getSignedAt() : ''
+      };
+
+      try {
+        await apiRequest('savePlan', plan);
+        document.getElementById('planForm').reset();
+        if (planSignaturePad) planSignaturePad.clear();
+        await loadAllDataFromServer();
+      } catch (err) {
+        setStatus('Error');
+        alert(err.message);
+      }
+    }
+
+    function fileToBase64(file) {
+      return new Promise(function(resolve, reject) {
+        const reader = new FileReader();
+        reader.onload = function() {
+          resolve(reader.result.split(',')[1]);
+        };
+        reader.onerror = reject;
+        reader.readAsDataURL(file);
+      });
+    }
+
+    async function saveDocument(e) {
+      e.preventDefault();
+
+      const file = document.getElementById('documentFile').files[0];
+      if (!file) {
+        alert('Please choose a file.');
+        return;
+      }
+
+      if (file.size > MAX_FILE_SIZE) {
+        alert('That file is too large for this upload method. Try a smaller PDF or image.');
+        return;
+      }
+
+      try {
+        const base64 = await fileToBase64(file);
+
+        const payload = {
+          clientId: document.getElementById('documentClient').value,
+          type: document.getElementById('documentType').value,
+          date: document.getElementById('documentDate').value,
+          title: document.getElementById('documentTitle').value || file.name,
+          notes: document.getElementById('documentNotes').value,
+          fileName: file.name,
+          mimeType: file.type || 'application/octet-stream',
+          base64: base64
+        };
+
+        await apiRequest('saveDocument', payload);
+        document.getElementById('documentForm').reset();
+        document.getElementById('documentDate').valueAsDate = new Date();
+        await loadAllDataFromServer();
+      } catch (err) {
+        setStatus('Error');
+        alert('Document save failed: ' + err.message);
+      }
+    }
+
+    function renderNotes() {
+      const box = document.getElementById('notesList');
+
+      if (!state.notes.length) {
+        box.innerHTML = '<div class="empty">No notes saved yet.</div>';
+        return;
+      }
+
+      box.innerHTML = state.notes.map(function(n) {
+        const c = state.clients.find(function(x) { return x.id === n.clientId; });
+
+        return '<div class="mini-item">' +
+          '<div style="display:flex; justify-content:space-between; gap:10px; flex-wrap:wrap;">' +
+            '<strong>' + escapeHtml(c ? c.name : 'Unknown Client') + '</strong>' +
+            '<span class="small">' + escapeHtml(formatDate(n.date)) + ' • ' + escapeHtml(n.type) + '</span>' +
+          '</div>' +
+          '<div style="margin-top:8px;"><strong>Data:</strong> ' + escapeHtml(n.data) + '</div>' +
+          '<div style="margin-top:8px;"><strong>Assessment:</strong> ' + escapeHtml(n.assessment) + '</div>' +
+          '<div style="margin-top:8px;"><strong>Plan:</strong> ' + escapeHtml(n.plan) + '</div>' +
+          '<div class="row-actions">' +
+            '<button class="primary-btn export-note-btn" data-note-id="' + n.id + '" type="button">Export Note PDF</button>' +
+            '<button class="danger-btn delete-note-btn" data-note-id="' + n.id + '" type="button">Delete</button>' +
+          '</div>' +
+        '</div>';
+      }).join('');
+
+      document.querySelectorAll('.export-note-btn').forEach(function(btn) {
+        btn.addEventListener('click', function() {
+          exportNotePDF(btn.dataset.noteId);
+        });
+      });
+
+      document.querySelectorAll('.delete-note-btn').forEach(function(btn) {
+        btn.addEventListener('click', async function() {
+          if (!confirm('Delete this note?')) return;
+          try {
+            await apiRequest('deleteNote', { id: btn.dataset.noteId });
+            await loadAllDataFromServer();
+          } catch (err) {
+            setStatus('Error');
+            alert(err.message);
+          }
+        });
+      });
+    }
+
+    function renderPlans() {
+      const box = document.getElementById('plansList');
+
+      if (!state.plans.length) {
+        box.innerHTML = '<div class="empty">No treatment plans saved yet.</div>';
+        return;
+      }
+
+      box.innerHTML = state.plans.map(function(p) {
+        const c = state.clients.find(function(x) { return x.id === p.clientId; });
+
+        return '<div class="mini-item">' +
+          '<div style="display:flex; justify-content:space-between; gap:10px; flex-wrap:wrap;">' +
+            '<strong>' + escapeHtml(c ? c.name : 'Unknown Client') + '</strong>' +
+            '<span class="small">Review: ' + escapeHtml(formatDate(p.reviewDate)) + '</span>' +
+          '</div>' +
+          '<div style="margin-top:8px;"><strong>Problem:</strong> ' + escapeHtml(p.problem) + '</div>' +
+          '<div style="margin-top:8px;"><strong>Goal:</strong> ' + escapeHtml(p.goal) + '</div>' +
+          '<div style="margin-top:8px;"><strong>Objectives:</strong> ' + escapeHtml(p.objectives) + '</div>' +
+          '<div style="margin-top:8px;"><strong>Interventions:</strong> ' + escapeHtml(p.interventions) + '</div>' +
+          '<div class="row-actions">' +
+            '<button class="primary-btn export-plan-btn" data-plan-id="' + p.id + '" type="button">Export Plan PDF</button>' +
+            '<button class="danger-btn delete-plan-btn" data-plan-id="' + p.id + '" type="button">Delete</button>' +
+          '</div>' +
+        '</div>';
+      }).join('');
+
+      document.querySelectorAll('.export-plan-btn').forEach(function(btn) {
+        btn.addEventListener('click', function() {
+          exportPlanPDF(btn.dataset.planId);
+        });
+      });
+
+      document.querySelectorAll('.delete-plan-btn').forEach(function(btn) {
+        btn.addEventListener('click', async function() {
+          if (!confirm('Delete this plan?')) return;
+          try {
+            await apiRequest('deletePlan', { id: btn.dataset.planId });
+            await loadAllDataFromServer();
+          } catch (err) {
+            setStatus('Error');
+            alert(err.message);
+          }
+        });
+      });
+    }
+
+    function renderDocuments() {
+      const box = document.getElementById('documentsList');
+
+      if (!state.documents.length) {
+        box.innerHTML = '<div class="empty">No documents saved yet.</div>';
+        return;
+      }
+
+      box.innerHTML = state.documents.map(function(d) {
+        const c = state.clients.find(function(x) { return x.id === d.clientId; });
+
+        return '<div class="mini-item">' +
+          '<div style="display:flex; justify-content:space-between; gap:10px; flex-wrap:wrap;">' +
+            '<strong>' + escapeHtml(d.title || d.fileName) + '</strong>' +
+            '<span class="small">' + escapeHtml(formatDate(d.date)) + ' • ' + escapeHtml(d.type || '—') + '</span>' +
+          '</div>' +
+          '<div style="margin-top:8px;"><strong>Client:</strong> ' + escapeHtml(c ? c.name : 'Unknown Client') + '</div>' +
+          '<div style="margin-top:8px;"><strong>File:</strong> ' + escapeHtml(d.fileName || '—') + '</div>' +
+          '<div style="margin-top:8px;"><strong>Notes:</strong> ' + escapeHtml(d.notes || '—') + '</div>' +
+          '<div class="row-actions">' +
+            (d.fileUrl ? '<a class="primary-btn" style="text-decoration:none; display:inline-block;" href="' + escapeHtml(d.fileUrl) + '" target="_blank">Open</a>' : '') +
+            '<button class="danger-btn delete-document-btn" data-document-id="' + d.id + '" type="button">Delete</button>' +
+          '</div>' +
+        '</div>';
+      }).join('');
+
+      document.querySelectorAll('.delete-document-btn').forEach(function(btn) {
+        btn.addEventListener('click', async function() {
+          if (!confirm('Delete this document?')) return;
+          try {
+            await apiRequest('deleteDocument', { id: btn.dataset.documentId });
+            await loadAllDataFromServer();
+          } catch (err) {
+            setStatus('Error');
+            alert(err.message);
+          }
+        });
+      });
+    }
+
+    function renderReports() {
+      const byStatus = {};
+      const bySubstance = {};
+
+      state.clients.forEach(function(c) {
+        byStatus[c.status] = (byStatus[c.status] || 0) + 1;
+        const substance = c.primarySubstance || 'Unspecified';
+        bySubstance[substance] = (bySubstance[substance] || 0) + 1;
+      });
+
+      document.getElementById('statusReport').innerHTML = Object.keys(byStatus).length
+        ? Object.keys(byStatus).map(function(k) {
+            return '<div class="mini-item">' + escapeHtml(k) + ': <strong>' + byStatus[k] + '</strong></div>';
+          }).join('')
+        : '<div class="empty">No data yet.</div>';
+
+      document.getElementById('substanceReport').innerHTML = Object.keys(bySubstance).length
+        ? Object.keys(bySubstance).map(function(k) {
+            return '<div class="mini-item">' + escapeHtml(k) + ': <strong>' + bySubstance[k] + '</strong></div>';
+          }).join('')
+        : '<div class="empty">No data yet.</div>';
+    }
+
+    function printDocument(title, bodyHtml) {
+      const w = window.open('', '_blank');
+      if (!w) {
+        alert('Pop-up blocked. Allow pop-ups for PDF export.');
+        return;
+      }
+
+      const html = '<!DOCTYPE html><html><head><meta charset="UTF-8"><title>' + escapeHtml(title) + '</title>' +
+        '<style>' +
+        'body{font-family:Arial,Helvetica,sans-serif;color:#111827;margin:36px;line-height:1.45;}' +
+        'h1{font-size:24px;margin:0 0 8px;}' +
+        'h2{font-size:16px;margin:22px 0 8px;border-bottom:1px solid #cbd5e1;padding-bottom:6px;}' +
+        '.meta{color:#475569;font-size:13px;margin-bottom:18px;}' +
+        '.block{margin-bottom:14px;}' +
+        '.label{font-weight:700;display:block;margin-bottom:4px;}' +
+        '.box{border:1px solid #cbd5e1;border-radius:8px;padding:10px 12px;white-space:pre-wrap;}' +
+        '.grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;}' +
+        '.sigdate{margin-top:8px;color:#475569;font-size:13px;}' +
+        '</style></head><body>' + bodyHtml + '</body></html>';
+
+      w.document.open();
+      w.document.write(html);
+      w.document.close();
+      w.focus();
+      setTimeout(function() { w.print(); }, 250);
+    }
+
+    function exportClientIntakePDF(clientId) {
+      const c = state.clients.find(function(x) { return x.id === clientId; });
+      if (!c) return;
+
+      const sigDate = c.signatureDate || c.createdAt || '';
+      const signatureHtml = c.signature
+        ? '<h2>Signature</h2><div class="box"><img src="' + c.signature + '" style="max-width:320px; max-height:120px;"><div class="sigdate">Signed: ' + escapeHtml(formatDateTime(sigDate)) + '</div></div>'
+        : '';
+
+      const html =
+        '<h1>Client Intake Summary</h1>' +
+        '<div class="meta">' + escapeHtml(c.name) + ' • Generated ' + escapeHtml(new Date().toLocaleString()) + '</div>' +
+        '<div class="grid">' +
+          '<div class="block"><span class="label">Client Name</span><div class="box">' + escapeHtml(c.name) + '</div></div>' +
+          '<div class="block"><span class="label">MRN / Client ID</span><div class="box">' + escapeHtml(c.mrn) + '</div></div>' +
+          '<div class="block"><span class="label">Date of Birth</span><div class="box">' + escapeHtml(formatDate(c.dob)) + '</div></div>' +
+          '<div class="block"><span class="label">Admission Date</span><div class="box">' + escapeHtml(formatDate(c.admissionDate)) + '</div></div>' +
+          '<div class="block"><span class="label">Phone</span><div class="box">' + escapeHtml(c.phone || '—') + '</div></div>' +
+          '<div class="block"><span class="label">Email</span><div class="box">' + escapeHtml(c.email || '—') + '</div></div>' +
+          '<div class="block"><span class="label">Primary Substance</span><div class="box">' + escapeHtml(c.primarySubstance || '—') + '</div></div>' +
+          '<div class="block"><span class="label">Secondary Substance</span><div class="box">' + escapeHtml(c.secondarySubstance || '—') + '</div></div>' +
+          '<div class="block"><span class="label">Diagnosis</span><div class="box">' + escapeHtml(c.diagnosis || '—') + '</div></div>' +
+          '<div class="block"><span class="label">Stage of Change</span><div class="box">' + escapeHtml(c.stageOfChange || '—') + '</div></div>' +
+          '<div class="block"><span class="label">Risk Level</span><div class="box">' + escapeHtml(c.riskLevel || '—') + '</div></div>' +
+          '<div class="block"><span class="label">Status</span><div class="box">' + escapeHtml(c.status || '—') + '</div></div>' +
+        '</div>' +
+        '<h2>Presenting Problem</h2><div class="box">' + escapeHtml(c.presentingProblem || '—') + '</div>' +
+        '<h2>Goals</h2><div class="box">' + escapeHtml(c.goals || '—') + '</div>' +
+        '<h2>Supports / Recovery Capital</h2><div class="box">' + escapeHtml(c.supports || '—') + '</div>' +
+        '<h2>Alerts / Safety Notes</h2><div class="box">' + escapeHtml(c.alerts || '—') + '</div>' +
+        signatureHtml;
+
+      printDocument('Intake - ' + c.name, html);
+    }
+
+    function exportNotePDF(noteId) {
+      const n = state.notes.find(function(x) { return x.id === noteId; });
+      if (!n) return;
+      const c = state.clients.find(function(x) { return x.id === n.clientId; });
+
+      const sigDate = n.signatureDate || n.date || '';
+      const signatureHtml = n.signature
+        ? '<h2>Signature</h2><div class="box"><img src="' + n.signature + '" style="max-width:320px; max-height:120px;"><div class="sigdate">Signed: ' + escapeHtml(formatDateTime(sigDate)) + '</div></div>'
+        : '';
+
+      const html =
+        '<h1>Progress Note</h1>' +
+        '<div class="meta">' + escapeHtml(c ? c.name : 'Unknown Client') + ' • ' + escapeHtml(formatDate(n.date)) + ' • ' + escapeHtml(n.type || '—') + '</div>' +
+        '<h2>Data / Presentation</h2><div class="box">' + escapeHtml(n.data || '—') + '</div>' +
+        '<h2>Assessment / Clinical Impression</h2><div class="box">' + escapeHtml(n.assessment || '—') + '</div>' +
+        '<h2>Plan / Next Steps</h2><div class="box">' + escapeHtml(n.plan || '—') + '</div>' +
+        signatureHtml;
+
+      printDocument('Note - ' + (c ? c.name : 'Client'), html);
+    }
+
+    function exportPlanPDF(planId) {
+      const p = state.plans.find(function(x) { return x.id === planId; });
+      if (!p) return;
+      const c = state.clients.find(function(x) { return x.id === p.clientId; });
+
+      const sigDate = p.signatureDate || p.reviewDate || '';
+      const signatureHtml = p.signature
+        ? '<h2>Signature</h2><div class="box"><img src="' + p.signature + '" style="max-width:320px; max-height:120px;"><div class="sigdate">Signed: ' + escapeHtml(formatDateTime(sigDate)) + '</div></div>'
+        : '';
+
+      const html =
+        '<h1>Treatment Plan</h1>' +
+        '<div class="meta">' + escapeHtml(c ? c.name : 'Unknown Client') + ' • Review ' + escapeHtml(formatDate(p.reviewDate)) + '</div>' +
+        '<h2>Problem</h2><div class="box">' + escapeHtml(p.problem || '—') + '</div>' +
+        '<h2>Goal</h2><div class="box">' + escapeHtml(p.goal || '—') + '</div>' +
+        '<h2>Objectives</h2><div class="box">' + escapeHtml(p.objectives || '—') + '</div>' +
+        '<h2>Interventions</h2><div class="box">' + escapeHtml(p.interventions || '—') + '</div>' +
+        signatureHtml;
+
+      printDocument('Treatment Plan - ' + (c ? c.name : 'Client'), html);
+    }
+
+    async function loadAllDataFromServer() {
+      try {
+        const result = await apiRequest('getAllData', {});
+        state = result || { clients: [], notes: [], plans: [], documents: [] };
+        if (!state.documents) state.documents = [];
+        if (!selectedClientId && state.clients.length) {
+          selectedClientId = state.clients[0].id;
+        }
+        refreshAll();
+      } catch (err) {
+        setStatus('Error');
+        alert(err.message);
+      }
+    }
+
+    function refreshAll() {
+      populateClientSelects();
+      renderDashboard();
+      renderClients();
+      renderNotes();
+      renderPlans();
+      renderDocuments();
+      renderReports();
+    }
+
+    document.querySelectorAll('.nav-btn').forEach(function(btn) {
+      btn.addEventListener('click', function() {
+        showView(btn.dataset.view);
+      });
+    });
+
+    document.getElementById('reloadBtn').addEventListener('click', loadAllDataFromServer);
+    document.getElementById('clientSearch').addEventListener('input', renderClients);
+    document.getElementById('newClientForm').addEventListener('submit', saveClient);
+    document.getElementById('clearClientFormBtn').addEventListener('click', function() {
+      document.getElementById('newClientForm').reset();
+      if (clientSignaturePad) clientSignaturePad.clear();
+    });
+    document.getElementById('noteForm').addEventListener('submit', saveNote);
+    document.getElementById('planForm').addEventListener('submit', savePlan);
+    document.getElementById('documentForm').addEventListener('submit', saveDocument);
+
+    populateSelectOptions('diagnosis', DIAGNOSIS_OPTIONS, 'diagnosis');
+    populateSelectOptions('planProblemSelect', PLAN_PROBLEM_OPTIONS, 'problem');
+    populateSelectOptions('planGoalSelect', PLAN_GOAL_OPTIONS, 'goal');
+    populateSelectOptions('planObjectivesSelect', PLAN_OBJECTIVE_OPTIONS, 'objective');
+    populateSelectOptions('planInterventionsSelect', PLAN_INTERVENTION_OPTIONS, 'intervention');
+
+    wireTemplateSelect('planProblemSelect', 'planProblem');
+    wireTemplateSelect('planGoalSelect', 'planGoal');
+    wireTemplateSelect('planObjectivesSelect', 'planObjectives');
+    wireTemplateSelect('planInterventionsSelect', 'planInterventions');
+
+    clientSignaturePad = setupSignaturePad('clientSignatureCanvas', 'clearClientSignatureBtn', 'clientSignatureDateText');
+    noteSignaturePad = setupSignaturePad('noteSignatureCanvas', 'clearNoteSignatureBtn', 'noteSignatureDateText');
+    planSignaturePad = setupSignaturePad('planSignatureCanvas', 'clearPlanSignatureBtn', 'planSignatureDateText');
+
+    document.getElementById('noteDate').valueAsDate = new Date();
+    document.getElementById('documentDate').valueAsDate = new Date();
+
+    showView('dashboardView');
+    initLogin();
+    loadAllDataFromServer();
+  </script>
+</body>
+</html>      padding: 12px;
+      font-size: 12px;
+      line-height: 1.4;
+      margin-bottom: 18px;
+    }
+
+    .nav-btn, .primary-btn, .secondary-btn, .danger-btn {
+      width: 100%;
+      border: none;
+      border-radius: 12px;
+      padding: 12px 14px;
+      margin-bottom: 10px;
+      cursor: pointer;
+      font-weight: 600;
+      transition: 0.2s ease;
+    }
+
+    .nav-btn {
+      background: var(--panel-2);
+      color: var(--text);
+      text-align: left;
+      border: 1px solid var(--border);
+    }
+
+    .nav-btn.active, .nav-btn:hover {
+      background: rgba(124, 58, 237, 0.18);
+      border-color: var(--accent);
+    }
+
+    .primary-btn {
+      background: var(--accent);
+      color: white;
+    }
+
+    .primary-btn:hover { background: #6d28d9; }
+
+    .secondary-btn {
+      background: #e5e7eb;
+      color: #111827;
+    }
+
+    .danger-btn {
+      background: var(--danger);
+      color: white;
+    }
+
+    .content {
+      padding: 28px;
+    }
+
+    .toolbar {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 22px;
+    }
+
+    .toolbar .left {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      align-items: center;
+    }
+
+    input, select, textarea {
+      width: 100%;
+      padding: 11px 12px;
+      border-radius: 10px;
+      border: 1px solid #cbd5e1;
+      font-size: 14px;
+      background: white;
+      color: #111827;
+    }
+
+    textarea {
+      min-height: 100px;
+      resize: vertical;
+    }
+
+    .search {
+      min-width: 260px;
+      max-width: 360px;
+    }
+
+    .grid {
+      display: grid;
+      gap: 16px;
+    }
+
+    .grid-2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .grid-3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+
+    .card {
+      background: var(--card);
+      color: #111827;
+      border-radius: 18px;
+      box-shadow: var(--shadow);
+      padding: 18px;
+    }
+
+    .section-title {
+      font-size: 20px;
+      font-weight: 700;
+      margin: 0 0 4px;
+      color: #0f172a;
+    }
+
+    .section-subtitle {
+      color: #475569;
+      margin-bottom: 16px;
+      font-size: 14px;
+    }
+
+    .label {
+      font-size: 13px;
+      font-weight: 700;
+      margin-bottom: 6px;
+      color: #334155;
+      display: block;
+    }
+
+    .field { margin-bottom: 14px; }
+
+    .client-list {
+      display: grid;
+      gap: 12px;
+    }
+
+    .client-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      padding: 14px;
+      border: 1px solid #e2e8f0;
+      border-radius: 14px;
+      cursor: pointer;
+    }
+
+    .client-item:hover {
+      border-color: var(--accent);
+      background: #faf5ff;
+    }
+
+    .badge {
+      display: inline-block;
+      padding: 6px 10px;
+      border-radius: 999px;
+      font-size: 12px;
+      font-weight: 700;
+    }
+
+    .badge-green { background: #d1fae5; color: #065f46; }
+    .badge-yellow { background: #fef3c7; color: #92400e; }
+    .badge-red { background: #fee2e2; color: #991b1b; }
+    .badge-purple { background: #ede9fe; color: #5b21b6; }
+
+    .detail-grid {
+      display: grid;
+      grid-template-columns: 1.2fr 1fr;
+      gap: 16px;
+    }
+
+    .mini-list {
+      display: grid;
+      gap: 10px;
+    }
+
+    .mini-item {
+      border: 1px solid #e2e8f0;
+      border-radius: 12px;
+      padding: 12px;
+      background: #f8fafc;
+    }
+
+    .small {
+      font-size: 12px;
+      color: #64748b;
+    }
+
+    .empty {
+      text-align: center;
+      color: #64748b;
+      padding: 28px;
+      border: 2px dashed #cbd5e1;
+      border-radius: 14px;
+    }
+
+    .row-actions {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin-top: 12px;
+    }
+
+    .row-actions button,
+    .row-actions a {
+      width: auto;
+      margin-bottom: 0;
+    }
+
+    .chip-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .chip {
+      padding: 7px 10px;
+      border-radius: 999px;
+      background: #f1f5f9;
+      border: 1px solid #cbd5e1;
+      font-size: 12px;
+      color: #334155;
+    }
+
+    .hidden { display: none !important; }
+
+    .signature-wrap {
+      border: 1px solid #cbd5e1;
+      border-radius: 12px;
+      background: #fff;
+      padding: 10px;
+    }
+
+    .signature-canvas {
+      width: 100%;
+      height: 180px;
+      border: 1px dashed #94a3b8;
+      border-radius: 8px;
+      background: #fff;
+      display: block;
+      touch-action: none;
+      cursor: crosshair;
+    }
+
     @media (max-width: 1000px) {
       .app { grid-template-columns: 1fr; }
       .sidebar { position: relative; height: auto; }
