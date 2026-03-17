@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -6,296 +5,203 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Recovery EHR</title>
   <style>
-    :root {
-      --panel: #111827;
-      --panel-2: #1f2937;
-      --card: #ffffff;
-      --text: #e5e7eb;
-      --muted: #94a3b8;
-      --accent: #7c3aed;
-      --danger: #dc2626;
-      --border: #334155;
-      --shadow: 0 10px 25px rgba(0,0,0,0.18);
+    :root{
+      --bg:#0f172a;
+      --bg2:#111827;
+      --panel:#1f2937;
+      --card:#ffffff;
+      --text:#e5e7eb;
+      --muted:#94a3b8;
+      --dark:#0f172a;
+      --accent:#7c3aed;
+      --danger:#dc2626;
+      --border:#334155;
+      --soft:#e2e8f0;
+      --shadow:0 10px 24px rgba(0,0,0,.18);
     }
-
-    * { box-sizing: border-box; }
-
-    body {
-      margin: 0;
-      font-family: Arial, Helvetica, sans-serif;
-      background: linear-gradient(180deg, #0b1220 0%, #111827 100%);
-      color: var(--text);
+    *{box-sizing:border-box}
+    body{
+      margin:0;
+      font-family:Arial,Helvetica,sans-serif;
+      background:linear-gradient(180deg,var(--bg),var(--bg2));
+      color:var(--text);
     }
-
-    .app {
-      display: grid;
-      grid-template-columns: 280px 1fr;
-      min-height: 100vh;
+    .hidden{display:none!important}
+    .app{
+      display:grid;
+      grid-template-columns:280px 1fr;
+      min-height:100vh;
     }
-
-    .sidebar {
-      background: rgba(15, 23, 42, 0.95);
-      border-right: 1px solid var(--border);
-      padding: 20px;
-      position: sticky;
-      top: 0;
-      height: 100vh;
-      overflow-y: auto;
+    .sidebar{
+      background:rgba(15,23,42,.96);
+      border-right:1px solid var(--border);
+      padding:20px;
+      position:sticky;
+      top:0;
+      height:100vh;
+      overflow:auto;
     }
-
-    .brand {
-      font-size: 22px;
-      font-weight: 700;
-      margin-bottom: 6px;
+    .brand{font-size:22px;font-weight:700;margin-bottom:6px}
+    .subtitle{font-size:13px;color:var(--muted);line-height:1.4;margin-bottom:18px}
+    .warning{
+      background:rgba(220,38,38,.12);
+      border:1px solid rgba(220,38,38,.35);
+      color:#fecaca;
+      border-radius:12px;
+      padding:12px;
+      font-size:12px;
+      line-height:1.4;
+      margin-bottom:18px;
     }
-
-    .subtitle {
-      color: var(--muted);
-      font-size: 13px;
-      margin-bottom: 20px;
-      line-height: 1.4;
+    .nav-btn,.primary-btn,.secondary-btn,.danger-btn{
+      width:100%;
+      border:none;
+      border-radius:12px;
+      padding:12px 14px;
+      margin-bottom:10px;
+      cursor:pointer;
+      font-weight:700;
+      transition:.2s ease;
     }
-
-    .warning {
-      background: rgba(220, 38, 38, 0.12);
-      border: 1px solid rgba(220, 38, 38, 0.35);
-      color: #fecaca;
-      border-radius: 12px;
-      padding: 12px;
-      font-size: 12px;
-      line-height: 1.4;
-      margin-bottom: 18px;
+    .nav-btn{
+      background:var(--panel);
+      color:var(--text);
+      text-align:left;
+      border:1px solid var(--border);
     }
-
-    .nav-btn, .primary-btn, .secondary-btn, .danger-btn {
-      width: 100%;
-      border: none;
-      border-radius: 12px;
-      padding: 12px 14px;
-      margin-bottom: 10px;
-      cursor: pointer;
-      font-weight: 600;
-      transition: 0.2s ease;
+    .nav-btn.active,.nav-btn:hover{
+      background:rgba(124,58,237,.18);
+      border-color:var(--accent);
     }
-
-    .nav-btn {
-      background: var(--panel-2);
-      color: var(--text);
-      text-align: left;
-      border: 1px solid var(--border);
+    .primary-btn{background:var(--accent);color:#fff}
+    .primary-btn:hover{background:#6d28d9}
+    .secondary-btn{background:#e5e7eb;color:#111827}
+    .danger-btn{background:var(--danger);color:#fff}
+    .content{padding:28px}
+    .toolbar{
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      gap:12px;
+      flex-wrap:wrap;
+      margin-bottom:22px;
     }
-
-    .nav-btn.active,
-    .nav-btn:hover {
-      background: rgba(124, 58, 237, 0.18);
-      border-color: var(--accent);
+    .toolbar .left{
+      display:flex;
+      align-items:center;
+      gap:10px;
+      flex-wrap:wrap;
     }
-
-    .primary-btn { background: var(--accent); color: white; }
-    .primary-btn:hover { background: #6d28d9; }
-    .secondary-btn { background: #e5e7eb; color: #111827; }
-    .danger-btn { background: var(--danger); color: white; }
-
-    .content { padding: 28px; }
-
-    .toolbar {
-      display: flex;
-      gap: 12px;
-      flex-wrap: wrap;
-      align-items: center;
-      justify-content: space-between;
-      margin-bottom: 22px;
+    input,select,textarea{
+      width:100%;
+      padding:11px 12px;
+      border-radius:10px;
+      border:1px solid #cbd5e1;
+      background:#fff;
+      color:#111827;
+      font-size:14px;
     }
-
-    .toolbar .left {
-      display: flex;
-      gap: 10px;
-      flex-wrap: wrap;
-      align-items: center;
+    textarea{min-height:100px;resize:vertical}
+    .search{min-width:260px;max-width:360px}
+    .grid{display:grid;gap:16px}
+    .grid-2{grid-template-columns:repeat(2,minmax(0,1fr))}
+    .grid-3{grid-template-columns:repeat(3,minmax(0,1fr))}
+    .card{
+      background:var(--card);
+      color:#111827;
+      border-radius:18px;
+      box-shadow:var(--shadow);
+      padding:18px;
     }
-
-    input, select, textarea {
-      width: 100%;
-      padding: 11px 12px;
-      border-radius: 10px;
-      border: 1px solid #cbd5e1;
-      font-size: 14px;
-      background: white;
-      color: #111827;
+    .section-title{font-size:20px;font-weight:700;margin:0 0 4px;color:#0f172a}
+    .section-subtitle{font-size:14px;color:#475569;margin-bottom:16px}
+    .label{display:block;font-size:13px;font-weight:700;color:#334155;margin-bottom:6px}
+    .field{margin-bottom:14px}
+    .detail-grid{display:grid;grid-template-columns:1.2fr 1fr;gap:16px}
+    .client-list,.mini-list{display:grid;gap:10px}
+    .client-item{
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      gap:12px;
+      padding:14px;
+      border:1px solid var(--soft);
+      border-radius:14px;
+      background:#fff;
+      color:#111827;
+      cursor:pointer;
     }
-
-    textarea {
-      min-height: 100px;
-      resize: vertical;
+    .client-item:hover{border-color:var(--accent);background:#faf5ff}
+    .mini-item{
+      border:1px solid var(--soft);
+      border-radius:12px;
+      padding:12px;
+      background:#f8fafc;
     }
-
-    .search {
-      min-width: 260px;
-      max-width: 360px;
+    .small{font-size:12px;color:#64748b}
+    .empty{
+      text-align:center;
+      padding:28px;
+      border:2px dashed #cbd5e1;
+      border-radius:14px;
+      color:#64748b;
+      background:#fff;
     }
-
-    .grid {
-      display: grid;
-      gap: 16px;
+    .badge{
+      display:inline-block;
+      padding:6px 10px;
+      border-radius:999px;
+      font-size:12px;
+      font-weight:700;
     }
-
-    .grid-2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-    .grid-3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
-
-    .card {
-      background: var(--card);
-      color: #111827;
-      border-radius: 18px;
-      box-shadow: var(--shadow);
-      padding: 18px;
+    .badge-green{background:#d1fae5;color:#065f46}
+    .badge-yellow{background:#fef3c7;color:#92400e}
+    .badge-red{background:#fee2e2;color:#991b1b}
+    .badge-purple{background:#ede9fe;color:#5b21b6}
+    .chip-row{display:flex;gap:8px;flex-wrap:wrap}
+    .chip{
+      padding:7px 10px;
+      border-radius:999px;
+      background:#f1f5f9;
+      border:1px solid #cbd5e1;
+      font-size:12px;
+      color:#334155;
     }
-
-    .section-title {
-      font-size: 20px;
-      font-weight: 700;
-      margin: 0 0 4px;
-      color: #0f172a;
+    .row-actions{
+      display:flex;
+      gap:8px;
+      flex-wrap:wrap;
+      margin-top:12px;
     }
-
-    .section-subtitle {
-      color: #475569;
-      margin-bottom: 16px;
-      font-size: 14px;
+    .row-actions button,.row-actions a{
+      width:auto;
+      margin-bottom:0;
     }
-
-    .label {
-      font-size: 13px;
-      font-weight: 700;
-      margin-bottom: 6px;
-      color: #334155;
-      display: block;
+    .signature-wrap{
+      border:1px solid #cbd5e1;
+      border-radius:12px;
+      background:#fff;
+      padding:10px;
     }
-
-    .field { margin-bottom: 14px; }
-
-    .client-list {
-      display: grid;
-      gap: 12px;
+    .signature-canvas{
+      width:100%;
+      height:180px;
+      display:block;
+      border:1px dashed #94a3b8;
+      border-radius:8px;
+      background:#fff;
+      touch-action:none;
+      cursor:crosshair;
     }
-
-    .client-item {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      gap: 12px;
-      padding: 14px;
-      border: 1px solid #e2e8f0;
-      border-radius: 14px;
-      cursor: pointer;
-    }
-
-    .client-item:hover {
-      border-color: var(--accent);
-      background: #faf5ff;
-    }
-
-    .badge {
-      display: inline-block;
-      padding: 6px 10px;
-      border-radius: 999px;
-      font-size: 12px;
-      font-weight: 700;
-    }
-
-    .badge-green { background: #d1fae5; color: #065f46; }
-    .badge-yellow { background: #fef3c7; color: #92400e; }
-    .badge-red { background: #fee2e2; color: #991b1b; }
-    .badge-purple { background: #ede9fe; color: #5b21b6; }
-
-    .detail-grid {
-      display: grid;
-      grid-template-columns: 1.2fr 1fr;
-      gap: 16px;
-    }
-
-    .mini-list {
-      display: grid;
-      gap: 10px;
-    }
-
-    .mini-item {
-      border: 1px solid #e2e8f0;
-      border-radius: 12px;
-      padding: 12px;
-      background: #f8fafc;
-    }
-
-    .small {
-      font-size: 12px;
-      color: #64748b;
-    }
-
-    .empty {
-      text-align: center;
-      color: #64748b;
-      padding: 28px;
-      border: 2px dashed #cbd5e1;
-      border-radius: 14px;
-    }
-
-    .row-actions {
-      display: flex;
-      gap: 8px;
-      flex-wrap: wrap;
-      margin-top: 12px;
-    }
-
-    .row-actions button,
-    .row-actions a {
-      width: auto;
-      margin-bottom: 0;
-    }
-
-    .chip-row {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 8px;
-    }
-
-    .chip {
-      padding: 7px 10px;
-      border-radius: 999px;
-      background: #f1f5f9;
-      border: 1px solid #cbd5e1;
-      font-size: 12px;
-      color: #334155;
-    }
-
-    .hidden { display: none !important; }
-
-    .signature-wrap {
-      border: 1px solid #cbd5e1;
-      border-radius: 12px;
-      background: #fff;
-      padding: 10px;
-    }
-
-    .signature-canvas {
-      width: 100%;
-      height: 180px;
-      border: 1px dashed #94a3b8;
-      border-radius: 8px;
-      background: #fff;
-      display: block;
-      touch-action: none;
-      cursor: crosshair;
-    }
-
-
-    @media (max-width: 1000px) {
-      .app { grid-template-columns: 1fr; }
-      .sidebar { position: relative; height: auto; }
-      .detail-grid, .grid-2, .grid-3 { grid-template-columns: 1fr; }
+    @media (max-width:1000px){
+      .app{grid-template-columns:1fr}
+      .sidebar{position:relative;height:auto}
+      .detail-grid,.grid-2,.grid-3{grid-template-columns:1fr}
     }
   </style>
 </head>
 <body>
-  <div class="app" id="appShell">
+  <div id="appShell" class="app">
     <aside class="sidebar">
       <div class="brand">Recovery EHR</div>
       <div class="subtitle">Google-backed prototype</div>
@@ -312,21 +218,24 @@
       <button class="nav-btn" data-view="documentsView" type="button">Documents</button>
       <button class="nav-btn" data-view="reportsView" type="button">Reports</button>
 
-      <hr style="border-color:#334155; opacity:.35; margin:18px 0;">
+      <hr style="border-color:#334155;opacity:.35;margin:18px 0;">
 
-      <button class="primary-btn" id="reloadBtn" type="button">Reload from Server</button>
+      <button id="reloadBtn" class="primary-btn" type="button">Reload from Server</button>
+      <button id="logoutBtn" class="secondary-btn" type="button">Login Removed</button>
     </aside>
 
     <main class="content">
       <section id="dashboardView">
         <div class="toolbar">
-          <div class="left"><h1 style="margin:0; font-size:30px;">Dashboard</h1></div>
+          <div class="left"><h1 style="margin:0;font-size:30px;">Dashboard</h1></div>
         </div>
+
         <div class="grid grid-3">
           <div class="card"><div class="section-title" id="statClients">0</div><div class="section-subtitle">Active Clients</div></div>
           <div class="card"><div class="section-title" id="statHighRisk">0</div><div class="section-subtitle">High-Risk Alerts</div></div>
           <div class="card"><div class="section-title" id="statNotes">0</div><div class="section-subtitle">Session Notes</div></div>
         </div>
+
         <div class="grid grid-2" style="margin-top:16px;">
           <div class="card">
             <div class="section-title">Recent Clients</div>
@@ -336,7 +245,9 @@
           <div class="card">
             <div class="section-title">Status</div>
             <div class="section-subtitle">Current app state</div>
-            <div class="mini-list"><div class="mini-item" id="serverStatus">Ready</div></div>
+            <div class="mini-list">
+              <div id="serverStatus" class="mini-item">Ready</div>
+            </div>
           </div>
         </div>
       </section>
@@ -344,16 +255,18 @@
       <section id="clientsView" class="hidden">
         <div class="toolbar">
           <div class="left">
-            <h1 style="margin:0; font-size:30px;">Clients</h1>
+            <h1 style="margin:0;font-size:30px;">Clients</h1>
             <input id="clientSearch" class="search" type="text" placeholder="Search">
           </div>
         </div>
+
         <div class="detail-grid">
           <div class="card">
             <div class="section-title">Client List</div>
             <div class="section-subtitle">Select a client to view details</div>
             <div id="clientList" class="client-list"></div>
           </div>
+
           <div class="card">
             <div class="section-title">Client Details</div>
             <div class="section-subtitle">Intake summary</div>
@@ -366,6 +279,7 @@
         <div class="card">
           <div class="section-title">New Intake</div>
           <div class="section-subtitle">Includes client and counselor signature</div>
+
           <form id="newClientForm">
             <div class="grid grid-2">
               <div class="field"><label class="label">Client Name</label><input id="name" required></div>
@@ -416,9 +330,9 @@
                 <label class="label">Client Signature</label>
                 <div class="signature-wrap">
                   <canvas id="clientSignatureCanvas" class="signature-canvas"></canvas>
-                  <div class="small" id="clientSignatureDateText">Signature date: today</div>
+                  <div id="clientSignatureDateText" class="small">Signature date: today</div>
                   <div class="row-actions">
-                    <button class="secondary-btn" id="clearClientSignatureBtn" type="button">Clear Client Signature</button>
+                    <button id="clearClientSignatureBtn" class="secondary-btn" type="button">Clear Client Signature</button>
                   </div>
                 </div>
               </div>
@@ -427,9 +341,9 @@
                 <label class="label">Counselor Signature</label>
                 <div class="signature-wrap">
                   <canvas id="counselorSignatureCanvas" class="signature-canvas"></canvas>
-                  <div class="small" id="counselorSignatureDateText">Signature date: today</div>
+                  <div id="counselorSignatureDateText" class="small">Signature date: today</div>
                   <div class="row-actions">
-                    <button class="secondary-btn" id="clearCounselorSignatureBtn" type="button">Clear Counselor Signature</button>
+                    <button id="clearCounselorSignatureBtn" class="secondary-btn" type="button">Clear Counselor Signature</button>
                   </div>
                 </div>
               </div>
@@ -437,7 +351,7 @@
 
             <div class="row-actions">
               <button class="primary-btn" type="submit">Save Client</button>
-              <button class="secondary-btn" type="button" id="clearClientFormBtn">Clear</button>
+              <button id="clearClientFormBtn" class="secondary-btn" type="button">Clear</button>
             </div>
           </form>
         </div>
@@ -446,7 +360,8 @@
       <section id="notesView" class="hidden">
         <div class="card">
           <div class="section-title">Session Notes</div>
-          <div class="section-subtitle">Single counselor signature</div>
+          <div class="section-subtitle">Counselor signature included</div>
+
           <form id="noteForm">
             <div class="grid grid-3">
               <div class="field"><label class="label">Client</label><select id="noteClient"></select></div>
@@ -471,14 +386,16 @@
               <label class="label">Counselor Signature</label>
               <div class="signature-wrap">
                 <canvas id="noteSignatureCanvas" class="signature-canvas"></canvas>
-                <div class="small" id="noteSignatureDateText">Signature date: today</div>
+                <div id="noteSignatureDateText" class="small">Signature date: today</div>
                 <div class="row-actions">
-                  <button class="secondary-btn" id="clearNoteSignatureBtn" type="button">Clear Signature</button>
+                  <button id="clearNoteSignatureBtn" class="secondary-btn" type="button">Clear Signature</button>
                 </div>
               </div>
             </div>
 
-            <div class="row-actions"><button class="primary-btn" type="submit">Save Note</button></div>
+            <div class="row-actions">
+              <button class="primary-btn" type="submit">Save Note</button>
+            </div>
           </form>
 
           <div style="margin-top:22px;">
@@ -492,6 +409,7 @@
         <div class="card">
           <div class="section-title">Treatment Plans</div>
           <div class="section-subtitle">Includes client and counselor signature</div>
+
           <form id="planForm">
             <div class="grid grid-2">
               <div class="field"><label class="label">Client</label><select id="planClient"></select></div>
@@ -512,9 +430,9 @@
                 <label class="label">Client Signature</label>
                 <div class="signature-wrap">
                   <canvas id="planClientSignatureCanvas" class="signature-canvas"></canvas>
-                  <div class="small" id="planClientSignatureDateText">Signature date: today</div>
+                  <div id="planClientSignatureDateText" class="small">Signature date: today</div>
                   <div class="row-actions">
-                    <button class="secondary-btn" id="clearPlanClientSignatureBtn" type="button">Clear Client Signature</button>
+                    <button id="clearPlanClientSignatureBtn" class="secondary-btn" type="button">Clear Client Signature</button>
                   </div>
                 </div>
               </div>
@@ -523,15 +441,17 @@
                 <label class="label">Counselor Signature</label>
                 <div class="signature-wrap">
                   <canvas id="planCounselorSignatureCanvas" class="signature-canvas"></canvas>
-                  <div class="small" id="planCounselorSignatureDateText">Signature date: today</div>
+                  <div id="planCounselorSignatureDateText" class="small">Signature date: today</div>
                   <div class="row-actions">
-                    <button class="secondary-btn" id="clearPlanCounselorSignatureBtn" type="button">Clear Counselor Signature</button>
+                    <button id="clearPlanCounselorSignatureBtn" class="secondary-btn" type="button">Clear Counselor Signature</button>
                   </div>
                 </div>
               </div>
             </div>
 
-            <div class="row-actions"><button class="primary-btn" type="submit">Save Plan</button></div>
+            <div class="row-actions">
+              <button class="primary-btn" type="submit">Save Plan</button>
+            </div>
           </form>
 
           <div style="margin-top:22px;">
@@ -545,6 +465,7 @@
         <div class="card">
           <div class="section-title">Documents</div>
           <div class="section-subtitle">Metadata in Sheets, files in Drive</div>
+
           <form id="documentForm">
             <div class="grid grid-3">
               <div class="field"><label class="label">Client</label><select id="documentClient"></select></div>
@@ -567,9 +488,12 @@
 
             <div class="field"><label class="label">Title</label><input id="documentTitle"></div>
             <div class="field"><label class="label">Choose File</label><input id="documentFile" type="file" accept=".pdf,.doc,.docx,.jpg,.jpeg,.png,.txt"></div>
-            <div class="small">For best results, keep uploads small. Large files can fail in Apps Script uploads.</div>
+            <div class="small">For best results, keep uploads small.</div>
             <div class="field"><label class="label">Notes</label><textarea id="documentNotes"></textarea></div>
-            <div class="row-actions"><button class="primary-btn" type="submit">Save Document</button></div>
+
+            <div class="row-actions">
+              <button class="primary-btn" type="submit">Save Document</button>
+            </div>
           </form>
 
           <div style="margin-top:22px;">
@@ -584,8 +508,14 @@
           <div class="section-title">Reports</div>
           <div class="section-subtitle">Simple summaries</div>
           <div class="grid grid-2">
-            <div><div class="label">Clients by Status</div><div id="statusReport" class="mini-list"></div></div>
-            <div><div class="label">Primary Substances</div><div id="substanceReport" class="mini-list"></div></div>
+            <div>
+              <div class="label">Clients by Status</div>
+              <div id="statusReport" class="mini-list"></div>
+            </div>
+            <div>
+              <div class="label">Primary Substances</div>
+              <div id="substanceReport" class="mini-list"></div>
+            </div>
           </div>
         </div>
       </section>
@@ -593,18 +523,6 @@
   </div>
 
   <script>
-    const APP_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwS4yzK4DA96PBkqXddLSZHytYmUXv-W-NZKCIrVbTmdjbshY8cWfJGRjZqO0AZ3cSgeQ/exec';
-    const MAX_FILE_SIZE = 4.5 * 1024 * 1024;
-
-    let state = { clients: [], notes: [], plans: [], documents: [] };
-    let selectedClientId = null;
-
-    let clientSignaturePad = null;
-    let counselorSignaturePad = null;
-    let noteSignaturePad = null;
-    let planClientSignaturePad = null;
-    let planCounselorSignaturePad = null;
-
     const DIAGNOSIS_OPTIONS = [
       '',
       'F10.10 Alcohol Use Disorder, Mild',
@@ -665,7 +583,6 @@
       'Client will verbalize at least 3 negative consequences of substance use.',
       'Client will identify supportive people and recovery resources.',
       'Client will demonstrate refusal skills in high-risk situations.',
-      'Client will monitor cravings and high-risk emotions between sessions.',
       'Client will comply with drug testing / monitoring as required.'
     ];
 
@@ -683,9 +600,30 @@
       'Counselor will review progress toward goals and update the plan as needed.'
     ];
 
+    const APP_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwS4yzK4DA96PBkqXddLSZHytYmUXv-W-NZKCIrVbTmdjbshY8cWfJGRjZqO0AZ3cSgeQ/exec';
+    const MAX_FILE_SIZE = 4.5 * 1024 * 1024;
+
+    let state = { clients: [], notes: [], plans: [], documents: [] };
+    let selectedClientId = null;
+
+    let clientSignaturePad = null;
+    let counselorSignaturePad = null;
+    let noteSignaturePad = null;
+    let planClientSignaturePad = null;
+    let planCounselorSignaturePad = null;
+
     function setStatus(text) {
       const el = document.getElementById('serverStatus');
       if (el) el.textContent = text;
+    }
+
+    function escapeHtml(str) {
+      return String(str || '')
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#039;');
     }
 
     function formatDate(value) {
@@ -695,12 +633,12 @@
       if (str.includes('T')) {
         const plain = str.split('T')[0];
         const parts = plain.split('-');
-        if (parts.length === 3) return parts[1] + '/' + parts[2] + '/' + parts[0];
+        if (parts.length === 3) return `${parts[1]}/${parts[2]}/${parts[0]}`;
       }
 
       if (/^\d{4}-\d{2}-\d{2}$/.test(str)) {
         const parts = str.split('-');
-        return parts[1] + '/' + parts[2] + '/' + parts[0];
+        return `${parts[1]}/${parts[2]}/${parts[0]}`;
       }
 
       const d = new Date(str);
@@ -710,39 +648,25 @@
 
     function currentLocalDateString() {
       const now = new Date();
-      const year = now.getFullYear();
-      const month = String(now.getMonth() + 1).padStart(2, '0');
-      const day = String(now.getDate()).padStart(2, '0');
-      return `${year}-${month}-${day}`;
-    }
-
-    function escapeHtml(value) {
-      if (value === null || value === undefined) return '';
-      return String(value)
-        .replace(/&/g, '&amp;')
-        .replace(/</g, '&lt;')
-        .replace(/>/g, '&gt;')
-        .replace(/"/g, '&quot;')
-        .replace(/'/g, '&#39;');
+      const y = now.getFullYear();
+      const m = String(now.getMonth() + 1).padStart(2, '0');
+      const d = String(now.getDate()).padStart(2, '0');
+      return `${y}-${m}-${d}`;
     }
 
     function badgeClass(value) {
-      const normalized = String(value || '').toLowerCase();
-
-      if (['active', 'low', 'stable', 'completed'].includes(normalized)) return 'badge badge-green';
-      if (['moderate', 'pending', 'in progress', 'warning'].includes(normalized)) return 'badge badge-yellow';
-      if (['high', 'critical', 'inactive', 'discharged', 'overdue'].includes(normalized)) return 'badge badge-red';
-      if (['new', 'intake', 'assessment'].includes(normalized)) return 'badge badge-purple';
-
-      return 'badge';
+      if (value === 'High' || value === 'Discharged') return 'badge badge-red';
+      if (value === 'Moderate' || value === 'Pending') return 'badge badge-yellow';
+      if (value === 'Active' || value === 'Action' || value === 'Maintenance') return 'badge badge-green';
+      return 'badge badge-purple';
     }
 
     async function apiRequest(action, payload) {
       setStatus('Working...');
-      let res;
+      let response;
 
       try {
-        res = await fetch(APP_SCRIPT_URL, {
+        response = await fetch(APP_SCRIPT_URL, {
           method: 'POST',
           headers: { 'Content-Type': 'text/plain;charset=utf-8' },
           body: JSON.stringify({ action, payload })
@@ -752,52 +676,43 @@
         throw new Error('Network request failed.');
       }
 
-      let data;
-      const rawBody = await res.text();
+      const raw = await response.text();
+      let data = null;
 
       try {
-        data = JSON.parse(rawBody);
+        data = JSON.parse(raw);
       } catch (err) {
-        const trimmed = (rawBody || '').trim();
+        const trimmed = (raw || '').trim();
         const start = trimmed.indexOf('{');
         const end = trimmed.lastIndexOf('}');
-
         if (start !== -1 && end > start) {
           try {
             data = JSON.parse(trimmed.slice(start, end + 1));
-          } catch (_) {
-            data = null;
-          }
-        }
-
-        if (!data) {
-          setStatus('Error');
-          throw new Error('Server response was not valid JSON. Check Apps Script deployment and CORS settings.');
+          } catch (_) {}
         }
       }
 
-      if (!res.ok) {
-        const message = data && data.error ? data.error : ('Request failed with status ' + res.status + '.');
+      if (!data) {
         setStatus('Error');
-        throw new Error(message);
+        throw new Error('Server response was not valid JSON.');
       }
 
-      if (data && data.ok === false) {
+      if (!response.ok || !data.ok) {
         setStatus('Error');
-        throw new Error(data.error || 'Server reported an error.');
+        throw new Error(data.error || 'Request failed.');
       }
 
       setStatus('Ready');
-      return data && Object.prototype.hasOwnProperty.call(data, 'result') ? data.result : data;
+      return data.result;
     }
 
     function showView(viewId) {
-      document.querySelectorAll('main section').forEach(function(section) {
-        section.classList.add('hidden');
+      document.querySelectorAll('main section').forEach(function(el) {
+        el.classList.add('hidden');
       });
 
-      const activeView = document.getElementById(viewId);
-      if (activeView) activeView.classList.remove('hidden');
+      const section = document.getElementById(viewId);
+      if (section) section.classList.remove('hidden');
 
       document.querySelectorAll('.nav-btn').forEach(function(btn) {
         btn.classList.remove('active');
@@ -814,10 +729,9 @@
     function populateSelectOptions(selectId, options, labelText) {
       const select = document.getElementById(selectId);
       if (!select) return;
-
       select.innerHTML = options.map(function(opt) {
         const text = opt || ('Select ' + labelText);
-        return '<option value="' + escapeHtml(opt) + '">' + escapeHtml(text) + '</option>';
+        return `<option value="${escapeHtml(opt)}">${escapeHtml(text)}</option>`;
       }).join('');
     }
 
@@ -840,63 +754,59 @@
       const ctx = canvas.getContext('2d');
       let drawing = false;
       let signedAt = '';
-      let hasStroke = false;
 
       function setLabel() {
-        if (label) label.textContent = 'Signature date: ' + (signedAt ? formatDate(signedAt) : 'today');
+        label.textContent = 'Signature date: ' + (signedAt ? formatDate(signedAt) : 'today');
       }
 
-      function sizeCanvas() {
+      function resizeCanvas() {
         const rect = canvas.getBoundingClientRect();
         if (!rect.width || !rect.height) return;
 
         const ratio = window.devicePixelRatio || 1;
-        const existing = hasStroke && canvas.width && canvas.height ? canvas.toDataURL('image/png') : null;
+        const snapshot = canvas.width && canvas.height ? canvas.toDataURL('image/png') : null;
 
         canvas.width = Math.max(1, Math.floor(rect.width * ratio));
         canvas.height = Math.max(1, Math.floor(rect.height * ratio));
 
-        ctx.setTransform(1, 0, 0, 1, 0, 0);
+        ctx.setTransform(1,0,0,1,0,0);
         ctx.scale(ratio, ratio);
         ctx.lineWidth = 2;
         ctx.lineCap = 'round';
         ctx.lineJoin = 'round';
         ctx.strokeStyle = '#111827';
 
-        if (existing && existing !== 'data:,') {
+        if (snapshot && snapshot !== 'data:,') {
           const img = new Image();
           img.onload = function() {
             ctx.drawImage(img, 0, 0, rect.width, rect.height);
           };
-          img.src = existing;
+          img.src = snapshot;
         }
       }
 
-      function getPos(e) {
+      function getPoint(e) {
         const rect = canvas.getBoundingClientRect();
         return { x: e.clientX - rect.left, y: e.clientY - rect.top };
       }
 
       function start(e) {
-        if (canvas.width <= 1 || canvas.height <= 1) sizeCanvas();
         drawing = true;
         if (!signedAt) {
           signedAt = currentLocalDateString();
           setLabel();
         }
-        const pos = getPos(e);
+        const p = getPoint(e);
         ctx.beginPath();
-        ctx.moveTo(pos.x, pos.y);
-        if (e && typeof e.preventDefault === 'function') e.preventDefault();
+        ctx.moveTo(p.x, p.y);
+        e.preventDefault();
       }
 
       function move(e) {
         if (!drawing) return;
-        const pos = getPos(e);
-        ctx.lineTo(pos.x, pos.y);
+        const p = getPoint(e);
+        ctx.lineTo(p.x, p.y);
         ctx.stroke();
-        hasStroke = true;
-        if (e && typeof e.preventDefault === 'function') e.preventDefault();
         e.preventDefault();
       }
 
@@ -910,88 +820,58 @@
       canvas.addEventListener('pointerleave', end);
       canvas.addEventListener('pointercancel', end);
 
-      canvas.addEventListener('mousedown', start);
-      canvas.addEventListener('mousemove', move);
-      canvas.addEventListener('mouseup', end);
-      canvas.addEventListener('mouseleave', end);
+      clearBtn.addEventListener('click', function() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        signedAt = '';
+        setLabel();
+      });
 
-      canvas.addEventListener('touchstart', function(e) {
-        if (!e.touches || !e.touches[0]) return;
-        const t = e.touches[0];
-        start({
-          clientX: t.clientX,
-          clientY: t.clientY,
-          preventDefault: function() { e.preventDefault(); }
-        });
-      }, { passive: false });
-      canvas.addEventListener('touchmove', function(e) {
-        if (!e.touches || !e.touches[0]) return;
-        const t = e.touches[0];
-        move({
-          clientX: t.clientX,
-          clientY: t.clientY,
-          preventDefault: function() { e.preventDefault(); }
-        });
-        start(e.touches[0]);
-      }, { passive: false });
-      canvas.addEventListener('touchmove', function(e) {
-        if (!e.touches || !e.touches[0]) return;
-        move(e.touches[0]);
-      }, { passive: false });
-      canvas.addEventListener('touchend', end);
-      canvas.addEventListener('touchcancel', end);
-
-      if (clearBtn) {
-        clearBtn.addEventListener('click', function() {
-          ctx.clearRect(0, 0, canvas.width, canvas.height);
-          signedAt = '';
-          hasStroke = false;
-          setLabel();
-        });
-      }
-
-      window.addEventListener('resize', sizeCanvas);
+      window.addEventListener('resize', resizeCanvas);
       setLabel();
 
       return {
-        getDataUrl: function() { return hasStroke ? canvas.toDataURL('image/png') : ''; },
+        getDataUrl: function() { return canvas.toDataURL('image/png'); },
         getSignedAt: function() { return signedAt; },
         clear: function() {
           ctx.clearRect(0, 0, canvas.width, canvas.height);
           signedAt = '';
-          hasStroke = false;
           setLabel();
         },
-        resize: function() { sizeCanvas(); }
+        resize: function() { resizeCanvas(); }
       };
     }
 
     function populateClientSelects() {
       const options = state.clients.map(function(c) {
-        return '<option value="' + c.id + '">' + escapeHtml(c.name) + ' (' + escapeHtml(c.mrn) + ')</option>';
+        return `<option value="${c.id}">${escapeHtml(c.name)} (${escapeHtml(c.mrn)})</option>`;
       }).join('');
 
-      ['noteClient', 'planClient', 'documentClient'].forEach(function(id) {
+      ['noteClient','planClient','documentClient'].forEach(function(id) {
         const el = document.getElementById(id);
         if (el) el.innerHTML = options;
       });
     }
 
     function renderDashboard() {
-      document.getElementById('statClients').textContent = state.clients.filter(c => c.status === 'Active').length;
-      document.getElementById('statHighRisk').textContent = state.clients.filter(c => c.riskLevel === 'High').length;
+      document.getElementById('statClients').textContent = state.clients.filter(function(c){ return c.status === 'Active'; }).length;
+      document.getElementById('statHighRisk').textContent = state.clients.filter(function(c){ return c.riskLevel === 'High'; }).length;
       document.getElementById('statNotes').textContent = state.notes.length;
 
-      const recent = state.clients.slice().sort((a, b) => new Date(b.createdAt || 0) - new Date(a.createdAt || 0)).slice(0, 5);
+      const recent = state.clients.slice().sort(function(a,b){
+        return new Date(b.createdAt || 0) - new Date(a.createdAt || 0);
+      }).slice(0,5);
+
       document.getElementById('recentClients').innerHTML = recent.length
-        ? recent.map(c => '<div class="mini-item"><strong>' + escapeHtml(c.name) + '</strong><br><span class="small">' + escapeHtml(c.primarySubstance || '—') + ' • Added ' + escapeHtml(formatDate(c.createdAt)) + '</span></div>').join('')
+        ? recent.map(function(c){
+            return `<div class="mini-item"><strong>${escapeHtml(c.name)}</strong><br><span class="small">${escapeHtml(c.primarySubstance || '—')} • Added ${escapeHtml(formatDate(c.createdAt))}</span></div>`;
+          }).join('')
         : '<div class="empty">No client records yet.</div>';
     }
 
     function renderClients() {
       const q = (document.getElementById('clientSearch').value || '').toLowerCase();
       const results = state.clients.filter(function(c) {
-        return [c.name, c.mrn, c.primarySubstance, c.secondarySubstance, c.status, c.diagnosis].join(' ').toLowerCase().includes(q);
+        return [c.name,c.mrn,c.primarySubstance,c.secondarySubstance,c.status,c.diagnosis].join(' ').toLowerCase().includes(q);
       });
 
       const wrap = document.getElementById('clientList');
@@ -1002,19 +882,22 @@
         return;
       }
 
-      if (!selectedClientId || !results.some(c => c.id === selectedClientId)) {
+      if (!selectedClientId || !results.some(function(c){ return c.id === selectedClientId; })) {
         selectedClientId = results[0].id;
       }
 
       wrap.innerHTML = results.map(function(c) {
-        return '<div class="client-item" data-client-id="' + c.id + '">' +
-          '<div><div style="font-weight:700;">' + escapeHtml(c.name) + '</div><div class="small">' + escapeHtml(c.primarySubstance || 'No substance listed') + ' • ' + escapeHtml(c.status || '') + '</div></div>' +
-          '<div style="text-align:right;">' +
-            '<div class="' + badgeClass(c.status) + '">' + escapeHtml(c.status) + '</div>' +
-            '<div style="height:6px;"></div>' +
-            '<div class="' + badgeClass(c.riskLevel) + '">' + escapeHtml(c.riskLevel) + ' Risk</div>' +
-          '</div>' +
-        '</div>';
+        return `<div class="client-item" data-client-id="${c.id}">
+          <div>
+            <div style="font-weight:700;">${escapeHtml(c.name)}</div>
+            <div class="small">${escapeHtml(c.primarySubstance || 'No substance listed')} • ${escapeHtml(c.status || '')}</div>
+          </div>
+          <div style="text-align:right;">
+            <div class="${badgeClass(c.status)}">${escapeHtml(c.status)}</div>
+            <div style="height:6px;"></div>
+            <div class="${badgeClass(c.riskLevel)}">${escapeHtml(c.riskLevel)} Risk</div>
+          </div>
+        </div>`;
       }).join('');
 
       document.querySelectorAll('.client-item').forEach(function(item) {
@@ -1028,39 +911,41 @@
     }
 
     function renderClientDetail() {
-      const c = state.clients.find(x => x.id === selectedClientId);
+      const c = state.clients.find(function(x){ return x.id === selectedClientId; });
       const box = document.getElementById('clientDetail');
+
       if (!c) {
         box.innerHTML = '<div class="empty">Select a client to view details.</div>';
         return;
       }
 
-      const notes = state.notes.filter(n => n.clientId === c.id);
-      const plans = state.plans.filter(p => p.clientId === c.id);
-      const docs = state.documents.filter(d => d.clientId === c.id);
+      const notes = state.notes.filter(function(n){ return n.clientId === c.id; });
+      const plans = state.plans.filter(function(p){ return p.clientId === c.id; });
+      const docs = state.documents.filter(function(d){ return d.clientId === c.id; });
 
-      box.innerHTML =
-        '<div style="margin-bottom:12px;">' +
-          '<div style="font-size:22px; font-weight:700;">' + escapeHtml(c.name) + '</div>' +
-          '<div class="small">' + (c.dob ? 'DOB ' + escapeHtml(formatDate(c.dob)) : '') + '</div>' +
-        '</div>' +
-        '<div class="chip-row" style="margin-bottom:14px;">' +
-          '<div class="chip">Primary: ' + escapeHtml(c.primarySubstance || '—') + '</div>' +
-          '<div class="chip">Secondary: ' + escapeHtml(c.secondarySubstance || '—') + '</div>' +
-          '<div class="chip">Stage: ' + escapeHtml(c.stageOfChange || '—') + '</div>' +
-        '</div>' +
-        '<div class="mini-list">' +
-          '<div class="mini-item"><strong>Diagnosis:</strong><br>' + escapeHtml(c.diagnosis || '—') + '</div>' +
-          '<div class="mini-item"><strong>Presenting Problem:</strong><br>' + escapeHtml(c.presentingProblem || '—') + '</div>' +
-          '<div class="mini-item"><strong>Goals:</strong><br>' + escapeHtml(c.goals || '—') + '</div>' +
-          '<div class="mini-item"><strong>Supports:</strong><br>' + escapeHtml(c.supports || '—') + '</div>' +
-          '<div class="mini-item"><strong>Alerts / Safety Notes:</strong><br>' + escapeHtml(c.alerts || '—') + '</div>' +
-          '<div class="mini-item"><strong>Counts:</strong><br>' + notes.length + ' notes • ' + plans.length + ' plans • ' + docs.length + ' documents</div>' +
-        '</div>' +
-        '<div class="row-actions">' +
-          '<button class="primary-btn" id="exportIntakeBtn" type="button">Export Intake PDF</button>' +
-          '<button class="danger-btn" id="deleteClientBtn" type="button">Delete Client</button>' +
-        '</div>';
+      box.innerHTML = `
+        <div style="margin-bottom:12px;">
+          <div style="font-size:22px;font-weight:700;">${escapeHtml(c.name)}</div>
+          <div class="small">${c.dob ? 'DOB ' + escapeHtml(formatDate(c.dob)) : ''}</div>
+        </div>
+        <div class="chip-row" style="margin-bottom:14px;">
+          <div class="chip">Primary: ${escapeHtml(c.primarySubstance || '—')}</div>
+          <div class="chip">Secondary: ${escapeHtml(c.secondarySubstance || '—')}</div>
+          <div class="chip">Stage: ${escapeHtml(c.stageOfChange || '—')}</div>
+        </div>
+        <div class="mini-list">
+          <div class="mini-item"><strong>Diagnosis:</strong><br>${escapeHtml(c.diagnosis || '—')}</div>
+          <div class="mini-item"><strong>Presenting Problem:</strong><br>${escapeHtml(c.presentingProblem || '—')}</div>
+          <div class="mini-item"><strong>Goals:</strong><br>${escapeHtml(c.goals || '—')}</div>
+          <div class="mini-item"><strong>Supports:</strong><br>${escapeHtml(c.supports || '—')}</div>
+          <div class="mini-item"><strong>Alerts / Safety Notes:</strong><br>${escapeHtml(c.alerts || '—')}</div>
+          <div class="mini-item"><strong>Counts:</strong><br>${notes.length} notes • ${plans.length} plans • ${docs.length} documents</div>
+        </div>
+        <div class="row-actions">
+          <button id="exportIntakeBtn" class="primary-btn" type="button">Export Intake PDF</button>
+          <button id="deleteClientBtn" class="danger-btn" type="button">Delete Client</button>
+        </div>
+      `;
 
       document.getElementById('exportIntakeBtn').addEventListener('click', function() {
         exportClientIntakePDF(c.id);
@@ -1175,7 +1060,9 @@
     function fileToBase64(file) {
       return new Promise(function(resolve, reject) {
         const reader = new FileReader();
-        reader.onload = function() { resolve(reader.result.split(',')[1]); };
+        reader.onload = function() {
+          resolve(reader.result.split(',')[1]);
+        };
         reader.onerror = reject;
         reader.readAsDataURL(file);
       });
@@ -1191,7 +1078,7 @@
       }
 
       if (file.size > MAX_FILE_SIZE) {
-        alert('That file is too large for this upload method. Try a smaller PDF or image.');
+        alert('That file is too large for this upload method. Try a smaller file.');
         return;
       }
 
@@ -1220,30 +1107,33 @@
 
     function renderNotes() {
       const box = document.getElementById('notesList');
+
       if (!state.notes.length) {
         box.innerHTML = '<div class="empty">No notes saved yet.</div>';
         return;
       }
 
       box.innerHTML = state.notes.map(function(n) {
-        const c = state.clients.find(x => x.id === n.clientId);
-        return '<div class="mini-item">' +
-          '<div style="display:flex; justify-content:space-between; gap:10px; flex-wrap:wrap;">' +
-            '<strong>' + escapeHtml(c ? c.name : 'Unknown Client') + '</strong>' +
-            '<span class="small">' + escapeHtml(formatDate(n.date)) + ' • ' + escapeHtml(n.type) + '</span>' +
-          '</div>' +
-          '<div style="margin-top:8px;"><strong>Data:</strong> ' + escapeHtml(n.data) + '</div>' +
-          '<div style="margin-top:8px;"><strong>Assessment:</strong> ' + escapeHtml(n.assessment) + '</div>' +
-          '<div style="margin-top:8px;"><strong>Plan:</strong> ' + escapeHtml(n.plan) + '</div>' +
-          '<div class="row-actions">' +
-            '<button class="primary-btn export-note-btn" data-note-id="' + n.id + '" type="button">Export Note PDF</button>' +
-            '<button class="danger-btn delete-note-btn" data-note-id="' + n.id + '" type="button">Delete</button>' +
-          '</div>' +
-        '</div>';
+        const c = state.clients.find(function(x){ return x.id === n.clientId; });
+        return `<div class="mini-item">
+          <div style="display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;">
+            <strong>${escapeHtml(c ? c.name : 'Unknown Client')}</strong>
+            <span class="small">${escapeHtml(formatDate(n.date))} • ${escapeHtml(n.type)}</span>
+          </div>
+          <div style="margin-top:8px;"><strong>Data:</strong> ${escapeHtml(n.data)}</div>
+          <div style="margin-top:8px;"><strong>Assessment:</strong> ${escapeHtml(n.assessment)}</div>
+          <div style="margin-top:8px;"><strong>Plan:</strong> ${escapeHtml(n.plan)}</div>
+          <div class="row-actions">
+            <button class="primary-btn export-note-btn" data-note-id="${n.id}" type="button">Export Note PDF</button>
+            <button class="danger-btn delete-note-btn" data-note-id="${n.id}" type="button">Delete</button>
+          </div>
+        </div>`;
       }).join('');
 
       document.querySelectorAll('.export-note-btn').forEach(function(btn) {
-        btn.addEventListener('click', function() { exportNotePDF(btn.dataset.noteId); });
+        btn.addEventListener('click', function() {
+          exportNotePDF(btn.dataset.noteId);
+        });
       });
 
       document.querySelectorAll('.delete-note-btn').forEach(function(btn) {
@@ -1262,31 +1152,34 @@
 
     function renderPlans() {
       const box = document.getElementById('plansList');
+
       if (!state.plans.length) {
         box.innerHTML = '<div class="empty">No treatment plans saved yet.</div>';
         return;
       }
 
       box.innerHTML = state.plans.map(function(p) {
-        const c = state.clients.find(x => x.id === p.clientId);
-        return '<div class="mini-item">' +
-          '<div style="display:flex; justify-content:space-between; gap:10px; flex-wrap:wrap;">' +
-            '<strong>' + escapeHtml(c ? c.name : 'Unknown Client') + '</strong>' +
-            '<span class="small">Review: ' + escapeHtml(formatDate(p.reviewDate)) + '</span>' +
-          '</div>' +
-          '<div style="margin-top:8px;"><strong>Problem:</strong> ' + escapeHtml(p.problem) + '</div>' +
-          '<div style="margin-top:8px;"><strong>Goal:</strong> ' + escapeHtml(p.goal) + '</div>' +
-          '<div style="margin-top:8px;"><strong>Objectives:</strong> ' + escapeHtml(p.objectives) + '</div>' +
-          '<div style="margin-top:8px;"><strong>Interventions:</strong> ' + escapeHtml(p.interventions) + '</div>' +
-          '<div class="row-actions">' +
-            '<button class="primary-btn export-plan-btn" data-plan-id="' + p.id + '" type="button">Export Plan PDF</button>' +
-            '<button class="danger-btn delete-plan-btn" data-plan-id="' + p.id + '" type="button">Delete</button>' +
-          '</div>' +
-        '</div>';
+        const c = state.clients.find(function(x){ return x.id === p.clientId; });
+        return `<div class="mini-item">
+          <div style="display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;">
+            <strong>${escapeHtml(c ? c.name : 'Unknown Client')}</strong>
+            <span class="small">Review: ${escapeHtml(formatDate(p.reviewDate))}</span>
+          </div>
+          <div style="margin-top:8px;"><strong>Problem:</strong> ${escapeHtml(p.problem)}</div>
+          <div style="margin-top:8px;"><strong>Goal:</strong> ${escapeHtml(p.goal)}</div>
+          <div style="margin-top:8px;"><strong>Objectives:</strong> ${escapeHtml(p.objectives)}</div>
+          <div style="margin-top:8px;"><strong>Interventions:</strong> ${escapeHtml(p.interventions)}</div>
+          <div class="row-actions">
+            <button class="primary-btn export-plan-btn" data-plan-id="${p.id}" type="button">Export Plan PDF</button>
+            <button class="danger-btn delete-plan-btn" data-plan-id="${p.id}" type="button">Delete</button>
+          </div>
+        </div>`;
       }).join('');
 
       document.querySelectorAll('.export-plan-btn').forEach(function(btn) {
-        btn.addEventListener('click', function() { exportPlanPDF(btn.dataset.planId); });
+        btn.addEventListener('click', function() {
+          exportPlanPDF(btn.dataset.planId);
+        });
       });
 
       document.querySelectorAll('.delete-plan-btn').forEach(function(btn) {
@@ -1305,26 +1198,27 @@
 
     function renderDocuments() {
       const box = document.getElementById('documentsList');
+
       if (!state.documents.length) {
         box.innerHTML = '<div class="empty">No documents saved yet.</div>';
         return;
       }
 
       box.innerHTML = state.documents.map(function(d) {
-        const c = state.clients.find(x => x.id === d.clientId);
-        return '<div class="mini-item">' +
-          '<div style="display:flex; justify-content:space-between; gap:10px; flex-wrap:wrap;">' +
-            '<strong>' + escapeHtml(d.title || d.fileName) + '</strong>' +
-            '<span class="small">' + escapeHtml(formatDate(d.date)) + ' • ' + escapeHtml(d.type || '—') + '</span>' +
-          '</div>' +
-          '<div style="margin-top:8px;"><strong>Client:</strong> ' + escapeHtml(c ? c.name : 'Unknown Client') + '</div>' +
-          '<div style="margin-top:8px;"><strong>File:</strong> ' + escapeHtml(d.fileName || '—') + '</div>' +
-          '<div style="margin-top:8px;"><strong>Notes:</strong> ' + escapeHtml(d.notes || '—') + '</div>' +
-          '<div class="row-actions">' +
-            (d.fileUrl ? '<a class="primary-btn" style="text-decoration:none; display:inline-block;" href="' + escapeHtml(d.fileUrl) + '" target="_blank">Open</a>' : '') +
-            '<button class="danger-btn delete-document-btn" data-document-id="' + d.id + '" type="button">Delete</button>' +
-          '</div>' +
-        '</div>';
+        const c = state.clients.find(function(x){ return x.id === d.clientId; });
+        return `<div class="mini-item">
+          <div style="display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;">
+            <strong>${escapeHtml(d.title || d.fileName)}</strong>
+            <span class="small">${escapeHtml(formatDate(d.date))} • ${escapeHtml(d.type || '—')}</span>
+          </div>
+          <div style="margin-top:8px;"><strong>Client:</strong> ${escapeHtml(c ? c.name : 'Unknown Client')}</div>
+          <div style="margin-top:8px;"><strong>File:</strong> ${escapeHtml(d.fileName || '—')}</div>
+          <div style="margin-top:8px;"><strong>Notes:</strong> ${escapeHtml(d.notes || '—')}</div>
+          <div class="row-actions">
+            ${d.fileUrl ? `<a class="primary-btn" style="text-decoration:none;display:inline-block;" href="${escapeHtml(d.fileUrl)}" target="_blank">Open</a>` : ''}
+            <button class="danger-btn delete-document-btn" data-document-id="${d.id}" type="button">Delete</button>
+          </div>
+        </div>`;
       }).join('');
 
       document.querySelectorAll('.delete-document-btn').forEach(function(btn) {
@@ -1347,17 +1241,34 @@
 
       state.clients.forEach(function(c) {
         byStatus[c.status] = (byStatus[c.status] || 0) + 1;
-        const substance = c.primarySubstance || 'Unspecified';
-        bySubstance[substance] = (bySubstance[substance] || 0) + 1;
+        const sub = c.primarySubstance || 'Unspecified';
+        bySubstance[sub] = (bySubstance[sub] || 0) + 1;
       });
 
       document.getElementById('statusReport').innerHTML = Object.keys(byStatus).length
-        ? Object.keys(byStatus).map(k => '<div class="mini-item">' + escapeHtml(k) + ': <strong>' + byStatus[k] + '</strong></div>').join('')
+        ? Object.keys(byStatus).map(function(k){
+            return `<div class="mini-item">${escapeHtml(k)}: <strong>${byStatus[k]}</strong></div>`;
+          }).join('')
         : '<div class="empty">No data yet.</div>';
 
       document.getElementById('substanceReport').innerHTML = Object.keys(bySubstance).length
-        ? Object.keys(bySubstance).map(k => '<div class="mini-item">' + escapeHtml(k) + ': <strong>' + bySubstance[k] + '</strong></div>').join('')
+        ? Object.keys(bySubstance).map(function(k){
+            return `<div class="mini-item">${escapeHtml(k)}: <strong>${bySubstance[k]}</strong></div>`;
+          }).join('')
         : '<div class="empty">No data yet.</div>';
+    }
+
+    function buildSignatureBlock(title, signatureData, signatureDate) {
+      if (!signatureData) return '';
+      return '<h2>' + escapeHtml(title) + '</h2>' +
+        '<div class="box">' +
+          '<div class="signature-row">' +
+            '<div><img src="' + signatureData + '" style="max-width:320px;max-height:120px;"></div>' +
+            '<div class="signature-meta">' +
+              (signatureDate ? '<div><strong>Date Signed:</strong><br>' + escapeHtml(formatDate(signatureDate)) + '</div>' : '') +
+            '</div>' +
+          '</div>' +
+        '</div>';
     }
 
     function printDocument(title, bodyHtml) {
@@ -1385,24 +1296,11 @@
       w.document.write(html);
       w.document.close();
       w.focus();
-      setTimeout(function() { w.print(); }, 250);
-    }
-
-    function buildSignatureBlock(title, signatureData, signatureDate) {
-      if (!signatureData) return '';
-      return '<h2>' + escapeHtml(title) + '</h2>' +
-        '<div class="box">' +
-          '<div class="signature-row">' +
-            '<div><img src="' + signatureData + '" style="max-width:320px; max-height:120px;"></div>' +
-            '<div class="signature-meta">' +
-              (signatureDate ? '<div><strong>Date Signed:</strong><br>' + escapeHtml(formatDate(signatureDate)) + '</div>' : '') +
-            '</div>' +
-          '</div>' +
-        '</div>';
+      setTimeout(function(){ w.print(); }, 250);
     }
 
     function exportClientIntakePDF(clientId) {
-      const c = state.clients.find(x => x.id === clientId);
+      const c = state.clients.find(function(x){ return x.id === clientId; });
       if (!c) return;
 
       const html =
@@ -1433,9 +1331,9 @@
     }
 
     function exportNotePDF(noteId) {
-      const n = state.notes.find(x => x.id === noteId);
+      const n = state.notes.find(function(x){ return x.id === noteId; });
       if (!n) return;
-      const c = state.clients.find(x => x.id === n.clientId);
+      const c = state.clients.find(function(x){ return x.id === n.clientId; });
 
       const html =
         '<h1>Progress Note</h1>' +
@@ -1451,9 +1349,9 @@
     }
 
     function exportPlanPDF(planId) {
-      const p = state.plans.find(x => x.id === planId);
+      const p = state.plans.find(function(x){ return x.id === planId; });
       if (!p) return;
-      const c = state.clients.find(x => x.id === p.clientId);
+      const c = state.clients.find(function(x){ return x.id === p.clientId; });
 
       const html =
         '<h1>Treatment Plan</h1>' +
@@ -1493,22 +1391,28 @@
     }
 
     document.querySelectorAll('.nav-btn').forEach(function(btn) {
-      btn.addEventListener('click', function() { showView(btn.dataset.view); });
+      btn.addEventListener('click', function() {
+        showView(btn.dataset.view);
+      });
     });
 
     document.getElementById('reloadBtn').addEventListener('click', loadAllDataFromServer);
     document.getElementById('clientSearch').addEventListener('input', renderClients);
 
+    document.getElementById('logoutBtn').addEventListener('click', function() {
+      alert('Login has been removed.');
+    });
+
     document.getElementById('newClientForm').addEventListener('submit', saveClient);
+    document.getElementById('noteForm').addEventListener('submit', saveNote);
+    document.getElementById('planForm').addEventListener('submit', savePlan);
+    document.getElementById('documentForm').addEventListener('submit', saveDocument);
+
     document.getElementById('clearClientFormBtn').addEventListener('click', function() {
       document.getElementById('newClientForm').reset();
       if (clientSignaturePad) clientSignaturePad.clear();
       if (counselorSignaturePad) counselorSignaturePad.clear();
     });
-
-    document.getElementById('noteForm').addEventListener('submit', saveNote);
-    document.getElementById('planForm').addEventListener('submit', savePlan);
-    document.getElementById('documentForm').addEventListener('submit', saveDocument);
 
     populateSelectOptions('diagnosis', DIAGNOSIS_OPTIONS, 'diagnosis');
     populateSelectOptions('planProblemSelect', PLAN_PROBLEM_OPTIONS, 'problem');
