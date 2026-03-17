@@ -716,6 +716,16 @@
       return `${year}-${month}-${day}`;
     }
 
+    function escapeHtml(value) {
+      if (value === null || value === undefined) return '';
+      return String(value)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#39;');
+    }
+
     async function apiRequest(action, payload) {
       setStatus('Working...');
       let res;
@@ -819,6 +829,7 @@
       const ctx = canvas.getContext('2d');
       let drawing = false;
       let signedAt = '';
+      let hasStroke = false;
 
       function setLabel() {
         if (label) label.textContent = 'Signature date: ' + (signedAt ? formatDate(signedAt) : 'today');
@@ -829,7 +840,7 @@
         if (!rect.width || !rect.height) return;
 
         const ratio = window.devicePixelRatio || 1;
-        const existing = canvas.width && canvas.height ? canvas.toDataURL('image/png') : null;
+        const existing = hasStroke && canvas.width && canvas.height ? canvas.toDataURL('image/png') : null;
 
         canvas.width = Math.max(1, Math.floor(rect.width * ratio));
         canvas.height = Math.max(1, Math.floor(rect.height * ratio));
@@ -856,6 +867,7 @@
       }
 
       function start(e) {
+        if (canvas.width <= 1 || canvas.height <= 1) sizeCanvas();
         drawing = true;
         if (!signedAt) {
           signedAt = currentLocalDateString();
@@ -864,7 +876,7 @@
         const pos = getPos(e);
         ctx.beginPath();
         ctx.moveTo(pos.x, pos.y);
-        e.preventDefault();
+        if (e && typeof e.preventDefault === 'function') e.preventDefault();
       }
 
       function move(e) {
@@ -872,7 +884,8 @@
         const pos = getPos(e);
         ctx.lineTo(pos.x, pos.y);
         ctx.stroke();
-        e.preventDefault();
+        hasStroke = true;
+        if (e && typeof e.preventDefault === 'function') e.preventDefault();
       }
 
       function end() {
@@ -885,21 +898,51 @@
       canvas.addEventListener('pointerleave', end);
       canvas.addEventListener('pointercancel', end);
 
-      clearBtn.addEventListener('click', function() {
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
-        signedAt = '';
-        setLabel();
-      });
+      canvas.addEventListener('mousedown', start);
+      canvas.addEventListener('mousemove', move);
+      canvas.addEventListener('mouseup', end);
+      canvas.addEventListener('mouseleave', end);
+
+      canvas.addEventListener('touchstart', function(e) {
+        if (!e.touches || !e.touches[0]) return;
+        const t = e.touches[0];
+        start({
+          clientX: t.clientX,
+          clientY: t.clientY,
+          preventDefault: function() { e.preventDefault(); }
+        });
+      }, { passive: false });
+      canvas.addEventListener('touchmove', function(e) {
+        if (!e.touches || !e.touches[0]) return;
+        const t = e.touches[0];
+        move({
+          clientX: t.clientX,
+          clientY: t.clientY,
+          preventDefault: function() { e.preventDefault(); }
+        });
+      }, { passive: false });
+      canvas.addEventListener('touchend', end);
+      canvas.addEventListener('touchcancel', end);
+
+      if (clearBtn) {
+        clearBtn.addEventListener('click', function() {
+          ctx.clearRect(0, 0, canvas.width, canvas.height);
+          signedAt = '';
+          hasStroke = false;
+          setLabel();
+        });
+      }
 
       window.addEventListener('resize', sizeCanvas);
       setLabel();
 
       return {
-        getDataUrl: function() { return canvas.toDataURL('image/png'); },
+        getDataUrl: function() { return hasStroke ? canvas.toDataURL('image/png') : ''; },
         getSignedAt: function() { return signedAt; },
         clear: function() {
           ctx.clearRect(0, 0, canvas.width, canvas.height);
           signedAt = '';
+          hasStroke = false;
           setLabel();
         },
         resize: function() { sizeCanvas(); }
