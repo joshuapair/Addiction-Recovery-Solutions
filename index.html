@@ -849,13 +849,40 @@
           setStatus('Error');
           throw new Error('Server response was not valid JSON. Check Apps Script deployment and CORS settings.');
         }
+      }
+
+      if (!res.ok) {
+        const message = data && data.error ? data.error : ('Request failed with status ' + res.status + '.');
+        setStatus('Error');
+        throw new Error(message);
+      }
+
+      if (data && data.ok === false) {
+        setStatus('Error');
+        throw new Error(data.error || 'Server reported an error.');
+      }
+
+      setStatus('Ready');
+      return data && Object.prototype.hasOwnProperty.call(data, 'result') ? data.result : data;
+    }
+
+    function showView(viewId) {
+      document.querySelectorAll('main section').forEach(function(section) {
+        section.classList.add('hidden');
+      });
+
+      const activeView = document.getElementById(viewId);
+      if (activeView) activeView.classList.remove('hidden');
+
+      document.querySelectorAll('.nav-btn').forEach(function(btn) {
+        btn.classList.remove('active');
         if (btn.dataset.view === viewId) btn.classList.add('active');
       });
 
       requestAnimationFrame(function() {
         [clientSignaturePad, counselorSignaturePad, noteSignaturePad, planClientSignaturePad, planCounselorSignaturePad]
           .filter(Boolean)
-          .forEach(pad => pad.resize());
+          .forEach(function(pad) { pad.resize(); });
       });
     }
 
