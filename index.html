@@ -84,31 +84,18 @@
       border: 1px solid var(--border);
     }
 
-    .nav-btn.active, .nav-btn:hover {
+    .nav-btn.active,
+    .nav-btn:hover {
       background: rgba(124, 58, 237, 0.18);
       border-color: var(--accent);
     }
 
-    .primary-btn {
-      background: var(--accent);
-      color: white;
-    }
-
+    .primary-btn { background: var(--accent); color: white; }
     .primary-btn:hover { background: #6d28d9; }
+    .secondary-btn { background: #e5e7eb; color: #111827; }
+    .danger-btn { background: var(--danger); color: white; }
 
-    .secondary-btn {
-      background: #e5e7eb;
-      color: #111827;
-    }
-
-    .danger-btn {
-      background: var(--danger);
-      color: white;
-    }
-
-    .content {
-      padding: 28px;
-    }
+    .content { padding: 28px; }
 
     .toolbar {
       display: flex;
@@ -325,7 +312,6 @@
   </style>
 </head>
 <body>
-
   <div id="loginScreen" class="login-screen">
     <div class="login-card">
       <h1 style="margin:0 0 8px; font-size:28px;">Recovery EHR Login</h1>
@@ -352,7 +338,7 @@
       <div class="subtitle">Google-backed prototype</div>
 
       <div class="warning">
-        This version saves to your Google Apps Script backend. The built-in HTML login is only a simple gate and is not strong security for sensitive records.
+        Intake and treatment plans include client and counselor signatures. Session dates and signature dates are stored separately.
       </div>
 
       <button class="nav-btn active" data-view="dashboardView" type="button">Dashboard</button>
@@ -372,9 +358,7 @@
     <main class="content">
       <section id="dashboardView">
         <div class="toolbar">
-          <div class="left">
-            <h1 style="margin:0; font-size:30px;">Dashboard</h1>
-          </div>
+          <div class="left"><h1 style="margin:0; font-size:30px;">Dashboard</h1></div>
         </div>
         <div class="grid grid-3">
           <div class="card"><div class="section-title" id="statClients">0</div><div class="section-subtitle">Active Clients</div></div>
@@ -390,9 +374,7 @@
           <div class="card">
             <div class="section-title">Status</div>
             <div class="section-subtitle">Current app state</div>
-            <div class="mini-list">
-              <div class="mini-item" id="serverStatus">Ready</div>
-            </div>
+            <div class="mini-list"><div class="mini-item" id="serverStatus">Ready</div></div>
           </div>
         </div>
       </section>
@@ -421,7 +403,7 @@
       <section id="newClientView" class="hidden">
         <div class="card">
           <div class="section-title">New Intake</div>
-          <div class="section-subtitle">Save directly to Google Sheets</div>
+          <div class="section-subtitle">Includes client and counselor signature</div>
           <form id="newClientForm">
             <div class="grid grid-2">
               <div class="field"><label class="label">Client Name</label><input id="name" required></div>
@@ -432,10 +414,7 @@
               <div class="field"><label class="label">Admission Date</label><input id="admissionDate" type="date"></div>
               <div class="field"><label class="label">Primary Substance</label><input id="primarySubstance"></div>
               <div class="field"><label class="label">Secondary Substance</label><input id="secondarySubstance"></div>
-              <div class="field">
-                <label class="label">Diagnosis</label>
-                <select id="diagnosis"></select>
-              </div>
+              <div class="field"><label class="label">Diagnosis</label><select id="diagnosis"></select></div>
               <div class="field">
                 <label class="label">Stage of Change</label>
                 <select id="stageOfChange">
@@ -470,13 +449,26 @@
             <div class="field"><label class="label">Supports / Recovery Capital</label><textarea id="supports"></textarea></div>
             <div class="field"><label class="label">Alerts / Safety Notes</label><textarea id="alerts"></textarea></div>
 
-            <div class="field">
-              <label class="label">Client Signature</label>
-              <div class="signature-wrap">
-                <canvas id="clientSignatureCanvas" class="signature-canvas"></canvas>
-                <div class="small" id="clientSignatureDateText">Signature date: today</div>
-                <div class="row-actions">
-                  <button class="secondary-btn" id="clearClientSignatureBtn" type="button">Clear Signature</button>
+            <div class="grid grid-2">
+              <div class="field">
+                <label class="label">Client Signature</label>
+                <div class="signature-wrap">
+                  <canvas id="clientSignatureCanvas" class="signature-canvas"></canvas>
+                  <div class="small" id="clientSignatureDateText">Signature date: today</div>
+                  <div class="row-actions">
+                    <button class="secondary-btn" id="clearClientSignatureBtn" type="button">Clear Client Signature</button>
+                  </div>
+                </div>
+              </div>
+
+              <div class="field">
+                <label class="label">Counselor Signature</label>
+                <div class="signature-wrap">
+                  <canvas id="counselorSignatureCanvas" class="signature-canvas"></canvas>
+                  <div class="small" id="counselorSignatureDateText">Signature date: today</div>
+                  <div class="row-actions">
+                    <button class="secondary-btn" id="clearCounselorSignatureBtn" type="button">Clear Counselor Signature</button>
+                  </div>
                 </div>
               </div>
             </div>
@@ -492,7 +484,7 @@
       <section id="notesView" class="hidden">
         <div class="card">
           <div class="section-title">Session Notes</div>
-          <div class="section-subtitle">Saved to Google Sheets</div>
+          <div class="section-subtitle">Single counselor signature</div>
           <form id="noteForm">
             <div class="grid grid-3">
               <div class="field"><label class="label">Client</label><select id="noteClient"></select></div>
@@ -524,9 +516,7 @@
               </div>
             </div>
 
-            <div class="row-actions">
-              <button class="primary-btn" type="submit">Save Note</button>
-            </div>
+            <div class="row-actions"><button class="primary-btn" type="submit">Save Note</button></div>
           </form>
 
           <div style="margin-top:22px;">
@@ -539,63 +529,47 @@
       <section id="plansView" class="hidden">
         <div class="card">
           <div class="section-title">Treatment Plans</div>
-          <div class="section-subtitle">Saved to Google Sheets</div>
+          <div class="section-subtitle">Includes client and counselor signature</div>
           <form id="planForm">
             <div class="grid grid-2">
               <div class="field"><label class="label">Client</label><select id="planClient"></select></div>
               <div class="field"><label class="label">Review Date</label><input id="planReviewDate" type="date"></div>
             </div>
 
-            <div class="field">
-              <label class="label">Problem Template</label>
-              <select id="planProblemSelect"></select>
-            </div>
-            <div class="field">
-              <label class="label">Problem</label>
-              <textarea id="planProblem" required></textarea>
-            </div>
+            <div class="field"><label class="label">Problem Template</label><select id="planProblemSelect"></select></div>
+            <div class="field"><label class="label">Problem</label><textarea id="planProblem" required></textarea></div>
+            <div class="field"><label class="label">Goal Template</label><select id="planGoalSelect"></select></div>
+            <div class="field"><label class="label">Goal</label><textarea id="planGoal" required></textarea></div>
+            <div class="field"><label class="label">Objective Template</label><select id="planObjectivesSelect"></select></div>
+            <div class="field"><label class="label">Objectives</label><textarea id="planObjectives" required></textarea></div>
+            <div class="field"><label class="label">Intervention Template</label><select id="planInterventionsSelect"></select></div>
+            <div class="field"><label class="label">Interventions</label><textarea id="planInterventions" required></textarea></div>
 
-            <div class="field">
-              <label class="label">Goal Template</label>
-              <select id="planGoalSelect"></select>
-            </div>
-            <div class="field">
-              <label class="label">Goal</label>
-              <textarea id="planGoal" required></textarea>
-            </div>
+            <div class="grid grid-2">
+              <div class="field">
+                <label class="label">Client Signature</label>
+                <div class="signature-wrap">
+                  <canvas id="planClientSignatureCanvas" class="signature-canvas"></canvas>
+                  <div class="small" id="planClientSignatureDateText">Signature date: today</div>
+                  <div class="row-actions">
+                    <button class="secondary-btn" id="clearPlanClientSignatureBtn" type="button">Clear Client Signature</button>
+                  </div>
+                </div>
+              </div>
 
-            <div class="field">
-              <label class="label">Objective Template</label>
-              <select id="planObjectivesSelect"></select>
-            </div>
-            <div class="field">
-              <label class="label">Objectives</label>
-              <textarea id="planObjectives" required></textarea>
-            </div>
-
-            <div class="field">
-              <label class="label">Intervention Template</label>
-              <select id="planInterventionsSelect"></select>
-            </div>
-            <div class="field">
-              <label class="label">Interventions</label>
-              <textarea id="planInterventions" required></textarea>
-            </div>
-
-            <div class="field">
-              <label class="label">Counselor Signature</label>
-              <div class="signature-wrap">
-                <canvas id="planSignatureCanvas" class="signature-canvas"></canvas>
-                <div class="small" id="planSignatureDateText">Signature date: today</div>
-                <div class="row-actions">
-                  <button class="secondary-btn" id="clearPlanSignatureBtn" type="button">Clear Signature</button>
+              <div class="field">
+                <label class="label">Counselor Signature</label>
+                <div class="signature-wrap">
+                  <canvas id="planCounselorSignatureCanvas" class="signature-canvas"></canvas>
+                  <div class="small" id="planCounselorSignatureDateText">Signature date: today</div>
+                  <div class="row-actions">
+                    <button class="secondary-btn" id="clearPlanCounselorSignatureBtn" type="button">Clear Counselor Signature</button>
+                  </div>
                 </div>
               </div>
             </div>
 
-            <div class="row-actions">
-              <button class="primary-btn" type="submit">Save Plan</button>
-            </div>
+            <div class="row-actions"><button class="primary-btn" type="submit">Save Plan</button></div>
           </form>
 
           <div style="margin-top:22px;">
@@ -633,10 +607,7 @@
             <div class="field"><label class="label">Choose File</label><input id="documentFile" type="file" accept=".pdf,.doc,.docx,.jpg,.jpeg,.png,.txt"></div>
             <div class="small">For best results, keep uploads small. Large files can fail in Apps Script uploads.</div>
             <div class="field"><label class="label">Notes</label><textarea id="documentNotes"></textarea></div>
-
-            <div class="row-actions">
-              <button class="primary-btn" type="submit">Save Document</button>
-            </div>
+            <div class="row-actions"><button class="primary-btn" type="submit">Save Document</button></div>
           </form>
 
           <div style="margin-top:22px;">
@@ -651,14 +622,8 @@
           <div class="section-title">Reports</div>
           <div class="section-subtitle">Simple summaries</div>
           <div class="grid grid-2">
-            <div>
-              <div class="label">Clients by Status</div>
-              <div id="statusReport" class="mini-list"></div>
-            </div>
-            <div>
-              <div class="label">Primary Substances</div>
-              <div id="substanceReport" class="mini-list"></div>
-            </div>
+            <div><div class="label">Clients by Status</div><div id="statusReport" class="mini-list"></div></div>
+            <div><div class="label">Primary Substances</div><div id="substanceReport" class="mini-list"></div></div>
           </div>
         </div>
       </section>
@@ -666,24 +631,20 @@
   </div>
 
   <script>
-    const APP_SCRIPT_URL = 'https://script.google.com/a/macros/addictionrecoverysolutions.org/s/AKfycbwS4yzK4DA96PBkqXddLSZHytYmUXv-W-NZKCIrVbTmdjbshY8cWfJGRjZqO0AZ3cSgeQ/exec';
+    const APP_SCRIPT_URL = 'YOUR_WEB_APP_URL_HERE';
     const MAX_FILE_SIZE = 4.5 * 1024 * 1024;
-
     const LOCAL_USERNAME = 'joshuapair';
     const LOCAL_PASSWORD = 'Annabelle_89';
     const LOGIN_STORAGE_KEY = 'recovery-ehr-login-ok';
 
-    let state = {
-      clients: [],
-      notes: [],
-      plans: [],
-      documents: []
-    };
-
+    let state = { clients: [], notes: [], plans: [], documents: [] };
     let selectedClientId = null;
+
     let clientSignaturePad = null;
+    let counselorSignaturePad = null;
     let noteSignaturePad = null;
-    let planSignaturePad = null;
+    let planClientSignaturePad = null;
+    let planCounselorSignaturePad = null;
 
     const DIAGNOSIS_OPTIONS = [
       '',
@@ -770,14 +731,12 @@
 
     function formatDate(value) {
       if (!value) return '—';
-
       const str = String(value);
 
       if (str.includes('T')) {
         const plain = str.split('T')[0];
         const parts = plain.split('-');
         if (parts.length === 3) return parts[1] + '/' + parts[2] + '/' + parts[0];
-        return plain;
       }
 
       if (/^\d{4}-\d{2}-\d{2}$/.test(str)) {
@@ -787,11 +746,10 @@
 
       const d = new Date(str);
       if (!isNaN(d.getTime())) return d.toLocaleDateString();
-
       return str;
     }
 
-    function todayDateString() {
+    function currentLocalDateString() {
       const now = new Date();
       const year = now.getFullYear();
       const month = String(now.getMonth() + 1).padStart(2, '0');
@@ -826,14 +784,12 @@
 
     function initLogin() {
       const ok = sessionStorage.getItem(LOGIN_STORAGE_KEY) === 'yes';
-      if (ok) showApp();
-      else showLogin();
+      if (ok) showApp(); else showLogin();
 
       document.getElementById('loginBtn').addEventListener('click', attemptLogin);
       document.getElementById('loginPassword').addEventListener('keydown', function(e) {
         if (e.key === 'Enter') attemptLogin();
       });
-
       document.getElementById('logoutBtn').addEventListener('click', function() {
         sessionStorage.removeItem(LOGIN_STORAGE_KEY);
         showLogin();
@@ -842,8 +798,8 @@
 
     async function apiRequest(action, payload) {
       setStatus('Working...');
-
       let res;
+
       try {
         res = await fetch(APP_SCRIPT_URL, {
           method: 'POST',
@@ -889,10 +845,7 @@
     }
 
     function showView(viewId) {
-      document.querySelectorAll('main section').forEach(function(el) {
-        el.classList.add('hidden');
-      });
-
+      document.querySelectorAll('main section').forEach(el => el.classList.add('hidden'));
       const section = document.getElementById(viewId);
       if (section) section.classList.remove('hidden');
 
@@ -902,9 +855,9 @@
       });
 
       requestAnimationFrame(function() {
-        if (viewId === 'newClientView' && clientSignaturePad) clientSignaturePad.resize();
-        if (viewId === 'notesView' && noteSignaturePad) noteSignaturePad.resize();
-        if (viewId === 'plansView' && planSignaturePad) planSignaturePad.resize();
+        [clientSignaturePad, counselorSignaturePad, noteSignaturePad, planClientSignaturePad, planCounselorSignaturePad]
+          .filter(Boolean)
+          .forEach(pad => pad.resize());
       });
     }
 
@@ -938,14 +891,6 @@
       let drawing = false;
       let signedAt = '';
 
-      function currentLocalDateString() {
-        const now = new Date();
-        const year = now.getFullYear();
-        const month = String(now.getMonth() + 1).padStart(2, '0');
-        const day = String(now.getDate()).padStart(2, '0');
-        return `${year}-${month}-${day}`;
-      }
-
       function setLabel() {
         if (label) label.textContent = 'Signature date: ' + (signedAt ? formatDate(signedAt) : 'today');
       }
@@ -955,7 +900,7 @@
         if (!rect.width || !rect.height) return;
 
         const ratio = window.devicePixelRatio || 1;
-        const imageData = canvas.width && canvas.height ? canvas.toDataURL('image/png') : null;
+        const existing = canvas.width && canvas.height ? canvas.toDataURL('image/png') : null;
 
         canvas.width = Math.max(1, Math.floor(rect.width * ratio));
         canvas.height = Math.max(1, Math.floor(rect.height * ratio));
@@ -967,31 +912,26 @@
         ctx.lineJoin = 'round';
         ctx.strokeStyle = '#111827';
 
-        if (imageData && imageData !== 'data:,') {
+        if (existing && existing !== 'data:,') {
           const img = new Image();
           img.onload = function() {
             ctx.drawImage(img, 0, 0, rect.width, rect.height);
           };
-          img.src = imageData;
+          img.src = existing;
         }
       }
 
       function getPos(e) {
         const rect = canvas.getBoundingClientRect();
-        return {
-          x: e.clientX - rect.left,
-          y: e.clientY - rect.top
-        };
+        return { x: e.clientX - rect.left, y: e.clientY - rect.top };
       }
 
       function start(e) {
         drawing = true;
-
         if (!signedAt) {
           signedAt = currentLocalDateString();
           setLabel();
         }
-
         const pos = getPos(e);
         ctx.beginPath();
         ctx.moveTo(pos.x, pos.y);
@@ -1016,32 +956,24 @@
       canvas.addEventListener('pointerleave', end);
       canvas.addEventListener('pointercancel', end);
 
-      if (clearBtn) {
-        clearBtn.addEventListener('click', function() {
-          ctx.clearRect(0, 0, canvas.width, canvas.height);
-          signedAt = '';
-          setLabel();
-        });
-      }
+      clearBtn.addEventListener('click', function() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        signedAt = '';
+        setLabel();
+      });
 
       window.addEventListener('resize', sizeCanvas);
       setLabel();
 
       return {
-        getDataUrl: function() {
-          return canvas.toDataURL('image/png');
-        },
-        getSignedAt: function() {
-          return signedAt;
-        },
+        getDataUrl: function() { return canvas.toDataURL('image/png'); },
+        getSignedAt: function() { return signedAt; },
         clear: function() {
           ctx.clearRect(0, 0, canvas.width, canvas.height);
           signedAt = '';
           setLabel();
         },
-        resize: function() {
-          sizeCanvas();
-        }
+        resize: function() { sizeCanvas(); }
       };
     }
 
@@ -1050,49 +982,27 @@
         return '<option value="' + c.id + '">' + escapeHtml(c.name) + ' (' + escapeHtml(c.mrn) + ')</option>';
       }).join('');
 
-      const noteClient = document.getElementById('noteClient');
-      const planClient = document.getElementById('planClient');
-      const documentClient = document.getElementById('documentClient');
-
-      if (noteClient) noteClient.innerHTML = options;
-      if (planClient) planClient.innerHTML = options;
-      if (documentClient) documentClient.innerHTML = options;
+      ['noteClient', 'planClient', 'documentClient'].forEach(function(id) {
+        const el = document.getElementById(id);
+        if (el) el.innerHTML = options;
+      });
     }
 
     function renderDashboard() {
-      document.getElementById('statClients').textContent = state.clients.filter(function(c) {
-        return c.status === 'Active';
-      }).length;
-
-      document.getElementById('statHighRisk').textContent = state.clients.filter(function(c) {
-        return c.riskLevel === 'High';
-      }).length;
-
+      document.getElementById('statClients').textContent = state.clients.filter(c => c.status === 'Active').length;
+      document.getElementById('statHighRisk').textContent = state.clients.filter(c => c.riskLevel === 'High').length;
       document.getElementById('statNotes').textContent = state.notes.length;
 
-      const recent = state.clients.slice().sort(function(a, b) {
-        return new Date(b.createdAt || 0) - new Date(a.createdAt || 0);
-      }).slice(0, 5);
-
+      const recent = state.clients.slice().sort((a, b) => new Date(b.createdAt || 0) - new Date(a.createdAt || 0)).slice(0, 5);
       document.getElementById('recentClients').innerHTML = recent.length
-        ? recent.map(function(c) {
-            return '<div class="mini-item"><strong>' + escapeHtml(c.name) + '</strong><br><span class="small">' + escapeHtml(c.primarySubstance || '—') + ' • Added ' + escapeHtml(formatDate(c.createdAt)) + '</span></div>';
-          }).join('')
+        ? recent.map(c => '<div class="mini-item"><strong>' + escapeHtml(c.name) + '</strong><br><span class="small">' + escapeHtml(c.primarySubstance || '—') + ' • Added ' + escapeHtml(formatDate(c.createdAt)) + '</span></div>').join('')
         : '<div class="empty">No client records yet.</div>';
     }
 
     function renderClients() {
       const q = (document.getElementById('clientSearch').value || '').toLowerCase();
-
       const results = state.clients.filter(function(c) {
-        return [
-          c.name,
-          c.mrn,
-          c.primarySubstance,
-          c.secondarySubstance,
-          c.status,
-          c.diagnosis
-        ].join(' ').toLowerCase().includes(q);
+        return [c.name, c.mrn, c.primarySubstance, c.secondarySubstance, c.status, c.diagnosis].join(' ').toLowerCase().includes(q);
       });
 
       const wrap = document.getElementById('clientList');
@@ -1103,7 +1013,7 @@
         return;
       }
 
-      if (!selectedClientId || !results.some(function(c) { return c.id === selectedClientId; })) {
+      if (!selectedClientId || !results.some(c => c.id === selectedClientId)) {
         selectedClientId = results[0].id;
       }
 
@@ -1129,17 +1039,16 @@
     }
 
     function renderClientDetail() {
-      const c = state.clients.find(function(x) { return x.id === selectedClientId; });
+      const c = state.clients.find(x => x.id === selectedClientId);
       const box = document.getElementById('clientDetail');
-
       if (!c) {
         box.innerHTML = '<div class="empty">Select a client to view details.</div>';
         return;
       }
 
-      const notes = state.notes.filter(function(n) { return n.clientId === c.id; });
-      const plans = state.plans.filter(function(p) { return p.clientId === c.id; });
-      const docs = state.documents.filter(function(d) { return d.clientId === c.id; });
+      const notes = state.notes.filter(n => n.clientId === c.id);
+      const plans = state.plans.filter(p => p.clientId === c.id);
+      const docs = state.documents.filter(d => d.clientId === c.id);
 
       box.innerHTML =
         '<div style="margin-bottom:12px;">' +
@@ -1201,14 +1110,17 @@
         goals: document.getElementById('goals').value,
         supports: document.getElementById('supports').value,
         alerts: document.getElementById('alerts').value,
-        signature: clientSignaturePad ? clientSignaturePad.getDataUrl() : '',
-        signatureDate: clientSignaturePad ? clientSignaturePad.getSignedAt() : ''
+        clientSignature: clientSignaturePad ? clientSignaturePad.getDataUrl() : '',
+        clientSignatureDate: clientSignaturePad ? clientSignaturePad.getSignedAt() : '',
+        counselorSignature: counselorSignaturePad ? counselorSignaturePad.getDataUrl() : '',
+        counselorSignatureDate: counselorSignaturePad ? counselorSignaturePad.getSignedAt() : ''
       };
 
       try {
         await apiRequest('saveClient', client);
         document.getElementById('newClientForm').reset();
         if (clientSignaturePad) clientSignaturePad.clear();
+        if (counselorSignaturePad) counselorSignaturePad.clear();
         await loadAllDataFromServer();
         showView('clientsView');
       } catch (err) {
@@ -1253,14 +1165,17 @@
         goal: document.getElementById('planGoal').value,
         objectives: document.getElementById('planObjectives').value,
         interventions: document.getElementById('planInterventions').value,
-        signature: planSignaturePad ? planSignaturePad.getDataUrl() : '',
-        signatureDate: planSignaturePad ? planSignaturePad.getSignedAt() : ''
+        clientSignature: planClientSignaturePad ? planClientSignaturePad.getDataUrl() : '',
+        clientSignatureDate: planClientSignaturePad ? planClientSignaturePad.getSignedAt() : '',
+        counselorSignature: planCounselorSignaturePad ? planCounselorSignaturePad.getDataUrl() : '',
+        counselorSignatureDate: planCounselorSignaturePad ? planCounselorSignaturePad.getSignedAt() : ''
       };
 
       try {
         await apiRequest('savePlan', plan);
         document.getElementById('planForm').reset();
-        if (planSignaturePad) planSignaturePad.clear();
+        if (planClientSignaturePad) planClientSignaturePad.clear();
+        if (planCounselorSignaturePad) planCounselorSignaturePad.clear();
         await loadAllDataFromServer();
       } catch (err) {
         setStatus('Error');
@@ -1271,9 +1186,7 @@
     function fileToBase64(file) {
       return new Promise(function(resolve, reject) {
         const reader = new FileReader();
-        reader.onload = function() {
-          resolve(reader.result.split(',')[1]);
-        };
+        reader.onload = function() { resolve(reader.result.split(',')[1]); };
         reader.onerror = reject;
         reader.readAsDataURL(file);
       });
@@ -1281,8 +1194,8 @@
 
     async function saveDocument(e) {
       e.preventDefault();
-
       const file = document.getElementById('documentFile').files[0];
+
       if (!file) {
         alert('Please choose a file.');
         return;
@@ -1295,7 +1208,6 @@
 
       try {
         const base64 = await fileToBase64(file);
-
         const payload = {
           clientId: document.getElementById('documentClient').value,
           type: document.getElementById('documentType').value,
@@ -1319,15 +1231,13 @@
 
     function renderNotes() {
       const box = document.getElementById('notesList');
-
       if (!state.notes.length) {
         box.innerHTML = '<div class="empty">No notes saved yet.</div>';
         return;
       }
 
       box.innerHTML = state.notes.map(function(n) {
-        const c = state.clients.find(function(x) { return x.id === n.clientId; });
-
+        const c = state.clients.find(x => x.id === n.clientId);
         return '<div class="mini-item">' +
           '<div style="display:flex; justify-content:space-between; gap:10px; flex-wrap:wrap;">' +
             '<strong>' + escapeHtml(c ? c.name : 'Unknown Client') + '</strong>' +
@@ -1344,9 +1254,7 @@
       }).join('');
 
       document.querySelectorAll('.export-note-btn').forEach(function(btn) {
-        btn.addEventListener('click', function() {
-          exportNotePDF(btn.dataset.noteId);
-        });
+        btn.addEventListener('click', function() { exportNotePDF(btn.dataset.noteId); });
       });
 
       document.querySelectorAll('.delete-note-btn').forEach(function(btn) {
@@ -1365,15 +1273,13 @@
 
     function renderPlans() {
       const box = document.getElementById('plansList');
-
       if (!state.plans.length) {
         box.innerHTML = '<div class="empty">No treatment plans saved yet.</div>';
         return;
       }
 
       box.innerHTML = state.plans.map(function(p) {
-        const c = state.clients.find(function(x) { return x.id === p.clientId; });
-
+        const c = state.clients.find(x => x.id === p.clientId);
         return '<div class="mini-item">' +
           '<div style="display:flex; justify-content:space-between; gap:10px; flex-wrap:wrap;">' +
             '<strong>' + escapeHtml(c ? c.name : 'Unknown Client') + '</strong>' +
@@ -1391,9 +1297,7 @@
       }).join('');
 
       document.querySelectorAll('.export-plan-btn').forEach(function(btn) {
-        btn.addEventListener('click', function() {
-          exportPlanPDF(btn.dataset.planId);
-        });
+        btn.addEventListener('click', function() { exportPlanPDF(btn.dataset.planId); });
       });
 
       document.querySelectorAll('.delete-plan-btn').forEach(function(btn) {
@@ -1412,15 +1316,13 @@
 
     function renderDocuments() {
       const box = document.getElementById('documentsList');
-
       if (!state.documents.length) {
         box.innerHTML = '<div class="empty">No documents saved yet.</div>';
         return;
       }
 
       box.innerHTML = state.documents.map(function(d) {
-        const c = state.clients.find(function(x) { return x.id === d.clientId; });
-
+        const c = state.clients.find(x => x.id === d.clientId);
         return '<div class="mini-item">' +
           '<div style="display:flex; justify-content:space-between; gap:10px; flex-wrap:wrap;">' +
             '<strong>' + escapeHtml(d.title || d.fileName) + '</strong>' +
@@ -1461,15 +1363,11 @@
       });
 
       document.getElementById('statusReport').innerHTML = Object.keys(byStatus).length
-        ? Object.keys(byStatus).map(function(k) {
-            return '<div class="mini-item">' + escapeHtml(k) + ': <strong>' + byStatus[k] + '</strong></div>';
-          }).join('')
+        ? Object.keys(byStatus).map(k => '<div class="mini-item">' + escapeHtml(k) + ': <strong>' + byStatus[k] + '</strong></div>').join('')
         : '<div class="empty">No data yet.</div>';
 
       document.getElementById('substanceReport').innerHTML = Object.keys(bySubstance).length
-        ? Object.keys(bySubstance).map(function(k) {
-            return '<div class="mini-item">' + escapeHtml(k) + ': <strong>' + bySubstance[k] + '</strong></div>';
-          }).join('')
+        ? Object.keys(bySubstance).map(k => '<div class="mini-item">' + escapeHtml(k) + ': <strong>' + bySubstance[k] + '</strong></div>').join('')
         : '<div class="empty">No data yet.</div>';
     }
 
@@ -1501,10 +1399,9 @@
       setTimeout(function() { w.print(); }, 250);
     }
 
-    function buildSignatureBlock(signatureData, signatureDate) {
+    function buildSignatureBlock(title, signatureData, signatureDate) {
       if (!signatureData) return '';
-      return '' +
-        '<h2>Signature</h2>' +
+      return '<h2>' + escapeHtml(title) + '</h2>' +
         '<div class="box">' +
           '<div class="signature-row">' +
             '<div><img src="' + signatureData + '" style="max-width:320px; max-height:120px;"></div>' +
@@ -1516,15 +1413,12 @@
     }
 
     function exportClientIntakePDF(clientId) {
-      const c = state.clients.find(function(x) { return x.id === clientId; });
+      const c = state.clients.find(x => x.id === clientId);
       if (!c) return;
-
-      const sessionDate = c.admissionDate || '';
-      const signatureHtml = buildSignatureBlock(c.signature, c.signatureDate || '');
 
       const html =
         '<h1>Client Intake Summary</h1>' +
-        '<div class="meta">' + escapeHtml(c.name) + (sessionDate ? ' • Intake Date: ' + escapeHtml(formatDate(sessionDate)) : '') + '</div>' +
+        '<div class="meta">' + escapeHtml(c.name) + (c.admissionDate ? ' • Intake Date: ' + escapeHtml(formatDate(c.admissionDate)) : '') + '</div>' +
         '<div class="grid">' +
           '<div class="block"><span class="label">Client Name</span><div class="box">' + escapeHtml(c.name) + '</div></div>' +
           '<div class="block"><span class="label">MRN / Client ID</span><div class="box">' + escapeHtml(c.mrn) + '</div></div>' +
@@ -1543,46 +1437,45 @@
         '<h2>Goals</h2><div class="box">' + escapeHtml(c.goals || '—') + '</div>' +
         '<h2>Supports / Recovery Capital</h2><div class="box">' + escapeHtml(c.supports || '—') + '</div>' +
         '<h2>Alerts / Safety Notes</h2><div class="box">' + escapeHtml(c.alerts || '—') + '</div>' +
-        signatureHtml;
+        buildSignatureBlock('Client Signature', c.clientSignature, c.clientSignatureDate) +
+        buildSignatureBlock('Counselor Signature', c.counselorSignature, c.counselorSignatureDate);
 
       printDocument('Intake - ' + c.name, html);
     }
 
     function exportNotePDF(noteId) {
-      const n = state.notes.find(function(x) { return x.id === noteId; });
+      const n = state.notes.find(x => x.id === noteId);
       if (!n) return;
-      const c = state.clients.find(function(x) { return x.id === n.clientId; });
-
-      const sessionDate = n.date || '';
-      const signatureHtml = buildSignatureBlock(n.signature, n.signatureDate || '');
+      const c = state.clients.find(x => x.id === n.clientId);
 
       const html =
         '<h1>Progress Note</h1>' +
-        '<div class="meta">' + escapeHtml(c ? c.name : 'Unknown Client') + (sessionDate ? ' • Session Date: ' + escapeHtml(formatDate(sessionDate)) : '') + (n.type ? ' • ' + escapeHtml(n.type) : '') + '</div>' +
+        '<div class="meta">' + escapeHtml(c ? c.name : 'Unknown Client') +
+        (n.date ? ' • Session Date: ' + escapeHtml(formatDate(n.date)) : '') +
+        (n.type ? ' • ' + escapeHtml(n.type) : '') + '</div>' +
         '<h2>Data / Presentation</h2><div class="box">' + escapeHtml(n.data || '—') + '</div>' +
         '<h2>Assessment / Clinical Impression</h2><div class="box">' + escapeHtml(n.assessment || '—') + '</div>' +
         '<h2>Plan / Next Steps</h2><div class="box">' + escapeHtml(n.plan || '—') + '</div>' +
-        signatureHtml;
+        buildSignatureBlock('Counselor Signature', n.signature, n.signatureDate);
 
       printDocument('Note - ' + (c ? c.name : 'Client'), html);
     }
 
     function exportPlanPDF(planId) {
-      const p = state.plans.find(function(x) { return x.id === planId; });
+      const p = state.plans.find(x => x.id === planId);
       if (!p) return;
-      const c = state.clients.find(function(x) { return x.id === p.clientId; });
-
-      const sessionDate = p.reviewDate || '';
-      const signatureHtml = buildSignatureBlock(p.signature, p.signatureDate || '');
+      const c = state.clients.find(x => x.id === p.clientId);
 
       const html =
         '<h1>Treatment Plan</h1>' +
-        '<div class="meta">' + escapeHtml(c ? c.name : 'Unknown Client') + (sessionDate ? ' • Review Date: ' + escapeHtml(formatDate(sessionDate)) : '') + '</div>' +
+        '<div class="meta">' + escapeHtml(c ? c.name : 'Unknown Client') +
+        (p.reviewDate ? ' • Review Date: ' + escapeHtml(formatDate(p.reviewDate)) : '') + '</div>' +
         '<h2>Problem</h2><div class="box">' + escapeHtml(p.problem || '—') + '</div>' +
         '<h2>Goal</h2><div class="box">' + escapeHtml(p.goal || '—') + '</div>' +
         '<h2>Objectives</h2><div class="box">' + escapeHtml(p.objectives || '—') + '</div>' +
         '<h2>Interventions</h2><div class="box">' + escapeHtml(p.interventions || '—') + '</div>' +
-        signatureHtml;
+        buildSignatureBlock('Client Signature', p.clientSignature, p.clientSignatureDate) +
+        buildSignatureBlock('Counselor Signature', p.counselorSignature, p.counselorSignatureDate);
 
       printDocument('Treatment Plan - ' + (c ? c.name : 'Client'), html);
     }
@@ -1592,9 +1485,7 @@
         const result = await apiRequest('getAllData', {});
         state = result || { clients: [], notes: [], plans: [], documents: [] };
         if (!state.documents) state.documents = [];
-        if (!selectedClientId && state.clients.length) {
-          selectedClientId = state.clients[0].id;
-        }
+        if (!selectedClientId && state.clients.length) selectedClientId = state.clients[0].id;
         refreshAll();
       } catch (err) {
         setStatus('Error');
@@ -1613,18 +1504,19 @@
     }
 
     document.querySelectorAll('.nav-btn').forEach(function(btn) {
-      btn.addEventListener('click', function() {
-        showView(btn.dataset.view);
-      });
+      btn.addEventListener('click', function() { showView(btn.dataset.view); });
     });
 
     document.getElementById('reloadBtn').addEventListener('click', loadAllDataFromServer);
     document.getElementById('clientSearch').addEventListener('input', renderClients);
+
     document.getElementById('newClientForm').addEventListener('submit', saveClient);
     document.getElementById('clearClientFormBtn').addEventListener('click', function() {
       document.getElementById('newClientForm').reset();
       if (clientSignaturePad) clientSignaturePad.clear();
+      if (counselorSignaturePad) counselorSignaturePad.clear();
     });
+
     document.getElementById('noteForm').addEventListener('submit', saveNote);
     document.getElementById('planForm').addEventListener('submit', savePlan);
     document.getElementById('documentForm').addEventListener('submit', saveDocument);
@@ -1641,8 +1533,10 @@
     wireTemplateSelect('planInterventionsSelect', 'planInterventions');
 
     clientSignaturePad = setupSignaturePad('clientSignatureCanvas', 'clearClientSignatureBtn', 'clientSignatureDateText');
+    counselorSignaturePad = setupSignaturePad('counselorSignatureCanvas', 'clearCounselorSignatureBtn', 'counselorSignatureDateText');
     noteSignaturePad = setupSignaturePad('noteSignatureCanvas', 'clearNoteSignatureBtn', 'noteSignatureDateText');
-    planSignaturePad = setupSignaturePad('planSignatureCanvas', 'clearPlanSignatureBtn', 'planSignatureDateText');
+    planClientSignaturePad = setupSignaturePad('planClientSignatureCanvas', 'clearPlanClientSignatureBtn', 'planClientSignatureDateText');
+    planCounselorSignaturePad = setupSignaturePad('planCounselorSignatureCanvas', 'clearPlanCounselorSignatureBtn', 'planCounselorSignatureDateText');
 
     document.getElementById('noteDate').valueAsDate = new Date();
     document.getElementById('documentDate').valueAsDate = new Date();
