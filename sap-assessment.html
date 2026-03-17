@@ -115,15 +115,16 @@
 </head>
 <body>
   <div class="wrap">
-    <div class="toolbar hidden-print">
-      <button type="button" onclick="calculateAll()">Calculate Scores</button>
-      <button type="button" class="secondary" onclick="buildReport()">Build DOT Report Preview</button>
-      <button type="button" class="ghost" onclick="saveDraft()">Save Draft</button>
-      <button type="button" class="ghost" onclick="loadDraft()">Load Draft</button>
-      <button type="button" class="danger" onclick="clearDraft()">Clear Saved Draft</button>
-      <button type="button" onclick="window.print()">Save / Print PDF</button>
-      <div class="status" id="saveStatus">Standalone file. Data can be saved locally in your browser.</div>
-    </div>
+   <div class="toolbar hidden-print">
+  <button type="button" onclick="calculateAll()">Calculate Scores</button>
+  <button type="button" class="secondary" onclick="buildReport()">Build DOT Report Preview</button>
+  <button type="button" onclick="saveSapEvaluationToServer()">Save to Google Sheets</button>
+  <button type="button" class="ghost" onclick="saveDraft()">Save Draft Locally</button>
+  <button type="button" class="ghost" onclick="loadDraft()">Load Local Draft</button>
+  <button type="button" class="danger" onclick="clearDraft()">Clear Local Draft</button>
+  <button type="button" onclick="window.print()">Save / Print PDF</button>
+  <div class="status" id="saveStatus">Ready.</div>
+</div>
 
     <form id="sapForm">
       <div class="card title">
