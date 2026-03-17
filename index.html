@@ -329,6 +329,7 @@
 
       <button id="loginBtn" style="width:100%; border:none; border-radius:12px; padding:12px 14px; background:#7c3aed; color:white; font-weight:700; cursor:pointer;">Login</button>
       <div id="loginError" style="margin-top:12px; color:#dc2626; font-size:14px;"></div>
+      <div id="loginHint" style="margin-top:8px; color:#64748b; font-size:12px;"></div>
     </div>
   </div>
 
@@ -767,12 +768,21 @@
       document.getElementById('appShell').classList.add('hidden');
     }
 
+    function normalizeUsername(value) {
+      return String(value || '').trim().toLowerCase();
+    }
+
+    function isValidLogin(user, pass) {
+      return normalizeUsername(user) === normalizeUsername(LOCAL_USERNAME)
+        && String(pass || '').trim() === LOCAL_PASSWORD;
+    }
+
     function attemptLogin() {
-      const user = document.getElementById('loginUsername').value.trim();
+      const user = document.getElementById('loginUsername').value;
       const pass = document.getElementById('loginPassword').value;
       const error = document.getElementById('loginError');
 
-      if (user === LOCAL_USERNAME && pass === LOCAL_PASSWORD) {
+      if (isValidLogin(user, pass)) {
         sessionStorage.setItem(LOGIN_STORAGE_KEY, 'yes');
         error.textContent = '';
         showApp();
@@ -786,7 +796,12 @@
       const ok = sessionStorage.getItem(LOGIN_STORAGE_KEY) === 'yes';
       if (ok) showApp(); else showLogin();
 
+      document.getElementById('loginHint').textContent = `Demo login: ${LOCAL_USERNAME} / ${LOCAL_PASSWORD}`;
+
       document.getElementById('loginBtn').addEventListener('click', attemptLogin);
+      document.getElementById('loginUsername').addEventListener('keydown', function(e) {
+        if (e.key === 'Enter') attemptLogin();
+      });
       document.getElementById('loginPassword').addEventListener('keydown', function(e) {
         if (e.key === 'Enter') attemptLogin();
       });
