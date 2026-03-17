@@ -246,13 +246,12 @@
 </head>
 <body>
   <div class="wrap">
-    <div class="toolbar hidden-print">
-      <button type="button" onclick="calculateAll()">Calculate Scores</button>
-      <button type="button" class="secondary" onclick="buildReport()">Build DOT Report Preview</button>
-      <button type="button" onclick="saveSapEvaluationToServer()">Save to Google Sheets</button>
-      <button type="button" onclick="window.print()">Save / Print PDF</button>
-      <div class="status" id="saveStatus">Ready.</div>
-    </div>
+<div class="toolbar hidden-print">
+  <button type="button" onclick="calculateAll()">Calculate Scores</button>
+  <button type="button" onclick="saveSapEvaluationToServer()">Save to Google Sheets</button>
+  <button type="button" onclick="window.print()">Save / Print PDF</button>
+  <div class="status" id="saveStatus">Ready.</div>
+</div>
 
     <form id="sapForm">
       <input type="hidden" name="recordId">
