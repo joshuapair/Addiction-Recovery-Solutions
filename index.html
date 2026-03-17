@@ -773,8 +773,12 @@
     }
 
     function isValidLogin(user, pass) {
-      return normalizeUsername(user) === normalizeUsername(LOCAL_USERNAME)
-        && String(pass || '').trim() === LOCAL_PASSWORD;
+      const normalizedUser = normalizeUsername(user);
+      const normalizedLocalUser = normalizeUsername(LOCAL_USERNAME);
+      const passwordMatches = String(pass || '').trim() === LOCAL_PASSWORD;
+
+      // For this demo build, allow password-only login even if username is left blank.
+      return passwordMatches && (!normalizedUser || normalizedUser === normalizedLocalUser);
     }
 
     function attemptLogin() {
@@ -789,14 +793,17 @@
         return;
       }
 
-      error.textContent = 'Incorrect username or password.';
+      error.textContent = 'Incorrect login. Use the demo password and optional username shown below.';
     }
 
     function initLogin() {
       const ok = sessionStorage.getItem(LOGIN_STORAGE_KEY) === 'yes';
       if (ok) showApp(); else showLogin();
 
-      document.getElementById('loginHint').textContent = `Demo login: ${LOCAL_USERNAME} / ${LOCAL_PASSWORD}`;
+      const usernameInput = document.getElementById('loginUsername');
+      const loginHint = document.getElementById('loginHint');
+      usernameInput.placeholder = LOCAL_USERNAME;
+      loginHint.textContent = `Demo login: username ${LOCAL_USERNAME} (optional) / password ${LOCAL_PASSWORD}`;
 
       document.getElementById('loginBtn').addEventListener('click', attemptLogin);
       document.getElementById('loginUsername').addEventListener('keydown', function(e) {
