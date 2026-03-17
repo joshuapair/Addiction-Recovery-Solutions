@@ -221,7 +221,6 @@
       <hr style="border-color:#334155;opacity:.35;margin:18px 0;">
 
       <button id="reloadBtn" class="primary-btn" type="button">Reload from Server</button>
-      <button id="logoutBtn" class="secondary-btn" type="button">Login Removed</button>
     </aside>
 
     <main class="content">
@@ -1398,10 +1397,6 @@
 
     document.getElementById('reloadBtn').addEventListener('click', loadAllDataFromServer);
     document.getElementById('clientSearch').addEventListener('input', renderClients);
-
-    document.getElementById('logoutBtn').addEventListener('click', function() {
-      alert('Login has been removed.');
-    });
 
     document.getElementById('newClientForm').addEventListener('submit', saveClient);
     document.getElementById('noteForm').addEventListener('submit', saveNote);
