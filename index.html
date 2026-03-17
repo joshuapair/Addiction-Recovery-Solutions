@@ -849,7 +849,44 @@
           setStatus('Error');
           throw new Error('Server response was not valid JSON. Check Apps Script deployment and CORS settings.');
         }
-        if (btn.dataset.view === viewId) btn.classList.add('active');
+      }
+
+      if (!res.ok || data.ok === false) {
+        setStatus('Error');
+        throw new Error((data && data.error) || ('Request failed with status ' + res.status));
+      }
+
+      setStatus('Ready');
+      return data.data;
+    }
+
+    function escapeHtml(value) {
+      return String(value ?? '')
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#39;');
+    }
+
+    function badgeClass(value) {
+      const normalized = String(value || '').toLowerCase();
+      if (normalized.includes('high') || normalized.includes('discharged')) return 'badge badge-red';
+      if (normalized.includes('active') || normalized.includes('low') || normalized.includes('completed')) return 'badge badge-green';
+      if (normalized.includes('moderate') || normalized.includes('pending')) return 'badge badge-yellow';
+      return 'badge badge-purple';
+    }
+
+    function showView(viewId) {
+      document.querySelectorAll('main section').forEach(function(section) {
+        section.classList.add('hidden');
+      });
+
+      const view = document.getElementById(viewId);
+      if (view) view.classList.remove('hidden');
+
+      document.querySelectorAll('.nav-btn').forEach(function(btn) {
+        btn.classList.toggle('active', btn.dataset.view === viewId);
       });
 
       requestAnimationFrame(function() {
