@@ -812,11 +812,7 @@
       }
 
       let data;
-      try {
-        data = await res.json();
-      } catch (err) {
-        setStatus('Error');
-        throw new Error('Server did not return valid JSON.');
+      if
       }
 
       if (!res.ok || !data.ok) {
