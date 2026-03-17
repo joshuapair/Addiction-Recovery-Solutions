@@ -286,24 +286,6 @@
       cursor: crosshair;
     }
 
-    .login-screen {
-      min-height: 100vh;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      background: linear-gradient(180deg, #0b1220 0%, #111827 100%);
-      padding: 24px;
-    }
-
-    .login-card {
-      width: 100%;
-      max-width: 420px;
-      background: white;
-      color: #111827;
-      border-radius: 18px;
-      padding: 24px;
-      box-shadow: var(--shadow);
-    }
 
     @media (max-width: 1000px) {
       .app { grid-template-columns: 1fr; }
@@ -313,28 +295,7 @@
   </style>
 </head>
 <body>
-  <div id="loginScreen" class="login-screen">
-    <div class="login-card">
-      <h1 style="margin:0 0 8px; font-size:28px;">Recovery EHR Login</h1>
-      <p style="margin:0 0 18px; color:#475569;">Enter your username and password.</p>
-
-      <div style="margin-bottom:14px;">
-        <label style="display:block; font-weight:700; margin-bottom:6px;">Username</label>
-        <input id="loginUsername" type="text" autocomplete="username">
-      </div>
-
-      <div style="margin-bottom:14px;">
-        <label style="display:block; font-weight:700; margin-bottom:6px;">Password</label>
-        <input id="loginPassword" type="password" autocomplete="current-password">
-      </div>
-
-      <button id="loginBtn" style="width:100%; border:none; border-radius:12px; padding:12px 14px; background:#7c3aed; color:white; font-weight:700; cursor:pointer;">Login</button>
-      <div id="loginError" style="margin-top:12px; color:#dc2626; font-size:14px;"></div>
-          <div id="loginHint" style="margin-top:8px; color:#64748b; font-size:12px;"></div>
-    </div>
-  </div>
-
-  <div class="app hidden" id="appShell">
+  <div class="app" id="appShell">
     <aside class="sidebar">
       <div class="brand">Recovery EHR</div>
       <div class="subtitle">Google-backed prototype</div>
@@ -354,7 +315,6 @@
       <hr style="border-color:#334155; opacity:.35; margin:18px 0;">
 
       <button class="primary-btn" id="reloadBtn" type="button">Reload from Server</button>
-      <button class="secondary-btn" id="logoutBtn" type="button">Logout</button>
     </aside>
 
     <main class="content">
@@ -635,9 +595,6 @@
   <script>
     const APP_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwS4yzK4DA96PBkqXddLSZHytYmUXv-W-NZKCIrVbTmdjbshY8cWfJGRjZqO0AZ3cSgeQ/exec';
     const MAX_FILE_SIZE = 4.5 * 1024 * 1024;
-    const LOCAL_USERNAME = 'joshuapair';
-    const LOCAL_PASSWORD = 'Annabelle_89';
-    const LOGIN_STORAGE_KEY = 'recovery-ehr-login-ok';
 
     let state = { clients: [], notes: [], plans: [], documents: [] };
     let selectedClientId = null;
@@ -757,59 +714,6 @@
       const month = String(now.getMonth() + 1).padStart(2, '0');
       const day = String(now.getDate()).padStart(2, '0');
       return `${year}-${month}-${day}`;
-    }
-
-    function showApp() {
-      document.getElementById('loginScreen').classList.add('hidden');
-      document.getElementById('appShell').classList.remove('hidden');
-    }
-
-    function showLogin() {
-      document.getElementById('loginScreen').classList.remove('hidden');
-      document.getElementById('appShell').classList.add('hidden');
-    }
-
-       function normalizeUsername(value) {
-      return String(value || '').trim().toLowerCase();
-    }
-
-    function isValidLogin(user, pass) {
-      return normalizeUsername(user) === normalizeUsername(LOCAL_USERNAME)
-        && String(pass || '').trim() === LOCAL_PASSWORD;
-    }
-
-    function attemptLogin() {
-      const user = document.getElementById('loginUsername').value;
-      const pass = document.getElementById('loginPassword').value;
-      const error = document.getElementById('loginError');
-
-      if (isValidLogin(user, pass)) {
-        sessionStorage.setItem(LOGIN_STORAGE_KEY, 'yes');
-        error.textContent = '';
-        showApp();
-        return;
-      }
-
-      error.textContent = 'Incorrect username or password.';
-    }
-
-    function initLogin() {
-      const ok = sessionStorage.getItem(LOGIN_STORAGE_KEY) === 'yes';
-      if (ok) showApp(); else showLogin();
-
-      document.getElementById('loginHint').textContent = `Demo login: ${LOCAL_USERNAME} / ${LOCAL_PASSWORD}`;
-
-      document.getElementById('loginBtn').addEventListener('click', attemptLogin);
-      document.getElementById('loginUsername').addEventListener('keydown', function(e) {
-        if (e.key === 'Enter') attemptLogin();
-      });
-      document.getElementById('loginPassword').addEventListener('keydown', function(e) {
-        if (e.key === 'Enter') attemptLogin();
-      });
-      document.getElementById('logoutBtn').addEventListener('click', function() {
-        sessionStorage.removeItem(LOGIN_STORAGE_KEY);
-        showLogin();
-      });
     }
 
     async function apiRequest(action, payload) {
@@ -1567,7 +1471,6 @@
     document.getElementById('documentDate').valueAsDate = new Date();
 
     showView('dashboardView');
-    initLogin();
     loadAllDataFromServer();
   </script>
 </body>
