@@ -726,6 +726,17 @@
         .replace(/'/g, '&#39;');
     }
 
+    function badgeClass(value) {
+      const normalized = String(value || '').toLowerCase();
+
+      if (['active', 'low', 'stable', 'completed'].includes(normalized)) return 'badge badge-green';
+      if (['moderate', 'pending', 'in progress', 'warning'].includes(normalized)) return 'badge badge-yellow';
+      if (['high', 'critical', 'inactive', 'discharged', 'overdue'].includes(normalized)) return 'badge badge-red';
+      if (['new', 'intake', 'assessment'].includes(normalized)) return 'badge badge-purple';
+
+      return 'badge';
+    }
+
     async function apiRequest(action, payload) {
       setStatus('Working...');
       let res;
