@@ -879,31 +879,44 @@
     const MAX_FILE_SIZE = 4.5 * 1024 * 1024;
 
     const SAP_MAST_ITEMS = [
-      { n:1, q:'Do you consider your drug/alcohol behavior normal?', yes:0, no:2 },
-      { n:2, q:'Do you ever experience memory loss or convulsions the day after heavy drug/alcohol use?', yes:2, no:0 },
-      { n:3, q:'Does your spouse (or parents) ever worry or complain about your drug/alcohol use?', yes:1, no:0 },
-      { n:4, q:'Can you stop using drugs/alcohol without a struggle once you have begun?', yes:0, no:2 },
-      { n:5, q:'Do you ever feel bad about your drug/alcohol use?', yes:1, no:0 },
-      { n:6, q:'Do friends or relatives think that your drug/alcohol use is normal?', yes:0, no:2 },
-      { n:7, q:'Are you always able to stop using drugs/alcohol when you want to?', yes:0, no:2 },
-      { n:8, q:'Have you ever gone to AA, NA, or other self-help groups for your drug/alcohol use?', yes:5, no:0 },
-      { n:9, q:'Have you ever gotten into fights while using drugs or alcohol?', yes:1, no:0 },
-      { n:10, q:'Has drug/alcohol use ever created problems with you and your spouse (or parents)?', yes:2, no:0 }
-    ];
+  { n:1, q:'Do you consider your drug/alcohol behavior normal?', yes:0, no:2 },
+  { n:2, q:'Do you ever experience memory loss or convulsions the day after heavy drug/alcohol use?', yes:2, no:0 },
+  { n:3, q:'Does your spouse (or parents) ever worry or complain about your drug/alcohol use?', yes:1, no:0 },
+  { n:4, q:'Can you stop using drugs/alcohol without a struggle once you have begun?', yes:0, no:2 },
+  { n:5, q:'Do you ever feel bad about your drug/alcohol use?', yes:1, no:0 },
+  { n:6, q:'Do friends or relatives think that your drug/alcohol use is normal?', yes:0, no:2 },
+  { n:7, q:'Are you always able to stop using drugs/alcohol when you want to?', yes:0, no:2 },
+  { n:8, q:'Have you ever gone to AA, NA, or other self-help groups for your drug/alcohol use?', yes:5, no:0 },
+  { n:9, q:'Have you ever gotten into fights while using drugs or alcohol?', yes:1, no:0 },
+  { n:10, q:'Has drug/alcohol use ever created problems with you and your spouse (or parents)?', yes:2, no:0 },
+  { n:11, q:'Has your spouse (or family member) ever gone to anyone for help about your drug/alcohol use?', yes:2, no:0 },
+  { n:12, q:'Have you ever lost friends, girlfriends, or boyfriends because of your drug/alcohol use?', yes:2, no:0 },
+  { n:13, q:'Have you ever gotten into trouble at school or at work because of your drug/alcohol use?', yes:2, no:0 },
+  { n:14, q:'Have you ever lost a job or been suspended / expelled from school because of your drug/alcohol use?', yes:2, no:0 },
+  { n:15, q:'Have you ever neglected obligations, family, work, or school for two or more days in a row because you were using drugs/alcohol?', yes:2, no:0 },
+  { n:16, q:'Do you ever use drugs/alcohol before noon?', yes:1, no:0 },
+  { n:17, q:'Have you ever been told that you have liver trouble?', yes:2, no:0 },
+  { n:18, q:'Have you ever had seizures, severe shaking, heard voices, seen things not there, or felt out of control and panicky after heavy drug/alcohol use?', yes:5, no:0 },
+  { n:19, q:'Have you ever gone to anyone for help about your drug/alcohol use?', yes:5, no:0 },
+  { n:20, q:'Have you ever gone to a hospital because of your drug/alcohol use?', yes:5, no:0 },
+  { n:21, q:'Have you ever been a patient in a psychiatric hospital or general hospital where drug/alcohol use was part of the problem?', yes:2, no:0 },
+  { n:22, q:'Have you ever been seen at a psychiatric or mental health clinic, or gone to a doctor, social worker, or clergyman for help with an emotional problem in which drug/alcohol use played a part?', yes:2, no:0 },
+  { n:23, q:'Have you ever been arrested, even for a few hours, because of behavior related to your drug/alcohol use?', yes:2, no:0 },
+  { n:24, q:'Have you ever been arrested for driving while intoxicated?', yes:2, no:0 }
+];
 
-    const SAP_DAST_ITEMS = [
-      { n:1, q:'Have you used drugs other than those required for medical reasons?', riskYes:true },
-      { n:2, q:'Do you use more than one drug at a time?', riskYes:true },
-      { n:3, q:'Are you always able to stop using drugs when you want to?', riskYes:false },
-      { n:4, q:'Have you had blackouts or flashbacks as a result of drug use?', riskYes:true },
-      { n:5, q:'Do you ever feel bad or guilty about your drug use?', riskYes:true },
-      { n:6, q:'Does your spouse or a parent ever complain about your involvement with drugs?', riskYes:true },
-      { n:7, q:'Have you neglected your family because of your use of drugs?', riskYes:true },
-      { n:8, q:'Have you engaged in illegal activities in order to obtain drugs?', riskYes:true },
-      { n:9, q:'Have you ever experienced withdrawal symptoms when you stopped taking drugs?', riskYes:true },
-      { n:10, q:'Have you had medical problems as a result of your drug use?', riskYes:true }
-    ];
-
+const SAP_DAST_ITEMS = [
+  { n:1, q:'Have you used drugs other than those required for medical reasons?', riskYes:true },
+  { n:2, q:'Do you use more than one drug at a time?', riskYes:true },
+  { n:3, q:'Are you always able to stop using drugs when you want to?', riskYes:false },
+  { n:4, q:'Have you had blackouts or flashbacks as a result of drug use?', riskYes:true },
+  { n:5, q:'Do you ever feel bad or guilty about your drug use?', riskYes:true },
+  { n:6, q:'Does your spouse or a parent ever complain about your involvement with drugs?', riskYes:true },
+  { n:7, q:'Have you neglected your family because of your use of drugs?', riskYes:true },
+  { n:8, q:'Have you engaged in illegal activities in order to obtain drugs?', riskYes:true },
+  { n:9, q:'Have you ever experienced withdrawal symptoms when you stopped taking drugs?', riskYes:true },
+  { n:10, q:'Have you had medical problems as a result of your drug use?', riskYes:true }
+];
     let state = { clients: [], notes: [], plans: [], documents: [], sapEvaluations: [] };
     let selectedClientId = null;
 
@@ -1164,6 +1177,8 @@
       document.getElementById('statClients').textContent = state.clients.filter(c => c.status === 'Active').length;
       document.getElementById('statHighRisk').textContent = state.clients.filter(c => c.riskLevel === 'High').length;
       document.getElementById('statNotes').textContent = state.notes.length;
+      const sapStat = document.getElementById('statSap');
+if (sapStat) sapStat.textContent = state.sapEvaluations.length;
       document.getElementById('statSap').textContent = state.sapEvaluations.length;
 
       const recent = state.clients.slice().sort((a,b) => new Date(b.createdAt || 0) - new Date(a.createdAt || 0)).slice(0,5);
@@ -2148,6 +2163,553 @@ SAP Signature Date: ${sigDate}`;
 
     showView('dashboardView');
     loadAllDataFromServer();
+function getCheckedValuesByName(name) {
+  return Array.from(document.querySelectorAll(`input[name="${name}"]:checked`)).map(el => el.value);
+}
+
+function setCheckedValuesByName(name, values) {
+  const arr = Array.isArray(values) ? values : (values ? [values] : []);
+  document.querySelectorAll(`input[name="${name}"]`).forEach(el => {
+    el.checked = arr.includes(el.value);
+  });
+}
+
+function getSapRadioValue(name) {
+  const el = document.querySelector(`input[name="${name}"]:checked`);
+  return el ? el.value : '';
+}
+
+function safeParseJson(value) {
+  if (!value) return {};
+  if (typeof value === 'object') return value;
+  try { return JSON.parse(value); } catch (e) { return {}; }
+}
+function buildSapTables() {
+  const mastBody = document.getElementById('sapMastTable');
+  if (mastBody) {
+    mastBody.innerHTML = SAP_MAST_ITEMS.map(item => `
+      <tr>
+        <td>${item.n}</td>
+        <td>${escapeHtml(item.q)}</td>
+        <td><input type="radio" name="sap_mast_${item.n}" value="yes"></td>
+        <td><input type="radio" name="sap_mast_${item.n}" value="no"></td>
+      </tr>
+    `).join('');
+  }
+
+  const dastBody = document.getElementById('sapDastTable');
+  if (dastBody) {
+    dastBody.innerHTML = SAP_DAST_ITEMS.map(item => `
+      <tr>
+        <td>${item.n}</td>
+        <td>${escapeHtml(item.q)}</td>
+        <td><input type="radio" name="sap_dast_${item.n}" value="yes"></td>
+        <td><input type="radio" name="sap_dast_${item.n}" value="no"></td>
+      </tr>
+    `).join('');
+  }
+}
+
+function getSapMastAnswer(n) {
+  return getSapRadioValue(`sap_mast_${n}`);
+}
+
+function getSapDastAnswer(n) {
+  return getSapRadioValue(`sap_dast_${n}`);
+}
+
+function calculateSapScores() {
+  let mast = 0;
+  SAP_MAST_ITEMS.forEach(item => {
+    const v = getSapMastAnswer(item.n);
+    if (v === 'yes') mast += item.yes;
+    if (v === 'no') mast += item.no;
+  });
+
+  let dast = 0;
+  SAP_DAST_ITEMS.forEach(item => {
+    const v = getSapDastAnswer(item.n);
+    if (!v) return;
+    dast += item.riskYes ? (v === 'yes' ? 1 : 0) : (v === 'no' ? 1 : 0);
+  });
+
+  let mastText = 'Not calculated';
+  let mastClass = 'small';
+  if (mast <= 3) { mastText = 'Probably no drug/alcohol addiction'; mastClass = 'result-good'; }
+  else if (mast === 4) { mastText = 'Borderline drug/alcohol addiction'; mastClass = 'result-warn'; }
+  else { mastText = 'Probably drug/alcohol addiction'; mastClass = 'result-bad'; }
+
+  let dastText = 'Not calculated';
+  let dastClass = 'small';
+  if (dast === 0) { dastText = 'No problems reported'; dastClass = 'result-good'; }
+  else if (dast <= 2) { dastText = 'Low level'; dastClass = 'result-good'; }
+  else if (dast <= 5) { dastText = 'Moderate level'; dastClass = 'result-warn'; }
+  else if (dast <= 8) { dastText = 'Substantial level'; dastClass = 'result-bad'; }
+  else { dastText = 'Severe level'; dastClass = 'result-bad'; }
+
+  document.getElementById('sapMastScore').textContent = mast;
+  document.getElementById('sapDastScore').textContent = dast;
+  document.getElementById('sapMastInterpretation').textContent = mastText;
+  document.getElementById('sapMastInterpretation').className = mastClass;
+  document.getElementById('sapDastInterpretation').textContent = dastText;
+  document.getElementById('sapDastInterpretation').className = dastClass;
+
+  let flag = 'Clinical Review';
+  let note = 'Use interview data, observed presentation, and history together with the instrument scores.';
+  if (mast >= 5 || dast >= 6) {
+    flag = 'High Concern';
+    note = 'Instrument scores suggest clinically significant substance-related risk.';
+  } else if (mast === 4 || (dast >= 3 && dast <= 5)) {
+    flag = 'Moderate Concern';
+    note = 'Scores show a meaningful risk pattern that should be integrated into the evaluation.';
+  } else if (mast <= 3 && dast <= 2) {
+    flag = 'Lower Concern';
+    note = 'Scores alone do not indicate high severity, but they do not replace clinical judgment.';
+  }
+
+  document.getElementById('sapCombinedFlag').textContent = flag;
+  document.getElementById('sapCombinedInterpretation').textContent = note;
+  document.getElementById('sapScoreStatus').textContent = 'Updated';
+
+  buildSapReportPreview();
+
+  return { mast, dast, mastText, dastText, flag, note };
+}
+
+function buildSapReportPreview() {
+  const clientName = document.getElementById('sapClientName').value || '';
+  const evalDate = document.getElementById('sapEvalDate').value || '';
+  const derName = document.getElementById('sapEmployer').value || '';
+  const derContact = '';
+  const company = document.getElementById('sapEmployer').value || '';
+  const ssn = document.getElementById('sapSsn').value || '';
+  const dotType = document.getElementById('sapDotType').value || '';
+  const reason = document.getElementById('sapReason').value || '';
+  const testType = document.getElementById('sapTestType').value || '';
+  const violationDate = document.getElementById('sapViolationDate').value || '';
+  const violationText = document.getElementById('sapViolationText').value || '';
+  const agency = document.getElementById('sapAgency').value || '';
+  const recommendation = document.getElementById('sapRecommendation').value || '';
+  const note = document.getElementById('sapReportNote').value || '';
+  const mast = document.getElementById('sapMastScore').textContent || '0';
+  const dast = document.getElementById('sapDastScore').textContent || '0';
+  const sapName = document.getElementById('sapName').value || '';
+  const sapCredentials = document.getElementById('sapCredentials').value || '';
+  const sigDate = document.getElementById('sapSignatureDate').value || '';
+
+  const opening = dotType === 'DOT'
+    ? `${clientName || 'Employee'} was assessed on ${evalDate} because ${clientName || 'the employee'} ${violationText || reason} for ${company}.`
+    : `${clientName || 'Client'} was assessed on ${evalDate} for a non-DOT referral involving ${violationText || reason}${company ? ' for ' + company : ''}.`;
+
+  const violationLine = dotType === 'DOT'
+    ? `This violation of the Department of Transportation's drug and alcohol testing rules occurred on ${violationDate}.`
+    : `This referral / policy event occurred on ${violationDate}.`;
+
+  const report = `${dotType} SAP INITIAL REPORT PREVIEW
+
+Date: ${evalDate}
+To: ${derName}${derContact ? ' | ' + derContact : ''}
+Company: ${company}
+Re: ${clientName}${ssn ? ' | ' + ssn : ''}
+
+${opening}
+
+${violationLine}
+
+Assessment Summary:
+- Reason for assessment: ${reason}
+- Type of test: ${testType}
+- Industry / mode: ${agency}
+- MAST score: ${mast}
+- DAST-10 score: ${dast}
+
+Recommendations:
+${recommendation}
+
+Additional report note:
+${note}
+
+${dotType === 'DOT'
+  ? 'This report is limited to SAP recommendations and return-to-duty related information. No diagnosis or protected medical history is included.'
+  : 'This non-DOT report is limited to the referral findings and recommendations requested. No diagnosis or protected medical history is included unless separately authorized.'}
+
+SAP Signature: ${sapName}${sapCredentials ? ', ' + sapCredentials : ''}
+SAP Signature Date: ${sigDate}`;
+
+  document.getElementById('sapReportPreview').textContent = report;
+}
+
+function syncSapClientContext() {
+  const sapClientId = document.getElementById('sapClientId');
+  if (!sapClientId) return;
+
+  if (selectedClientId) sapClientId.value = selectedClientId;
+
+  const c = state.clients.find(x => x.id === sapClientId.value);
+  if (!c) return;
+
+  if (!document.getElementById('sapClientName').value) document.getElementById('sapClientName').value = c.name || '';
+  if (!document.getElementById('sapDob').value) document.getElementById('sapDob').value = c.dob || '';
+
+  buildSapReportPreview();
+  renderSapEvaluations();
+}
+
+function clearSapForm(keepClient = true) {
+  const currentClient = keepClient ? document.getElementById('sapClientId').value : '';
+  document.getElementById('sapForm').reset();
+  document.getElementById('sapRecordId').value = '';
+  if (sapSignaturePad) sapSignaturePad.clear();
+
+  if (keepClient) {
+    document.getElementById('sapClientId').value = currentClient || selectedClientId || '';
+    syncSapClientContext();
+  }
+
+  document.getElementById('sapEvalDate').valueAsDate = new Date();
+  document.getElementById('sapSignatureDate').valueAsDate = new Date();
+
+  calculateSapScores();
+  buildSapReportPreview();
+}
+
+function collectSapPayload() {
+  const scores = calculateSapScores();
+
+  const mastAnswers = {};
+  SAP_MAST_ITEMS.forEach(item => {
+    mastAnswers['mast_' + item.n] = getSapMastAnswer(item.n) || '';
+  });
+
+  const dastAnswers = {};
+  SAP_DAST_ITEMS.forEach(item => {
+    dastAnswers['dast_' + item.n] = getSapDastAnswer(item.n) || '';
+  });
+
+  return {
+    id: document.getElementById('sapRecordId').value || '',
+    clientId: document.getElementById('sapClientId').value || '',
+    status: document.getElementById('sapStatus').value || 'Completed',
+
+    evalDate: document.getElementById('sapEvalDate').value || '',
+    dotType: document.getElementById('sapDotType').value || '',
+    sapName: document.getElementById('sapName').value || '',
+    sapCredentials: document.getElementById('sapCredentials').value || '',
+    sapPhone: '903.445.8953',
+    sapEmail: '',
+    sapSignature: sapSignaturePad ? sapSignaturePad.getDataUrl() : '',
+    sapSignatureDate: document.getElementById('sapSignatureDate').value || '',
+
+    derName: document.getElementById('sapEmployer').value || '',
+    derContact: '',
+    company: document.getElementById('sapEmployer').value || '',
+    companyAddress1: '',
+    companyAddress2: '',
+
+    employeeName: document.getElementById('sapClientName').value || '',
+    employeeAddress1: '',
+    employeeAddress2: '',
+    ssnLast4: document.getElementById('sapSsn').value || '',
+    dob: document.getElementById('sapDob').value || '',
+    phone: '',
+    email: '',
+
+    reasonForAssessment: document.getElementById('sapReason').value || '',
+    testType: document.getElementById('sapTestType').value || '',
+    dateOfViolation: document.getElementById('sapViolationDate').value || '',
+    violationText: document.getElementById('sapViolationText').value || '',
+    agency: document.getElementById('sapAgency').value || '',
+
+    mastScore: String(scores.mast),
+    mastSeverity: scores.mastText,
+    dastScore: String(scores.dast),
+    dastSeverity: scores.dastText,
+    mastAnswers: mastAnswers,
+    dastAnswers: dastAnswers,
+
+    educationHours: '',
+    groupCount: '',
+    sessionCount: '',
+
+    recommendations: {
+      recommendation: document.getElementById('sapRecommendation').value || '',
+      reportNote: document.getElementById('sapReportNote').value || '',
+      docsSigned: getCheckedValuesByName('sapDocsSigned'),
+      identifiedProblem: getCheckedValuesByName('sapIdentifiedProblem'),
+      otherAddictions: getCheckedValuesByName('sapOtherAddictions'),
+      suicidal: getCheckedValuesByName('sapSuicidal'),
+      homicidal: getCheckedValuesByName('sapHomicidal'),
+      impairments: getCheckedValuesByName('sapImpairments'),
+
+      caseNumber: document.getElementById('sapCaseNumber').value || '',
+      docsOther: document.getElementById('sapDocsOther').value || '',
+      positiveTestDate: document.getElementById('sapPositiveTestDate').value || '',
+      reasonNotes: document.getElementById('sapReasonNotes').value || '',
+      otherPosition: document.getElementById('sapOtherPosition').value || '',
+
+      alcoholQty: document.getElementById('sapAlcoholQty').value || '',
+      alcoholFirstUse: document.getElementById('sapAlcoholFirstUse').value || '',
+      alcoholLastFrequency: document.getElementById('sapAlcoholLastFrequency').value || '',
+      drug1Name: document.getElementById('sapDrug1Name').value || '',
+      drug1Qty: document.getElementById('sapDrug1Qty').value || '',
+      drug1Details: document.getElementById('sapDrug1Details').value || '',
+      drug2Name: document.getElementById('sapDrug2Name').value || '',
+      drug2Qty: document.getElementById('sapDrug2Qty').value || '',
+      drug2Details: document.getElementById('sapDrug2Details').value || '',
+
+      historyPositiveTests: document.getElementById('sapHistoryPositiveTests').value || '',
+      historyDwi: document.getElementById('sapHistoryDwi').value || '',
+      previousTreatment: document.getElementById('sapPreviousTreatment').value || '',
+      previousTreatmentExplain: document.getElementById('sapPreviousTreatmentExplain').value || '',
+      problemHistory: document.getElementById('sapProblemHistory').value || '',
+
+      intoxicated: document.getElementById('sapIntoxicated').value || '',
+      orientation: document.getElementById('sapOrientation').value || '',
+      physicalPresentation: document.getElementById('sapPhysicalPresentation').value || '',
+      presentationComments: document.getElementById('sapPresentationComments').value || '',
+      otherAddictionsComments: document.getElementById('sapOtherAddictionsComments').value || '',
+      acknowledgeProblem: document.getElementById('sapAcknowledgeProblem').value || '',
+      denial: document.getElementById('sapDenial').value || '',
+      denialComments: document.getElementById('sapDenialComments').value || '',
+
+      diagnosisList: document.getElementById('sapDiagnosisList').value || '',
+      diagnosisComments: document.getElementById('sapDiagnosisComments').value || '',
+      victimInfo: document.getElementById('sapVictimInfo').value || '',
+      actionTaken: document.getElementById('sapActionTaken').value || '',
+      safetyExplanation: document.getElementById('sapSafetyExplanation').value || '',
+      psychTxHistory: document.getElementById('sapPsychTxHistory').value || '',
+      psychMedHistory: document.getElementById('sapPsychMedHistory').value || '',
+      counselingHistory: document.getElementById('sapCounselingHistory').value || '',
+      currentMeds: document.getElementById('sapCurrentMeds').value || '',
+
+      weightChanges: document.getElementById('sapWeightChanges').value || '',
+      impairmentComments: document.getElementById('sapImpairmentComments').value || '',
+      supportSystem: document.getElementById('sapSupportSystem').value || '',
+      medicalHistory: document.getElementById('sapMedicalHistory').value || '',
+      medicalExplain: document.getElementById('sapMedicalExplain').value || '',
+      medicalMeds: document.getElementById('sapMedicalMeds').value || '',
+      doctorInfo: document.getElementById('sapDoctorInfo').value || '',
+      legalProblems: document.getElementById('sapLegalProblems').value || '',
+      legalExplain: document.getElementById('sapLegalExplain').value || '',
+      courtDate: document.getElementById('sapCourtDate').value || '',
+      financialProblems: document.getElementById('sapFinancialProblems').value || '',
+      financialExplain: document.getElementById('sapFinancialExplain').value || '',
+      workIssues: document.getElementById('sapWorkIssues').value || '',
+      workExplain: document.getElementById('sapWorkExplain').value || '',
+      losses: document.getElementById('sapLosses').value || '',
+      lossesExplain: document.getElementById('sapLossesExplain').value || ''
+    },
+
+    customRecommendationText: document.getElementById('sapRecommendation').value || '',
+    clinicalNotes: document.getElementById('sapProblemHistory').value || '',
+    reportHtml: document.getElementById('sapReportPreview').innerHTML || '',
+    reportText: document.getElementById('sapReportPreview').textContent || ''
+  };
+}
+
+async function saveSapEvaluation(e) {
+  e.preventDefault();
+  const payload = collectSapPayload();
+
+  if (!payload.clientId) {
+    alert('Please select a client for this SAP evaluation.');
+    return;
+  }
+
+  try {
+    const result = await apiRequest('saveSapEvaluation', payload);
+    if (result && result.id) document.getElementById('sapRecordId').value = result.id;
+    selectedClientId = payload.clientId;
+    await loadAllDataFromServer();
+    showView('sapAssessmentView');
+  } catch (err) {
+    setStatus('Error');
+    alert('SAP save failed: ' + err.message);
+  }
+}
+
+function loadSapIntoForm(id) {
+  const s = state.sapEvaluations.find(x => String(x.id) === String(id));
+  if (!s) return;
+
+  const r = safeParseJson(s.recommendations);
+
+  showView('sapAssessmentView');
+
+  document.getElementById('sapRecordId').value = s.id || '';
+  document.getElementById('sapClientId').value = s.clientId || '';
+  document.getElementById('sapStatus').value = s.status || 'Completed';
+  document.getElementById('sapEvalDate').value = s.evalDate || '';
+  document.getElementById('sapDotType').value = s.dotType || 'DOT';
+  document.getElementById('sapName').value = s.sapName || 'Joshua Pair';
+  document.getElementById('sapCredentials').value = s.sapCredentials || 'LCDC, SAP';
+  document.getElementById('sapSignatureDate').value = s.sapSignatureDate || '';
+  document.getElementById('sapEmployer').value = s.company || '';
+  document.getElementById('sapClientName').value = s.employeeName || '';
+  document.getElementById('sapSsn').value = s.ssnLast4 || '';
+  document.getElementById('sapDob').value = s.dob || '';
+  document.getElementById('sapReason').value = s.reasonForAssessment || '';
+  document.getElementById('sapTestType').value = s.testType || '';
+  document.getElementById('sapViolationDate').value = s.dateOfViolation || '';
+  document.getElementById('sapViolationText').value = s.violationText || '';
+  document.getElementById('sapAgency').value = s.agency || '';
+  document.getElementById('sapRecommendation').value = s.customRecommendationText || r.recommendation || '';
+  document.getElementById('sapReportNote').value = r.reportNote || '';
+
+  document.getElementById('sapCaseNumber').value = r.caseNumber || '';
+  document.getElementById('sapDocsOther').value = r.docsOther || '';
+  document.getElementById('sapPositiveTestDate').value = r.positiveTestDate || '';
+  document.getElementById('sapReasonNotes').value = r.reasonNotes || '';
+  document.getElementById('sapOtherPosition').value = r.otherPosition || '';
+
+  document.getElementById('sapAlcoholQty').value = r.alcoholQty || '';
+  document.getElementById('sapAlcoholFirstUse').value = r.alcoholFirstUse || '';
+  document.getElementById('sapAlcoholLastFrequency').value = r.alcoholLastFrequency || '';
+  document.getElementById('sapDrug1Name').value = r.drug1Name || '';
+  document.getElementById('sapDrug1Qty').value = r.drug1Qty || '';
+  document.getElementById('sapDrug1Details').value = r.drug1Details || '';
+  document.getElementById('sapDrug2Name').value = r.drug2Name || '';
+  document.getElementById('sapDrug2Qty').value = r.drug2Qty || '';
+  document.getElementById('sapDrug2Details').value = r.drug2Details || '';
+
+  document.getElementById('sapHistoryPositiveTests').value = r.historyPositiveTests || '';
+  document.getElementById('sapHistoryDwi').value = r.historyDwi || '';
+  document.getElementById('sapPreviousTreatment').value = r.previousTreatment || '';
+  document.getElementById('sapPreviousTreatmentExplain').value = r.previousTreatmentExplain || '';
+  document.getElementById('sapProblemHistory').value = r.problemHistory || '';
+
+  document.getElementById('sapIntoxicated').value = r.intoxicated || '';
+  document.getElementById('sapOrientation').value = r.orientation || '';
+  document.getElementById('sapPhysicalPresentation').value = r.physicalPresentation || '';
+  document.getElementById('sapPresentationComments').value = r.presentationComments || '';
+  document.getElementById('sapOtherAddictionsComments').value = r.otherAddictionsComments || '';
+  document.getElementById('sapAcknowledgeProblem').value = r.acknowledgeProblem || '';
+  document.getElementById('sapDenial').value = r.denial || '';
+  document.getElementById('sapDenialComments').value = r.denialComments || '';
+
+  document.getElementById('sapDiagnosisList').value = r.diagnosisList || '';
+  document.getElementById('sapDiagnosisComments').value = r.diagnosisComments || '';
+  document.getElementById('sapVictimInfo').value = r.victimInfo || '';
+  document.getElementById('sapActionTaken').value = r.actionTaken || '';
+  document.getElementById('sapSafetyExplanation').value = r.safetyExplanation || '';
+  document.getElementById('sapPsychTxHistory').value = r.psychTxHistory || '';
+  document.getElementById('sapPsychMedHistory').value = r.psychMedHistory || '';
+  document.getElementById('sapCounselingHistory').value = r.counselingHistory || '';
+  document.getElementById('sapCurrentMeds').value = r.currentMeds || '';
+
+  document.getElementById('sapWeightChanges').value = r.weightChanges || '';
+  document.getElementById('sapImpairmentComments').value = r.impairmentComments || '';
+  document.getElementById('sapSupportSystem').value = r.supportSystem || '';
+  document.getElementById('sapMedicalHistory').value = r.medicalHistory || '';
+  document.getElementById('sapMedicalExplain').value = r.medicalExplain || '';
+  document.getElementById('sapMedicalMeds').value = r.medicalMeds || '';
+  document.getElementById('sapDoctorInfo').value = r.doctorInfo || '';
+  document.getElementById('sapLegalProblems').value = r.legalProblems || '';
+  document.getElementById('sapLegalExplain').value = r.legalExplain || '';
+  document.getElementById('sapCourtDate').value = r.courtDate || '';
+  document.getElementById('sapFinancialProblems').value = r.financialProblems || '';
+  document.getElementById('sapFinancialExplain').value = r.financialExplain || '';
+  document.getElementById('sapWorkIssues').value = r.workIssues || '';
+  document.getElementById('sapWorkExplain').value = r.workExplain || '';
+  document.getElementById('sapLosses').value = r.losses || '';
+  document.getElementById('sapLossesExplain').value = r.lossesExplain || '';
+
+  setCheckedValuesByName('sapDocsSigned', r.docsSigned || []);
+  setCheckedValuesByName('sapIdentifiedProblem', r.identifiedProblem || []);
+  setCheckedValuesByName('sapOtherAddictions', r.otherAddictions || []);
+  setCheckedValuesByName('sapSuicidal', r.suicidal || []);
+  setCheckedValuesByName('sapHomicidal', r.homicidal || []);
+  setCheckedValuesByName('sapImpairments', r.impairments || []);
+
+  const mastAnswers = safeParseJson(s.mastAnswers);
+  SAP_MAST_ITEMS.forEach(item => {
+    const answer = mastAnswers['mast_' + item.n];
+    if (answer) {
+      const el = document.querySelector(`input[name="sap_mast_${item.n}"][value="${answer}"]`);
+      if (el) el.checked = true;
+    }
+  });
+
+  const dastAnswers = safeParseJson(s.dastAnswers);
+  SAP_DAST_ITEMS.forEach(item => {
+    const answer = dastAnswers['dast_' + item.n];
+    if (answer) {
+      const el = document.querySelector(`input[name="sap_dast_${item.n}"][value="${answer}"]`);
+      if (el) el.checked = true;
+    }
+  });
+
+  if (sapSignaturePad) sapSignaturePad.clear();
+
+  selectedClientId = s.clientId || selectedClientId;
+  calculateSapScores();
+  buildSapReportPreview();
+  renderSapEvaluations();
+}
+
+function renderSapEvaluations() {
+  const box = document.getElementById('sapEvaluationsList');
+  if (!box) return;
+
+  const clientId = selectedClientId || (document.getElementById('sapClientId') ? document.getElementById('sapClientId').value : '');
+  const items = clientId ? state.sapEvaluations.filter(s => s.clientId === clientId) : state.sapEvaluations;
+
+  if (!items.length) {
+    box.innerHTML = '<div class="empty">No SAP evaluations saved yet.</div>';
+    return;
+  }
+
+  box.innerHTML = items.map(s => {
+    const c = state.clients.find(x => x.id === s.clientId);
+    return `<div class="mini-item">
+      <div style="display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;">
+        <strong>${escapeHtml(c ? c.name : s.employeeName || 'Unknown Client')}</strong>
+        <span class="small">${escapeHtml(formatDate(s.evalDate))} • ${escapeHtml(s.dotType || '')}</span>
+      </div>
+      <div style="margin-top:8px;"><strong>Reason:</strong> ${escapeHtml(s.reasonForAssessment || '—')}</div>
+      <div style="margin-top:8px;"><strong>MAST / DAST:</strong> ${escapeHtml(s.mastScore || '0')} / ${escapeHtml(s.dastScore || '0')}</div>
+      <div style="margin-top:8px;"><strong>Company:</strong> ${escapeHtml(s.company || '—')}</div>
+      <div class="row-actions">
+        <button class="secondary-btn open-sap-btn" data-sap-id="${s.id}" type="button">Open</button>
+      </div>
+    </div>`;
+  }).join('');
+
+  document.querySelectorAll('.open-sap-btn').forEach(btn => {
+    btn.addEventListener('click', function() {
+      loadSapIntoForm(btn.dataset.sapId);
+    });
+  });
+}
+    document.getElementById('sapForm').addEventListener('submit', saveSapEvaluation);
+
+document.getElementById('sapClientId').addEventListener('change', function() {
+  selectedClientId = this.value || selectedClientId;
+  syncSapClientContext();
+});
+
+document.getElementById('newSapForSelectedBtn').addEventListener('click', function() {
+  clearSapForm(true);
+});
+
+buildSapTables();
+
+sapSignaturePad = setupSignaturePad('sapSignatureCanvas', 'clearSapSignatureBtn', null);
+
+document.getElementById('sapEvalDate').valueAsDate = new Date();
+document.getElementById('sapSignatureDate').valueAsDate = new Date();
+
+document.addEventListener('input', function(e) {
+  if (e.target.closest('#sapForm')) {
+    calculateSapScores();
+  }
+});
+
+document.addEventListener('change', function(e) {
+  if (e.target.closest('#sapForm')) {
+    calculateSapScores();
+  }
+});
   </script>
 </body>
 </html>
