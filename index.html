@@ -3,785 +3,840 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Recovery EHR</title>
+  <title>ARS SAP Evaluation Form</title>
   <style>
-    :root{
-      --bg:#0f172a;
-      --bg2:#111827;
-      --panel:#1f2937;
-      --card:#ffffff;
-      --text:#e5e7eb;
-      --muted:#94a3b8;
-      --dark:#0f172a;
-      --accent:#7c3aed;
-      --danger:#dc2626;
-      --border:#334155;
-      --soft:#e2e8f0;
-      --shadow:0 10px 24px rgba(0,0,0,.18);
+    :root {
+      --bg: #f3f4f6;
+      --card: #ffffff;
+      --line: #d1d5db;
+      --text: #111827;
+      --muted: #6b7280;
+      --accent: #5b21b6;
+      --accent-2: #ede9fe;
+      --danger: #991b1b;
+      --ok: #065f46;
     }
-    *{box-sizing:border-box}
-    body{
-      margin:0;
-      font-family:Arial,Helvetica,sans-serif;
-      background:linear-gradient(180deg,var(--bg),var(--bg2));
-      color:var(--text);
+    * { box-sizing: border-box; }
+    html, body { margin: 0; padding: 0; background: var(--bg); color: var(--text); font-family: Arial, Helvetica, sans-serif; }
+    body { padding: 20px; }
+    .wrap { max-width: 1200px; margin: 0 auto; }
+    .toolbar {
+      position: sticky; top: 0; z-index: 1000; background: rgba(243,244,246,.96);
+      backdrop-filter: blur(8px); padding: 12px 0 16px; margin-bottom: 16px;
+      display: flex; flex-wrap: wrap; gap: 10px; align-items: center;
     }
-    .hidden{display:none!important}
-    .app{
-      display:grid;
-      grid-template-columns:280px 1fr;
-      min-height:100vh;
+    button {
+      border: 0; border-radius: 10px; padding: 10px 14px; font-weight: 700; cursor: pointer;
+      background: var(--accent); color: #fff;
     }
-    .sidebar{
-      background:rgba(15,23,42,.96);
-      border-right:1px solid var(--border);
-      padding:20px;
-      position:sticky;
-      top:0;
-      height:100vh;
-      overflow:auto;
+    button.secondary { background: #374151; }
+    button.ghost { background: #e5e7eb; color: #111827; }
+    button.danger { background: var(--danger); }
+    .status { color: var(--muted); font-size: 14px; }
+    .card {
+      background: var(--card); border: 1px solid var(--line); border-radius: 18px;
+      box-shadow: 0 8px 22px rgba(0,0,0,.04); padding: 18px; margin-bottom: 18px;
     }
-    .brand{font-size:22px;font-weight:700;margin-bottom:6px}
-    .subtitle{font-size:13px;color:var(--muted);line-height:1.4;margin-bottom:18px}
-    .warning{
-      background:rgba(220,38,38,.12);
-      border:1px solid rgba(220,38,38,.35);
-      color:#fecaca;
-      border-radius:12px;
-      padding:12px;
-      font-size:12px;
-      line-height:1.4;
-      margin-bottom:18px;
+    .title h1 { margin: 0 0 6px; font-size: 28px; }
+    .title p { margin: 3px 0; color: var(--muted); }
+    .section-title {
+      display: flex; justify-content: space-between; align-items: center; gap: 12px;
+      border-bottom: 2px solid var(--accent-2); padding-bottom: 8px; margin-bottom: 16px;
     }
-    .nav-btn,.primary-btn,.secondary-btn,.danger-btn{
-      width:100%;
-      border:none;
-      border-radius:12px;
-      padding:12px 14px;
-      margin-bottom:10px;
-      cursor:pointer;
-      font-weight:700;
-      transition:.2s ease;
+    .section-title h2 { margin: 0; font-size: 22px; color: var(--accent); }
+    .section-title small { color: var(--muted); }
+    .grid { display: grid; gap: 12px; }
+    .g2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .g3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+    .g4 { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+    .g5 { grid-template-columns: repeat(5, minmax(0, 1fr)); }
+    .g6 { grid-template-columns: repeat(6, minmax(0, 1fr)); }
+    .field label, .field legend { display: block; font-weight: 700; font-size: 14px; margin-bottom: 6px; }
+    .field input[type="text"], .field input[type="date"], .field input[type="tel"], .field input[type="number"],
+    .field textarea, .field select, .field input[type="email"] {
+      width: 100%; border: 1px solid var(--line); border-radius: 10px; padding: 10px 12px;
+      font-size: 14px; background: #fff; color: #111827;
     }
-    .nav-btn{
-      background:var(--panel);
-      color:var(--text);
-      text-align:left;
-      border:1px solid var(--border);
+    .field textarea { min-height: 90px; resize: vertical; }
+    fieldset.field { border: 1px solid var(--line); border-radius: 14px; padding: 12px; margin: 0; }
+    .check-group, .radio-group {
+      display: grid; gap: 8px 12px; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
     }
-    .nav-btn.active,.nav-btn:hover{
-      background:rgba(124,58,237,.18);
-      border-color:var(--accent);
+    .check-group.compact, .radio-group.compact { grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); }
+    .option { display: flex; gap: 8px; align-items: flex-start; font-size: 14px; }
+    .inline { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+    .muted { color: var(--muted); }
+    .score-box {
+      background: #faf5ff; border: 1px solid #ddd6fe; border-radius: 14px; padding: 14px;
     }
-    .primary-btn{background:var(--accent);color:#fff}
-    .primary-btn:hover{background:#6d28d9}
-    .secondary-btn{background:#e5e7eb;color:#111827}
-    .danger-btn{background:var(--danger);color:#fff}
-    .content{padding:28px}
-    .toolbar{
-      display:flex;
-      justify-content:space-between;
-      align-items:center;
-      gap:12px;
-      flex-wrap:wrap;
-      margin-bottom:22px;
+    .score-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px; }
+    .score-item {
+      background: #fff; border: 1px solid var(--line); border-radius: 12px; padding: 12px;
     }
-    .toolbar .left{
-      display:flex;
-      align-items:center;
-      gap:10px;
-      flex-wrap:wrap;
+    .score-item strong { display: block; font-size: 24px; color: var(--accent); margin-top: 4px; }
+    .result-good { color: var(--ok); font-weight: 700; }
+    .result-warn { color: #92400e; font-weight: 700; }
+    .result-bad { color: var(--danger); font-weight: 700; }
+    table { width: 100%; border-collapse: collapse; }
+    th, td { border: 1px solid var(--line); padding: 8px; vertical-align: top; font-size: 14px; }
+    th { background: #f9fafb; text-align: left; }
+    .instrument-table td:first-child { width: 48px; text-align: center; font-weight: 700; }
+    .instrument-table td:nth-child(3), .instrument-table td:nth-child(4) { width: 90px; text-align: center; }
+    .sig-wrap { display: grid; grid-template-columns: 1fr; gap: 16px; }
+    .multi-rec-grid { display:grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap:12px; }
+    .recommendation-block { border:1px solid var(--line); border-radius:14px; padding:12px; background:#fafafa; }
+    .rec-summary { background:#f8fafc; border:1px solid var(--line); border-radius:12px; padding:12px; white-space:pre-wrap; }
+    .signature-pad { border: 1px dashed #9ca3af; border-radius: 12px; background: #fff; width: 100%; height: 190px; }
+    .sig-tools { display: flex; gap: 8px; margin-top: 8px; }
+    .tiny { font-size: 12px; color: var(--muted); }
+    .page-break { page-break-before: always; break-before: page; }
+    .report-preview {
+      white-space: pre-wrap; background: #fff; border: 1px solid var(--line); border-radius: 12px; padding: 14px;
+      min-height: 240px; font-size: 14px; line-height: 1.5;
     }
-    input,select,textarea{
-      width:100%;
-      padding:11px 12px;
-      border-radius:10px;
-      border:1px solid #cbd5e1;
-      background:#fff;
-      color:#111827;
-      font-size:14px;
+    .hidden-print { display: block; }
+    .print-note { display: none; }
+    .subtle { background: #f9fafb; border: 1px solid var(--line); border-radius: 12px; padding: 12px; }
+    .footer-note { font-size: 12px; color: #4b5563; line-height: 1.5; }
+    @media (max-width: 900px) {
+      .g2,.g3,.g4,.g5,.g6,.sig-wrap,.score-grid,.multi-rec-grid { grid-template-columns: 1fr; }
     }
-    textarea{min-height:100px;resize:vertical}
-    .search{min-width:260px;max-width:360px}
-    .grid{display:grid;gap:16px}
-    .grid-2{grid-template-columns:repeat(2,minmax(0,1fr))}
-    .grid-3{grid-template-columns:repeat(3,minmax(0,1fr))}
-    .card{
-      background:var(--card);
-      color:#111827;
-      border-radius:18px;
-      box-shadow:var(--shadow);
-      padding:18px;
-    }
-    .section-title{font-size:20px;font-weight:700;margin:0 0 4px;color:#0f172a}
-    .section-subtitle{font-size:14px;color:#475569;margin-bottom:16px}
-    .label{display:block;font-size:13px;font-weight:700;color:#334155;margin-bottom:6px}
-    .field{margin-bottom:14px}
-    .detail-grid{display:grid;grid-template-columns:1.2fr 1fr;gap:16px}
-    .client-list,.mini-list{display:grid;gap:10px}
-    .client-item{
-      display:flex;
-      justify-content:space-between;
-      align-items:center;
-      gap:12px;
-      padding:14px;
-      border:1px solid var(--soft);
-      border-radius:14px;
-      background:#fff;
-      color:#111827;
-      cursor:pointer;
-    }
-    .client-item:hover{border-color:var(--accent);background:#faf5ff}
-    .mini-item{
-      border:1px solid var(--soft);
-      border-radius:12px;
-      padding:12px;
-      background:#f8fafc;
-    }
-    .small{font-size:12px;color:#64748b}
-    .empty{
-      text-align:center;
-      padding:28px;
-      border:2px dashed #cbd5e1;
-      border-radius:14px;
-      color:#64748b;
-      background:#fff;
-    }
-    .badge{
-      display:inline-block;
-      padding:6px 10px;
-      border-radius:999px;
-      font-size:12px;
-      font-weight:700;
-    }
-    .badge-green{background:#d1fae5;color:#065f46}
-    .badge-yellow{background:#fef3c7;color:#92400e}
-    .badge-red{background:#fee2e2;color:#991b1b}
-    .badge-purple{background:#ede9fe;color:#5b21b6}
-    .chip-row{display:flex;gap:8px;flex-wrap:wrap}
-    .chip{
-      padding:7px 10px;
-      border-radius:999px;
-      background:#f1f5f9;
-      border:1px solid #cbd5e1;
-      font-size:12px;
-      color:#334155;
-    }
-    .row-actions{
-      display:flex;
-      gap:8px;
-      flex-wrap:wrap;
-      margin-top:12px;
-    }
-    .row-actions button,.row-actions a{
-      width:auto;
-      margin-bottom:0;
-    }
-    .signature-wrap{
-      border:1px solid #cbd5e1;
-      border-radius:12px;
-      background:#fff;
-      padding:10px;
-    }
-    .signature-canvas{
-      width:100%;
-      height:180px;
-      display:block;
-      border:1px dashed #94a3b8;
-      border-radius:8px;
-      background:#fff;
-      touch-action:none;
-      cursor:crosshair;
-    }
-    @media (max-width:1000px){
-      .app{grid-template-columns:1fr}
-      .sidebar{position:relative;height:auto}
-      .detail-grid,.grid-2,.grid-3{grid-template-columns:1fr}
+    @media print {
+      @page { size: letter; margin: 0.4in; }
+      body { background: #fff; padding: 0; }
+      .toolbar, .hidden-print { display: none !important; }
+      .card { box-shadow: none; border-radius: 0; border: 1px solid #999; margin-bottom: 14px; }
+      .print-note { display: block; color: #111; font-size: 12px; margin-bottom: 8px; }
+      input, textarea, select { border: 1px solid #999 !important; }
+      .section-title h2 { color: #000; }
+      .score-box { background: #fff !important; }
     }
   </style>
 </head>
 <body>
-  <div id="appShell" class="app">
-    <aside class="sidebar">
-      <div class="brand">Recovery EHR</div>
-      <div class="subtitle">Google-backed prototype</div>
+  <div class="wrap">
+    <div class="toolbar hidden-print">
+      <button type="button" onclick="calculateAll()">Calculate Scores</button>
+      <button type="button" class="secondary" onclick="buildReport()">Build DOT Report Preview</button>
+      <button type="button" class="ghost" onclick="saveDraft()">Save Draft</button>
+      <button type="button" class="ghost" onclick="loadDraft()">Load Draft</button>
+      <button type="button" class="danger" onclick="clearDraft()">Clear Saved Draft</button>
+      <button type="button" onclick="window.print()">Save / Print PDF</button>
+      <div class="status" id="saveStatus">Standalone file. Data can be saved locally in your browser.</div>
+    </div>
 
-      <div class="warning">
-        Intake and treatment plans include client and counselor signatures. Session dates and signature dates are stored separately.
+    <form id="sapForm">
+      <div class="card title">
+        <h1>Addiction Recovery Solutions, PLLC</h1>
+        <p><strong>Initial SAP Evaluation – Standalone HTML</strong></p>
+        <p>Phone: 903.445.8953</p>
+        <p class="tiny print-note">Use the Save / Print PDF button and choose “Save as PDF” in the browser print dialog.</p>
       </div>
 
-      <button class="nav-btn active" data-view="dashboardView" type="button">Dashboard</button>
-      <button class="nav-btn" data-view="clientsView" type="button">Clients</button>
-      <button class="nav-btn" data-view="newClientView" type="button">New Intake</button>
-      <button class="nav-btn" data-view="notesView" type="button">Session Notes</button>
-      <button class="nav-btn" data-view="plansView" type="button">Treatment Plans</button>
-      <button class="nav-btn" data-view="documentsView" type="button">Documents</button>
-      <button class="nav-btn" data-view="reportsView" type="button">Reports</button>
-
-      <hr style="border-color:#334155;opacity:.35;margin:18px 0;">
-
-      <button id="reloadBtn" class="primary-btn" type="button">Reload from Server</button>
-    </aside>
-
-    <main class="content">
-      <section id="dashboardView">
-        <div class="toolbar">
-          <div class="left"><h1 style="margin:0;font-size:30px;">Dashboard</h1></div>
+      <div class="card">
+        <div class="section-title"><h2>Client / Referral Information</h2><small>Form Header</small></div>
+        <div class="grid g4">
+          <div class="field"><label>Client Name</label><input name="clientName" type="text"></div>
+          <div class="field"><label>Date</label><input name="evalDate" type="date"></div>
+          <div class="field"><label>SSN</label><input name="ssn" type="text"></div>
+          <div class="field"><label>DOB</label><input name="dob" type="date"></div>
         </div>
-
-        <div class="grid grid-3">
-          <div class="card"><div class="section-title" id="statClients">0</div><div class="section-subtitle">Active Clients</div></div>
-          <div class="card"><div class="section-title" id="statHighRisk">0</div><div class="section-subtitle">High-Risk Alerts</div></div>
-          <div class="card"><div class="section-title" id="statNotes">0</div><div class="section-subtitle">Session Notes</div></div>
-        </div>
-
-        <div class="grid grid-2" style="margin-top:16px;">
-          <div class="card">
-            <div class="section-title">Recent Clients</div>
-            <div class="section-subtitle">Most recently loaded records</div>
-            <div id="recentClients" class="mini-list"></div>
-          </div>
-          <div class="card">
-            <div class="section-title">Status</div>
-            <div class="section-subtitle">Current app state</div>
-            <div class="mini-list">
-              <div id="serverStatus" class="mini-item">Ready</div>
+        <div class="grid g3" style="margin-top:12px;">
+          <fieldset class="field">
+            <legend>Referred employee signed paperwork</legend>
+            <div class="check-group compact">
+              <label class="option"><input type="checkbox" name="docsSigned" value="Statement of Understanding"> Statement of Understanding</label>
+              <label class="option"><input type="checkbox" name="docsSigned" value="Consent/ROI"> Consent / ROI</label>
+              <label class="option"><input type="checkbox" name="docsSigned" value="Other"> Other</label>
             </div>
-          </div>
+          </fieldset>
+          <div class="field"><label>Other paperwork details</label><input type="text" name="docsOther"></div>
+          <div class="field"><label>Case / Reference #</label><input type="text" name="caseNumber"></div>
         </div>
-      </section>
+      </div>
 
-      <section id="clientsView" class="hidden">
-        <div class="toolbar">
-          <div class="left">
-            <h1 style="margin:0;font-size:30px;">Clients</h1>
-            <input id="clientSearch" class="search" type="text" placeholder="Search">
-          </div>
-        </div>
-
-        <div class="detail-grid">
-          <div class="card">
-            <div class="section-title">Client List</div>
-            <div class="section-subtitle">Select a client to view details</div>
-            <div id="clientList" class="client-list"></div>
-          </div>
-
-          <div class="card">
-            <div class="section-title">Client Details</div>
-            <div class="section-subtitle">Intake summary</div>
-            <div id="clientDetail"></div>
+      <div class="card">
+        <div class="section-title"><h2>Assessment Reason / Test / Industry</h2><small>Questions 2–3</small></div>
+        <div class="grid g2">
+          <fieldset class="field">
+            <legend>Reason for assessment</legend>
+            <div class="radio-group">
+              <label class="option"><input type="radio" name="reason" value="Positive Test"> Positive Test</label>
+              <label class="option"><input type="radio" name="reason" value="Self Referral"> Self Referral</label>
+              <label class="option"><input type="radio" name="reason" value="DWI/DUI"> DWI/DUI</label>
+              <label class="option"><input type="radio" name="reason" value="Random Selection"> Random Selection</label>
+              <label class="option"><input type="radio" name="reason" value="Reasonable Suspicion"> Reasonable Suspicion</label>
+              <label class="option"><input type="radio" name="reason" value="Follow Up"> Follow Up</label>
+              <label class="option"><input type="radio" name="reason" value="Post Accident"> Post Accident</label>
+              <label class="option"><input type="radio" name="reason" value="Return to Duty"> Return to Duty</label>
+              <label class="option"><input type="radio" name="reason" value="Pre-employment"> Pre-employment</label>
+              <label class="option"><input type="radio" name="reason" value="Not Applicable"> Not Applicable</label>
+            </div>
+          </fieldset>
+          <div class="grid g2">
+            <div class="field"><label>Positive test date</label><input name="positiveTestDate" type="date"></div>
+            <div class="field"><label>Type of test</label><input name="typeOfTest" type="text" placeholder="e.g., Urine, BAT, Oral Fluid"></div>
+            <div class="field"><label>Other assessment reason details</label><input name="reasonNotes" type="text"></div>
+            <div class="field"><label>Current employer / entity</label><input name="employer" type="text"></div>
           </div>
         </div>
-      </section>
-
-      <section id="newClientView" class="hidden">
-        <div class="card">
-          <div class="section-title">New Intake</div>
-          <div class="section-subtitle">Includes client and counselor signature</div>
-
-          <form id="newClientForm">
-            <div class="grid grid-2">
-              <div class="field"><label class="label">Client Name</label><input id="name" required></div>
-              <div class="field"><label class="label">MRN / Client ID</label><input id="mrn" required></div>
-              <div class="field"><label class="label">Date of Birth</label><input id="dob" type="date"></div>
-              <div class="field"><label class="label">Phone</label><input id="phone"></div>
-              <div class="field"><label class="label">Email</label><input id="email" type="email"></div>
-              <div class="field"><label class="label">Admission Date</label><input id="admissionDate" type="date"></div>
-              <div class="field"><label class="label">Primary Substance</label><input id="primarySubstance"></div>
-              <div class="field"><label class="label">Secondary Substance</label><input id="secondarySubstance"></div>
-              <div class="field"><label class="label">Diagnosis</label><select id="diagnosis"></select></div>
-              <div class="field">
-                <label class="label">Stage of Change</label>
-                <select id="stageOfChange">
-                  <option>Precontemplation</option>
-                  <option>Contemplation</option>
-                  <option>Preparation</option>
-                  <option>Action</option>
-                  <option>Maintenance</option>
-                </select>
-              </div>
-              <div class="field">
-                <label class="label">Risk Level</label>
-                <select id="riskLevel">
-                  <option>Low</option>
-                  <option>Moderate</option>
-                  <option>High</option>
-                </select>
-              </div>
-              <div class="field">
-                <label class="label">Status</label>
-                <select id="status">
-                  <option>Active</option>
-                  <option>Pending</option>
-                  <option>Completed</option>
-                  <option>Discharged</option>
-                </select>
-              </div>
+        <div class="grid g2" style="margin-top:12px;">
+          <fieldset class="field">
+            <legend>Industry Type (DOT Mode)</legend>
+            <div class="radio-group">
+              <label class="option"><input type="radio" name="industry" value="FMCSA"> FMCSA</label>
+              <label class="option"><input type="radio" name="industry" value="FAA"> FAA</label>
+              <label class="option"><input type="radio" name="industry" value="FRA"> FRA</label>
+              <label class="option"><input type="radio" name="industry" value="FTA"> FTA</label>
+              <label class="option"><input type="radio" name="industry" value="USCG"> USCG</label>
+              <label class="option"><input type="radio" name="industry" value="PHMSA"> PHMSA</label>
+              <label class="option"><input type="radio" name="industry" value="Non-Transportation"> Non-Transportation</label>
+              <label class="option"><input type="radio" name="industry" value="Other"> Other Position</label>
             </div>
-
-            <div class="field"><label class="label">Presenting Problem</label><textarea id="presentingProblem"></textarea></div>
-            <div class="field"><label class="label">Goals</label><textarea id="goals"></textarea></div>
-            <div class="field"><label class="label">Supports / Recovery Capital</label><textarea id="supports"></textarea></div>
-            <div class="field"><label class="label">Alerts / Safety Notes</label><textarea id="alerts"></textarea></div>
-
-            <div class="grid grid-2">
-              <div class="field">
-                <label class="label">Client Signature</label>
-                <div class="signature-wrap">
-                  <canvas id="clientSignatureCanvas" class="signature-canvas"></canvas>
-                  <div id="clientSignatureDateText" class="small">Signature date: today</div>
-                  <div class="row-actions">
-                    <button id="clearClientSignatureBtn" class="secondary-btn" type="button">Clear Client Signature</button>
-                  </div>
-                </div>
-              </div>
-
-              <div class="field">
-                <label class="label">Counselor Signature</label>
-                <div class="signature-wrap">
-                  <canvas id="counselorSignatureCanvas" class="signature-canvas"></canvas>
-                  <div id="counselorSignatureDateText" class="small">Signature date: today</div>
-                  <div class="row-actions">
-                    <button id="clearCounselorSignatureBtn" class="secondary-btn" type="button">Clear Counselor Signature</button>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <div class="row-actions">
-              <button class="primary-btn" type="submit">Save Client</button>
-              <button id="clearClientFormBtn" class="secondary-btn" type="button">Clear</button>
-            </div>
-          </form>
+          </fieldset>
+          <div class="field"><label>Other position / industry</label><input name="otherPosition" type="text"></div>
         </div>
-      </section>
+      </div>
 
-      <section id="notesView" class="hidden">
-        <div class="card">
-          <div class="section-title">Session Notes</div>
-          <div class="section-subtitle">Counselor signature included</div>
-
-          <form id="noteForm">
-            <div class="grid grid-3">
-              <div class="field"><label class="label">Client</label><select id="noteClient"></select></div>
-              <div class="field"><label class="label">Date</label><input id="noteDate" type="date" required></div>
-              <div class="field">
-                <label class="label">Service Type</label>
-                <select id="noteType">
-                  <option>Individual Counseling</option>
-                  <option>Group Counseling</option>
-                  <option>Assessment</option>
-                  <option>Case Management</option>
-                  <option>SAP / RTD Support</option>
-                </select>
-              </div>
+      <div class="card">
+        <div class="section-title"><h2>Identified Problem / Relevant Circumstances</h2><small>Questions 4–8</small></div>
+        <fieldset class="field">
+          <legend>Description of identified problem – check all that apply</legend>
+          <div class="check-group">
+            <label class="option"><input type="checkbox" name="identifiedProblem" value="Alcohol"> Alcohol</label>
+            <label class="option"><input type="checkbox" name="identifiedProblem" value="Opiates"> Opiates</label>
+            <label class="option"><input type="checkbox" name="identifiedProblem" value="Ketamine"> Ketamine</label>
+            <label class="option"><input type="checkbox" name="identifiedProblem" value="Tranquilizers"> Tranquilizers</label>
+            <label class="option"><input type="checkbox" name="identifiedProblem" value="Amphetamines"> Amphetamines</label>
+            <label class="option"><input type="checkbox" name="identifiedProblem" value="PCP"> PCP</label>
+            <label class="option"><input type="checkbox" name="identifiedProblem" value="GHB"> GHB</label>
+            <label class="option"><input type="checkbox" name="identifiedProblem" value="Hallucinogens"> Hallucinogens</label>
+            <label class="option"><input type="checkbox" name="identifiedProblem" value="Cocaine"> Cocaine</label>
+            <label class="option"><input type="checkbox" name="identifiedProblem" value="Inhalants"> Inhalants</label>
+            <label class="option"><input type="checkbox" name="identifiedProblem" value="Prescription Drugs"> Prescription Drugs</label>
+            <label class="option"><input type="checkbox" name="identifiedProblem" value="Cannabis"> Cannabis</label>
+            <label class="option"><input type="checkbox" name="identifiedProblem" value="Ecstasy"> Ecstasy</label>
+            <label class="option"><input type="checkbox" name="identifiedProblem" value="Other"> Other</label>
+          </div>
+        </fieldset>
+        <div class="grid g3" style="margin-top:12px;">
+          <div class="field"><label>Alcohol – Quantity / $ spent</label><input name="alcoholQty" type="text"></div>
+          <div class="field"><label>Alcohol – First use</label><input name="alcoholFirstUse" type="text"></div>
+          <div class="field"><label>Alcohol – Last use / Frequency</label><input name="alcoholLastFrequency" type="text"></div>
+          <div class="field"><label>Drug 1 – Name</label><input name="drug1Name" type="text"></div>
+          <div class="field"><label>Drug 1 – Quantity / $ spent</label><input name="drug1Qty" type="text"></div>
+          <div class="field"><label>Drug 1 – First use / Last use / Frequency</label><input name="drug1Details" type="text"></div>
+          <div class="field"><label>Drug 2 – Name</label><input name="drug2Name" type="text"></div>
+          <div class="field"><label>Drug 2 – Quantity / $ spent</label><input name="drug2Qty" type="text"></div>
+          <div class="field"><label>Drug 2 – First use / Last use / Frequency</label><input name="drug2Details" type="text"></div>
+        </div>
+        <div class="grid g2" style="margin-top:12px;">
+          <div class="field"><label>5. History of Positive Tests</label><textarea name="historyPositiveTests"></textarea></div>
+          <div class="field"><label>6. History of DWI / DUI</label><textarea name="historyDwi"></textarea></div>
+          <fieldset class="field">
+            <legend>7. History of previous substance abuse treatment</legend>
+            <div class="radio-group compact">
+              <label class="option"><input type="radio" name="previousTreatment" value="Yes"> Yes</label>
+              <label class="option"><input type="radio" name="previousTreatment" value="No"> No</label>
             </div>
+            <div class="field" style="margin-top:8px;"><label>Explain if yes</label><textarea name="previousTreatmentExplain"></textarea></div>
+          </fieldset>
+          <div class="field"><label>8. History and background of the problem</label><textarea name="problemHistory"></textarea></div>
+        </div>
+      </div>
 
-            <div class="field"><label class="label">Data / Presentation</label><textarea id="noteData" required></textarea></div>
-            <div class="field"><label class="label">Assessment / Clinical Impression</label><textarea id="noteAssessment" required></textarea></div>
-            <div class="field"><label class="label">Plan / Next Steps</label><textarea id="notePlan" required></textarea></div>
-
-            <div class="field">
-              <label class="label">Counselor Signature</label>
-              <div class="signature-wrap">
-                <canvas id="noteSignatureCanvas" class="signature-canvas"></canvas>
-                <div id="noteSignatureDateText" class="small">Signature date: today</div>
-                <div class="row-actions">
-                  <button id="clearNoteSignatureBtn" class="secondary-btn" type="button">Clear Signature</button>
-                </div>
-              </div>
-            </div>
-
-            <div class="row-actions">
-              <button class="primary-btn" type="submit">Save Note</button>
-            </div>
-          </form>
-
-          <div style="margin-top:22px;">
-            <div class="section-title" style="font-size:18px;">Saved Notes</div>
-            <div id="notesList" class="mini-list" style="margin-top:12px;"></div>
+      <div class="card">
+        <div class="section-title"><h2>Mental Status / Addictions / Diagnosis</h2><small>Questions 9–23</small></div>
+        <div class="grid g3">
+          <fieldset class="field"><legend>9. Intoxicated</legend><div class="radio-group compact"><label class="option"><input type="radio" name="intoxicated" value="Yes"> Yes</label><label class="option"><input type="radio" name="intoxicated" value="No"> No</label></div></fieldset>
+          <div class="field"><label>11. Orientation (x3)</label><input name="orientation" type="text"></div>
+          <div class="field"><label>10. Physical Presentation / Behavior / Affect</label><input name="physicalPresentation" type="text"></div>
+        </div>
+        <div class="field" style="margin-top:12px;"><label>Comments</label><textarea name="presentationComments"></textarea></div>
+        <fieldset class="field" style="margin-top:12px;">
+          <legend>12. Other Addictions (if relevant to current problem)</legend>
+          <div class="check-group compact">
+            <label class="option"><input type="checkbox" name="otherAddictions" value="Nicotine"> Nicotine</label>
+            <label class="option"><input type="checkbox" name="otherAddictions" value="Spending"> Spending</label>
+            <label class="option"><input type="checkbox" name="otherAddictions" value="Gambling"> Gambling</label>
+            <label class="option"><input type="checkbox" name="otherAddictions" value="Sexual Behaviors"> Sexual Behaviors</label>
+            <label class="option"><input type="checkbox" name="otherAddictions" value="Eating"> Eating</label>
+            <label class="option"><input type="checkbox" name="otherAddictions" value="Other"> Other</label>
+          </div>
+          <div class="field" style="margin-top:8px;"><label>Comments</label><textarea name="otherAddictionsComments"></textarea></div>
+        </fieldset>
+        <div class="grid g3" style="margin-top:12px;">
+          <fieldset class="field"><legend>13. Client acknowledges a problem with substance abuse</legend><div class="radio-group compact"><label class="option"><input type="radio" name="ackProblem" value="Yes"> Yes</label><label class="option"><input type="radio" name="ackProblem" value="No"> No</label></div></fieldset>
+          <fieldset class="field"><legend>14. Factors of denial evident</legend><div class="radio-group compact"><label class="option"><input type="radio" name="denial" value="Yes"> Yes</label><label class="option"><input type="radio" name="denial" value="No"> No</label></div></fieldset>
+          <div class="field"><label>Comments</label><textarea name="denialComments"></textarea></div>
+        </div>
+        <div class="score-box" style="margin-top:12px;">
+          <div class="section-title" style="margin-bottom:12px;"><h2 style="font-size:18px;">15. Instrument Scores</h2><small>Auto-calculated</small></div>
+          <div class="score-grid">
+            <div class="score-item"><div>MAST Score</div><strong id="mastScore">0</strong><div id="mastInterpretation" class="muted">Not calculated</div></div>
+            <div class="score-item"><div>DAST-10 Score</div><strong id="dastScore">0</strong><div id="dastInterpretation" class="muted">Not calculated</div></div>
+            <div class="score-item"><div>Combined Instrument Note</div><strong id="combinedFlag">—</strong><div id="combinedInterpretation" class="muted">Use clinical judgment with all findings</div></div>
+            <div class="score-item"><div>Manual instrument comments</div><strong id="scoreCommentStatus">Ready</strong><div class="muted">Comments save into PDF</div></div>
+          </div>
+          <div class="grid g2" style="margin-top:12px;">
+            <div class="field"><label>Instrument score summary</label><input name="instrumentSummary" type="text" readonly></div>
+            <div class="field"><label>Instrument comments</label><textarea name="instrumentComments"></textarea></div>
           </div>
         </div>
-      </section>
+        <fieldset class="field" style="margin-top:12px;">
+          <legend>16. Overall Diagnosis: DSM-5 Substance Use Disorders – check all that apply</legend>
+          <div class="check-group">
+            <label class="option"><input type="checkbox" name="diagnosis" value="F10.10 Alcohol Use – Mild"> F10.10 Alcohol Use – Mild</label>
+            <label class="option"><input type="checkbox" name="diagnosis" value="F10.20 Alcohol Use – Moderate"> F10.20 Alcohol Use – Moderate</label>
+            <label class="option"><input type="checkbox" name="diagnosis" value="F10.20 Alcohol Use – Severe"> F10.20 Alcohol Use – Severe</label>
+            <label class="option"><input type="checkbox" name="diagnosis" value="F12.10 Cannabis Use – Mild"> F12.10 Cannabis Use – Mild</label>
+            <label class="option"><input type="checkbox" name="diagnosis" value="F12.20 Cannabis Use – Moderate"> F12.20 Cannabis Use – Moderate</label>
+            <label class="option"><input type="checkbox" name="diagnosis" value="F12.20 Cannabis Use – Severe"> F12.20 Cannabis Use – Severe</label>
+            <label class="option"><input type="checkbox" name="diagnosis" value="F16.10 Phencyclidine Use – Mild"> F16.10 Phencyclidine Use – Mild</label>
+            <label class="option"><input type="checkbox" name="diagnosis" value="F16.20 Phencyclidine Use – Moderate"> F16.20 Phencyclidine Use – Moderate</label>
+            <label class="option"><input type="checkbox" name="diagnosis" value="F16.20 Phencyclidine Use – Severe"> F16.20 Phencyclidine Use – Severe</label>
+            <label class="option"><input type="checkbox" name="diagnosis" value="F16.10 Hallucinogen Use – Mild"> F16.10 Hallucinogen Use – Mild</label>
+            <label class="option"><input type="checkbox" name="diagnosis" value="F16.20 Hallucinogen Use – Moderate"> F16.20 Hallucinogen Use – Moderate</label>
+            <label class="option"><input type="checkbox" name="diagnosis" value="F16.20 Hallucinogen Use – Severe"> F16.20 Hallucinogen Use – Severe</label>
+            <label class="option"><input type="checkbox" name="diagnosis" value="F18.10 Inhalant Use – Mild"> F18.10 Inhalant Use – Mild</label>
+            <label class="option"><input type="checkbox" name="diagnosis" value="F18.20 Inhalant Use – Moderate"> F18.20 Inhalant Use – Moderate</label>
+            <label class="option"><input type="checkbox" name="diagnosis" value="F18.20 Inhalant Dependence – Severe"> F18.20 Inhalant Dependence – Severe</label>
+            <label class="option"><input type="checkbox" name="diagnosis" value="F11.10 Opiate Use – Mild"> F11.10 Opiate Use – Mild</label>
+            <label class="option"><input type="checkbox" name="diagnosis" value="F11.20 Opiate Use – Moderate"> F11.20 Opiate Use – Moderate</label>
+            <label class="option"><input type="checkbox" name="diagnosis" value="F11.20 Opiate Use – Severe"> F11.20 Opiate Use – Severe</label>
+            <label class="option"><input type="checkbox" name="diagnosis" value="F13.10 Sedative/Hypnotic Use – Mild"> F13.10 Sedative/Hypnotic Use – Mild</label>
+            <label class="option"><input type="checkbox" name="diagnosis" value="F13.20 Sedative/Hypnotic Use – Moderate"> F13.20 Sedative/Hypnotic Use – Moderate</label>
+            <label class="option"><input type="checkbox" name="diagnosis" value="F13.20 Sedative/Hypnotic Use – Severe"> F13.20 Sedative/Hypnotic Use – Severe</label>
+            <label class="option"><input type="checkbox" name="diagnosis" value="F15.10 Amphetamine-type – Mild"> F15.10 Amphetamine-type – Mild</label>
+            <label class="option"><input type="checkbox" name="diagnosis" value="F15.20 Amphetamine-type – Moderate"> F15.20 Amphetamine-type – Moderate</label>
+            <label class="option"><input type="checkbox" name="diagnosis" value="F15.20 Amphetamine-type – Severe"> F15.20 Amphetamine-type – Severe</label>
+            <label class="option"><input type="checkbox" name="diagnosis" value="F14.10 Cocaine Use – Mild"> F14.10 Cocaine Use – Mild</label>
+            <label class="option"><input type="checkbox" name="diagnosis" value="F14.20 Cocaine Use – Moderate"> F14.20 Cocaine Use – Moderate</label>
+            <label class="option"><input type="checkbox" name="diagnosis" value="F14.20 Cocaine Use – Severe"> F14.20 Cocaine Use – Severe</label>
+            <label class="option"><input type="checkbox" name="diagnosis" value="F15.10 Other Stimulant Use – Mild"> F15.10 Other Stimulant Use – Mild</label>
+            <label class="option"><input type="checkbox" name="diagnosis" value="F15.20 Other Stimulant Use – Moderate"> F15.20 Other Stimulant Use – Moderate</label>
+            <label class="option"><input type="checkbox" name="diagnosis" value="F15.20 Other Stimulant Use – Severe"> F15.20 Other Stimulant Use – Severe</label>
+            <label class="option"><input type="checkbox" name="diagnosis" value="F19.10 Other Substance Use – Mild"> F19.10 Other Substance Use – Mild</label>
+            <label class="option"><input type="checkbox" name="diagnosis" value="F19.20 Other Substance Use – Moderate"> F19.20 Other Substance Use – Moderate</label>
+            <label class="option"><input type="checkbox" name="diagnosis" value="F19.20 Other Substance Use – Severe"> F19.20 Other Substance Use – Severe</label>
+            <label class="option"><input type="checkbox" name="diagnosis" value="R69 NO DIAGNOSIS"> R69 NO DIAGNOSIS</label>
+          </div>
+        </fieldset>
+        <div class="field" style="margin-top:12px;"><label>Diagnosis comments</label><textarea name="diagnosisComments"></textarea></div>
+        <div class="grid g3" style="margin-top:12px;">
+          <fieldset class="field"><legend>17. Suicidal Ideation</legend><div class="check-group compact"><label class="option"><input type="checkbox" name="suicidal" value="Yes"> Yes</label><label class="option"><input type="checkbox" name="suicidal" value="No"> No</label><label class="option"><input type="checkbox" name="suicidal" value="Plans"> Plans</label><label class="option"><input type="checkbox" name="suicidal" value="Means"> Means</label><label class="option"><input type="checkbox" name="suicidal" value="History"> History</label></div></fieldset>
+          <fieldset class="field"><legend>18. Homicidal Ideation</legend><div class="check-group compact"><label class="option"><input type="checkbox" name="homicidal" value="Yes"> Yes</label><label class="option"><input type="checkbox" name="homicidal" value="No"> No</label><label class="option"><input type="checkbox" name="homicidal" value="Plans"> Plans</label><label class="option"><input type="checkbox" name="homicidal" value="Means"> Means</label><label class="option"><input type="checkbox" name="homicidal" value="History"> History</label></div></fieldset>
+          <div class="field"><label>Name / address / phone of intended victim</label><textarea name="victimInfo"></textarea></div>
+        </div>
+        <div class="grid g2" style="margin-top:12px;">
+          <div class="field"><label>17. Explanation</label><textarea name="suicidalExplanation"></textarea></div>
+          <div class="field"><label>19. If yes to suicide / homicide: Action taken by SAP</label><textarea name="actionTaken"></textarea></div>
+          <div class="field"><label>20. Relevant Psychiatric Treatment History</label><textarea name="psychTxHistory"></textarea></div>
+          <div class="field"><label>21. Relevant Psychiatric Medication History</label><textarea name="psychMedHistory"></textarea></div>
+          <div class="field"><label>22. Relevant Counseling History</label><textarea name="counselingHistory"></textarea></div>
+          <div class="field"><label>23. Relevant Current Prescribed Medications</label><textarea name="currentMeds"></textarea></div>
+        </div>
+      </div>
 
-      <section id="plansView" class="hidden">
-        <div class="card">
-          <div class="section-title">Treatment Plans</div>
-          <div class="section-subtitle">Includes client and counselor signature</div>
-
-          <form id="planForm">
-            <div class="grid grid-2">
-              <div class="field"><label class="label">Client</label><select id="planClient"></select></div>
-              <div class="field"><label class="label">Review Date</label><input id="planReviewDate" type="date"></div>
-            </div>
-
-            <div class="field"><label class="label">Problem Template</label><select id="planProblemSelect"></select></div>
-            <div class="field"><label class="label">Problem</label><textarea id="planProblem" required></textarea></div>
-            <div class="field"><label class="label">Goal Template</label><select id="planGoalSelect"></select></div>
-            <div class="field"><label class="label">Goal</label><textarea id="planGoal" required></textarea></div>
-            <div class="field"><label class="label">Objective Template</label><select id="planObjectivesSelect"></select></div>
-            <div class="field"><label class="label">Objectives</label><textarea id="planObjectives" required></textarea></div>
-            <div class="field"><label class="label">Intervention Template</label><select id="planInterventionsSelect"></select></div>
-            <div class="field"><label class="label">Interventions</label><textarea id="planInterventions" required></textarea></div>
-
-            <div class="grid grid-2">
-              <div class="field">
-                <label class="label">Client Signature</label>
-                <div class="signature-wrap">
-                  <canvas id="planClientSignatureCanvas" class="signature-canvas"></canvas>
-                  <div id="planClientSignatureDateText" class="small">Signature date: today</div>
-                  <div class="row-actions">
-                    <button id="clearPlanClientSignatureBtn" class="secondary-btn" type="button">Clear Client Signature</button>
-                  </div>
-                </div>
-              </div>
-
-              <div class="field">
-                <label class="label">Counselor Signature</label>
-                <div class="signature-wrap">
-                  <canvas id="planCounselorSignatureCanvas" class="signature-canvas"></canvas>
-                  <div id="planCounselorSignatureDateText" class="small">Signature date: today</div>
-                  <div class="row-actions">
-                    <button id="clearPlanCounselorSignatureBtn" class="secondary-btn" type="button">Clear Counselor Signature</button>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <div class="row-actions">
-              <button class="primary-btn" type="submit">Save Plan</button>
-            </div>
-          </form>
-
-          <div style="margin-top:22px;">
-            <div class="section-title" style="font-size:18px;">Saved Plans</div>
-            <div id="plansList" class="mini-list" style="margin-top:12px;"></div>
+      <div class="card page-break">
+        <div class="section-title"><h2>Impairments / Medical / Legal / Social</h2><small>Questions 24–30</small></div>
+        <fieldset class="field">
+          <legend>24. Impairments – check all that apply</legend>
+          <div class="check-group">
+            <label class="option"><input type="checkbox" name="impairments" value="Onset Insomnia"> Onset Insomnia</label>
+            <label class="option"><input type="checkbox" name="impairments" value="Terminal Insomnia"> Terminal Insomnia</label>
+            <label class="option"><input type="checkbox" name="impairments" value="Global Insomnia"> Global Insomnia</label>
+            <label class="option"><input type="checkbox" name="impairments" value="Appetite"> Appetite</label>
+            <label class="option"><input type="checkbox" name="impairments" value="Speech"> Speech</label>
+            <label class="option"><input type="checkbox" name="impairments" value="Mood"> Mood</label>
+            <label class="option"><input type="checkbox" name="impairments" value="Vision"> Vision</label>
+            <label class="option"><input type="checkbox" name="impairments" value="Weight Changes"> Weight Changes</label>
+            <label class="option"><input type="checkbox" name="impairments" value="Energy"> Energy</label>
+            <label class="option"><input type="checkbox" name="impairments" value="Memory"> Memory</label>
+            <label class="option"><input type="checkbox" name="impairments" value="Concentration"> Concentration</label>
+            <label class="option"><input type="checkbox" name="impairments" value="Headaches"> Headaches</label>
+            <label class="option"><input type="checkbox" name="impairments" value="Changes in gait"> Changes in gait</label>
+            <label class="option"><input type="checkbox" name="impairments" value="Tremors"> Tremors</label>
+            <label class="option"><input type="checkbox" name="impairments" value="Perception"> Perception</label>
+            <label class="option"><input type="checkbox" name="impairments" value="Thought Process"> Thought Process</label>
+            <label class="option"><input type="checkbox" name="impairments" value="Thought Content"> Thought Content</label>
+            <label class="option"><input type="checkbox" name="impairments" value="Loss of balance"> Loss of balance</label>
+            <label class="option"><input type="checkbox" name="impairments" value="Hallucinations"> Hallucinations</label>
+          </div>
+        </fieldset>
+        <div class="grid g3" style="margin-top:12px;">
+          <div class="field"><label>Weight changes details</label><input name="weightChanges" type="text"></div>
+          <div class="field"><label>Impairment comments</label><textarea name="impairmentComments"></textarea></div>
+          <div class="field"><label>Support system currently in place</label><textarea name="supportSystem"></textarea></div>
+        </div>
+        <div class="grid g2" style="margin-top:12px;">
+          <fieldset class="field"><legend>25. Medical / Health Problems History relevant to current problem</legend><div class="radio-group compact"><label class="option"><input type="radio" name="medicalHistory" value="Yes"> Yes</label><label class="option"><input type="radio" name="medicalHistory" value="No"> No</label></div><div class="field" style="margin-top:8px;"><label>Explain if yes</label><textarea name="medicalExplain"></textarea></div><div class="field"><label>Medications</label><textarea name="medicalMeds"></textarea></div><div class="field"><label>Doctor Name / Phone</label><input name="doctorInfo" type="text"></div></fieldset>
+          <fieldset class="field"><legend>26. Legal problems</legend><div class="radio-group compact"><label class="option"><input type="radio" name="legalProblems" value="Yes"> Yes</label><label class="option"><input type="radio" name="legalProblems" value="No"> No</label></div><div class="field" style="margin-top:8px;"><label>Explain if yes</label><textarea name="legalExplain"></textarea></div><div class="field"><label>Court date</label><input name="courtDate" type="date"></div></fieldset>
+          <fieldset class="field"><legend>27. Financial problems</legend><div class="radio-group compact"><label class="option"><input type="radio" name="financialProblems" value="Yes"> Yes</label><label class="option"><input type="radio" name="financialProblems" value="No"> No</label></div><div class="field" style="margin-top:8px;"><label>Explain if yes</label><textarea name="financialExplain"></textarea></div></fieldset>
+          <fieldset class="field"><legend>28. Work related issues</legend><div class="radio-group compact"><label class="option"><input type="radio" name="workIssues" value="Yes"> Yes</label><label class="option"><input type="radio" name="workIssues" value="No"> No</label></div><div class="field" style="margin-top:8px;"><label>Explain if yes</label><textarea name="workExplain"></textarea></div></fieldset>
+          <fieldset class="field"><legend>29. Significant losses (last 12 months)</legend><div class="radio-group compact"><label class="option"><input type="radio" name="losses" value="Yes"> Yes</label><label class="option"><input type="radio" name="losses" value="No"> No</label></div><div class="field" style="margin-top:8px;"><label>Explain if yes</label><textarea name="lossesExplain"></textarea></div></fieldset>
+          <div class="subtle footer-note">
+            <strong>Reminder section from the original form</strong><br>
+            • Do not include diagnosis or personal / medical history in the DOT SAP report.<br>
+            • Send a copy of the initial report to ASAP for fact checking if required.<br>
+            • Reach out to the case manager after the evaluation.<br>
+            • Reimbursement note can be preserved here for internal workflow reference.
           </div>
         </div>
-      </section>
+      </div>
 
-      <section id="documentsView" class="hidden">
-        <div class="card">
-          <div class="section-title">Documents</div>
-          <div class="section-subtitle">Metadata in Sheets, files in Drive</div>
+      <div class="card">
+        <div class="section-title"><h2>MAST / Drug-Alcohol Screening Protocol</h2><small>Adapted from the uploaded form</small></div>
+        <div class="muted" style="margin-bottom:12px;">Directions: answer each question Yes or No. Weighted scoring follows the scoring key from the uploaded packet.</div>
+        <table class="instrument-table">
+          <thead><tr><th>#</th><th>Question</th><th>Yes</th><th>No</th><th>Weight</th></tr></thead>
+          <tbody id="mastTable"></tbody>
+        </table>
+      </div>
 
-          <form id="documentForm">
-            <div class="grid grid-3">
-              <div class="field"><label class="label">Client</label><select id="documentClient"></select></div>
-              <div class="field">
-                <label class="label">Document Type</label>
-                <select id="documentType">
-                  <option>Intake</option>
-                  <option>Consent</option>
-                  <option>ROI</option>
-                  <option>Assessment</option>
-                  <option>Treatment Plan</option>
-                  <option>Progress Note</option>
-                  <option>Discharge</option>
-                  <option>Lab / Test Result</option>
-                  <option>Other</option>
-                </select>
-              </div>
-              <div class="field"><label class="label">Date</label><input id="documentDate" type="date"></div>
+      <div class="card page-break">
+        <div class="section-title"><h2>DAST-10</h2><small>Auto-scored section</small></div>
+        <div class="muted" style="margin-bottom:12px;">Use this section for drug-use screening without alcohol items. Most items score 1 for a risk response; item 3 is reverse scored.</div>
+        <table class="instrument-table">
+          <thead><tr><th>#</th><th>Question</th><th>Yes</th><th>No</th><th>Score Rule</th></tr></thead>
+          <tbody id="dastTable"></tbody>
+        </table>
+      </div>
+
+      <div class="card">
+        <div class="section-title"><h2>Recommendation Builder / Report Settings</h2><small>DOT and non-DOT language controls</small></div>
+        <div class="grid g3">
+          <fieldset class="field">
+            <legend>Case language</legend>
+            <div class="radio-group compact">
+              <label class="option"><input type="radio" name="caseLanguage" value="DOT" checked onchange="buildReport()"> DOT</label>
+              <label class="option"><input type="radio" name="caseLanguage" value="Non-DOT" onchange="buildReport()"> Non-DOT</label>
             </div>
+          </fieldset>
+          <div class="field"><label>DER / Employer Contact Name</label><input name="derName" type="text"></div>
+          <div class="field"><label>DER / Employer Contact Email or Fax</label><input name="derContact" type="text"></div>
+        </div>
+        <div class="grid g2" style="margin-top:12px;">
+          <div class="field"><label>Company Name</label><input name="companyName" type="text"></div>
+          <div class="field"><label>Company Address</label><textarea name="companyAddress" placeholder="Street, City, State ZIP"></textarea></div>
+          <div class="field"><label>Violation Date</label><input name="violationDate" type="date"></div>
+          <div class="field"><label>Violation / referral description</label><input name="violationLabel" type="text" placeholder="e.g., positive random urine drug screen, refused test, self referral"></div>
+        </div>
 
-            <div class="field"><label class="label">Title</label><input id="documentTitle"></div>
-            <div class="field"><label class="label">Choose File</label><input id="documentFile" type="file" accept=".pdf,.doc,.docx,.jpg,.jpeg,.png,.txt"></div>
-            <div class="small">For best results, keep uploads small.</div>
-            <div class="field"><label class="label">Notes</label><textarea id="documentNotes"></textarea></div>
-
-            <div class="row-actions">
-              <button class="primary-btn" type="submit">Save Document</button>
+        <div class="section-title" style="margin-top:18px;"><h2>Structured Recommendations</h2><small>Select up to two per category and add custom items</small></div>
+        <div class="multi-rec-grid">
+          <div class="recommendation-block">
+            <label><strong>Education Option 1</strong></label>
+            <select name="education1" onchange="buildRecommendationSummary();buildReport()">
+              <option value="">Select education recommendation</option>
+              <option value="4-hour Online Drug & Alcohol Education">4-hour Online Drug & Alcohol Education</option>
+              <option value="8-hour Online Drug & Alcohol Education">8-hour Online Drug & Alcohol Education</option>
+              <option value="16-hour Online Drug & Alcohol Education">16-hour Online Drug & Alcohol Education</option>
+              <option value="Substance use psychoeducation program">Substance use psychoeducation program</option>
+              <option value="Custom">Custom</option>
+            </select>
+            <div class="grid g2" style="margin-top:8px;">
+              <div class="field"><label>Custom education 1</label><input name="education1Custom" type="text" placeholder="IOP prep class, workbook, etc." oninput="buildRecommendationSummary();buildReport()"></div>
+              <div class="field"><label>Value / hours</label><input name="education1Value" type="text" placeholder="e.g., 8 hours" oninput="buildRecommendationSummary();buildReport()"></div>
             </div>
-          </form>
+          </div>
+          <div class="recommendation-block">
+            <label><strong>Education Option 2</strong></label>
+            <select name="education2" onchange="buildRecommendationSummary();buildReport()">
+              <option value="">Select second education recommendation</option>
+              <option value="4-hour Online Drug & Alcohol Education">4-hour Online Drug & Alcohol Education</option>
+              <option value="8-hour Online Drug & Alcohol Education">8-hour Online Drug & Alcohol Education</option>
+              <option value="16-hour Online Drug & Alcohol Education">16-hour Online Drug & Alcohol Education</option>
+              <option value="Substance use psychoeducation program">Substance use psychoeducation program</option>
+              <option value="Custom">Custom</option>
+            </select>
+            <div class="grid g2" style="margin-top:8px;">
+              <div class="field"><label>Custom education 2</label><input name="education2Custom" type="text" placeholder="IOP prep class, workbook, etc." oninput="buildRecommendationSummary();buildReport()"></div>
+              <div class="field"><label>Value / hours</label><input name="education2Value" type="text" placeholder="e.g., 16 hours" oninput="buildRecommendationSummary();buildReport()"></div>
+            </div>
+          </div>
 
-          <div style="margin-top:22px;">
-            <div class="section-title" style="font-size:18px;">Saved Documents</div>
-            <div id="documentsList" class="mini-list" style="margin-top:12px;"></div>
+          <div class="recommendation-block">
+            <label><strong>Peer Support Option 1</strong></label>
+            <select name="peer1" onchange="buildRecommendationSummary();buildReport()">
+              <option value="">Select peer support recommendation</option>
+              <option value="AA meetings">AA meetings</option>
+              <option value="NA meetings">NA meetings</option>
+              <option value="SMART Recovery meetings">SMART Recovery meetings</option>
+              <option value="Adult Children of Alcoholics meetings">Adult Children of Alcoholics meetings</option>
+              <option value="In The Rooms meetings">In The Rooms meetings</option>
+              <option value="Custom">Custom</option>
+            </select>
+            <div class="grid g2" style="margin-top:8px;">
+              <div class="field"><label>Custom peer support 1</label><input name="peer1Custom" type="text" placeholder="Faith-based recovery, Celebrate Recovery, etc." oninput="buildRecommendationSummary();buildReport()"></div>
+              <div class="field"><label>Value / count</label><input name="peer1Value" type="text" placeholder="e.g., 4 groups with verification" oninput="buildRecommendationSummary();buildReport()"></div>
+            </div>
+          </div>
+          <div class="recommendation-block">
+            <label><strong>Peer Support Option 2</strong></label>
+            <select name="peer2" onchange="buildRecommendationSummary();buildReport()">
+              <option value="">Select second peer support recommendation</option>
+              <option value="AA meetings">AA meetings</option>
+              <option value="NA meetings">NA meetings</option>
+              <option value="SMART Recovery meetings">SMART Recovery meetings</option>
+              <option value="Adult Children of Alcoholics meetings">Adult Children of Alcoholics meetings</option>
+              <option value="In The Rooms meetings">In The Rooms meetings</option>
+              <option value="Custom">Custom</option>
+            </select>
+            <div class="grid g2" style="margin-top:8px;">
+              <div class="field"><label>Custom peer support 2</label><input name="peer2Custom" type="text" placeholder="Faith-based recovery, Celebrate Recovery, etc." oninput="buildRecommendationSummary();buildReport()"></div>
+              <div class="field"><label>Value / count</label><input name="peer2Value" type="text" placeholder="e.g., 8 groups with verification" oninput="buildRecommendationSummary();buildReport()"></div>
+            </div>
+          </div>
+
+          <div class="recommendation-block">
+            <label><strong>Treatment / Counseling Option 1</strong></label>
+            <select name="treatment1" onchange="buildRecommendationSummary();buildReport()">
+              <option value="">Select treatment recommendation</option>
+              <option value="Individual counseling">Individual counseling</option>
+              <option value="Outpatient treatment">Outpatient treatment</option>
+              <option value="Intensive outpatient treatment (IOP)">Intensive outpatient treatment (IOP)</option>
+              <option value="Residential treatment">Residential treatment</option>
+              <option value="Aftercare / continuing care">Aftercare / continuing care</option>
+              <option value="Custom">Custom</option>
+            </select>
+            <div class="grid g2" style="margin-top:8px;">
+              <div class="field"><label>Custom treatment 1</label><input name="treatment1Custom" type="text" placeholder="IOP, residential, trauma therapy, etc." oninput="buildRecommendationSummary();buildReport()"></div>
+              <div class="field"><label>Value / sessions</label><input name="treatment1Value" type="text" placeholder="e.g., 6 sessions" oninput="buildRecommendationSummary();buildReport()"></div>
+            </div>
+          </div>
+          <div class="recommendation-block">
+            <label><strong>Treatment / Counseling Option 2</strong></label>
+            <select name="treatment2" onchange="buildRecommendationSummary();buildReport()">
+              <option value="">Select second treatment recommendation</option>
+              <option value="Individual counseling">Individual counseling</option>
+              <option value="Outpatient treatment">Outpatient treatment</option>
+              <option value="Intensive outpatient treatment (IOP)">Intensive outpatient treatment (IOP)</option>
+              <option value="Residential treatment">Residential treatment</option>
+              <option value="Aftercare / continuing care">Aftercare / continuing care</option>
+              <option value="Custom">Custom</option>
+            </select>
+            <div class="grid g2" style="margin-top:8px;">
+              <div class="field"><label>Custom treatment 2</label><input name="treatment2Custom" type="text" placeholder="IOP, residential, trauma therapy, etc." oninput="buildRecommendationSummary();buildReport()"></div>
+              <div class="field"><label>Value / sessions</label><input name="treatment2Value" type="text" placeholder="e.g., 30 days" oninput="buildRecommendationSummary();buildReport()"></div>
+            </div>
           </div>
         </div>
-      </section>
 
-      <section id="reportsView" class="hidden">
-        <div class="card">
-          <div class="section-title">Reports</div>
-          <div class="section-subtitle">Simple summaries</div>
-          <div class="grid grid-2">
-            <div>
-              <div class="label">Clients by Status</div>
-              <div id="statusReport" class="mini-list"></div>
-            </div>
-            <div>
-              <div class="label">Primary Substances</div>
-              <div id="substanceReport" class="mini-list"></div>
+        <div class="grid g2" style="margin-top:14px;">
+          <div class="field"><label>Recommendation summary</label><textarea name="sapRecommendation" placeholder="Auto-built from selections, but editable"></textarea></div>
+          <div class="field"><label>Additional report note</label><textarea name="dotReportNote" placeholder="No diagnosis or protected medical history in the employer-facing report."></textarea></div>
+        </div>
+        <div class="rec-summary" id="recommendationSummary"></div>
+      </div>
+
+      <div class="card">
+        <div class="section-title"><h2>SAP Report Preview</h2><small>Employer-facing language updates automatically</small></div>
+        <div style="margin:12px 0 10px;" class="inline hidden-print">
+          <button type="button" onclick="buildRecommendationSummary();buildReport()">Generate SAP Report Preview</button>
+        </div>
+        <div id="reportPreview" class="report-preview"></div>
+      </div>
+
+      <div class="card">
+        <div class="section-title"><h2>Signature Block / PDF Finalization</h2><small>SAP signature appears in print/PDF</small></div>
+        <div class="grid g3">
+          <div class="field"><label>SAP Full Name</label><input name="sapName" type="text" placeholder="Joshua Pair"></div>
+          <div class="field"><label>SAP Credentials</label><input name="sapCredentials" type="text" placeholder="LCDC, SAP"></div>
+          <div class="field"><label>SAP Signature Date</label><input name="sapSigDate" type="date"></div>
+        </div>
+        <div class="sig-wrap" style="margin-top:12px;">
+          <div>
+            <label><strong>Substance Abuse Professional Signature</strong></label>
+            <canvas id="sapSignature" class="signature-pad"></canvas>
+            <div class="sig-tools hidden-print">
+              <button type="button" class="ghost" onclick="clearPad('sapSignature')">Clear SAP Signature</button>
             </div>
           </div>
         </div>
-      </section>
-    </main>
+        <div class="footer-note" style="margin-top:14px;">
+          Disclaimer: “The Genetic Information Nondiscrimination Act of 2008 (GINA) prohibits employers and other entities covered by GINA Title II from requesting or requiring genetic information of an individual or family member of the individual, except as specifically allowed by this law. As defined by GINA, ‘Genetic information’ includes an individual’s family medical history, the results of an individual’s or family member’s genetic tests, the fact that an individual or an individual’s family member sought or received genetic services, and genetic information of a fetus carried by an individual or an individual’s family member or an embryo lawfully held by an individual or family member receiving assistive reproductive services.” To comply with this law, do not provide genetic information in this response.
+        </div>
+      </div></div>
+    </form>
   </div>
 
   <script>
-    const DIAGNOSIS_OPTIONS = [
-      '',
-      'F10.10 Alcohol Use Disorder, Mild',
-      'F10.20 Alcohol Use Disorder, Moderate/Severe',
-      'F11.10 Opioid Use Disorder, Mild',
-      'F11.20 Opioid Use Disorder, Moderate/Severe',
-      'F12.10 Cannabis Use Disorder, Mild',
-      'F12.20 Cannabis Use Disorder, Moderate/Severe',
-      'F13.10 Sedative, Hypnotic, or Anxiolytic Use Disorder, Mild',
-      'F13.20 Sedative, Hypnotic, or Anxiolytic Use Disorder, Moderate/Severe',
-      'F14.10 Cocaine Use Disorder, Mild',
-      'F14.20 Cocaine Use Disorder, Moderate/Severe',
-      'F15.10 Other Stimulant Use Disorder, Mild',
-      'F15.20 Other Stimulant Use Disorder, Moderate/Severe',
-      'F16.10 Hallucinogen Use Disorder, Mild',
-      'F16.20 Hallucinogen Use Disorder, Moderate/Severe',
-      'F18.10 Inhalant Use Disorder, Mild',
-      'F18.20 Inhalant Use Disorder, Moderate/Severe',
-      'F17.200 Tobacco Use Disorder, Unspecified',
-      'F17.210 Nicotine Dependence, Cigarettes, Uncomplicated',
-      'F19.10 Other Psychoactive Substance Use Disorder, Mild',
-      'F19.20 Other Psychoactive Substance Use Disorder, Moderate/Severe'
+    const MAST_ITEMS = [
+      { n:1, q:'Do you consider your drug/alcohol behavior normal?', yes:0, no:2 },
+      { n:2, q:'Do you ever experience memory loss or convulsions the day after heavy drug/alcohol use?', yes:2, no:0 },
+      { n:3, q:'Does your spouse (or parents) ever worry or complain about your drug/alcohol use?', yes:1, no:0 },
+      { n:4, q:'Can you stop using drugs/alcohol without a struggle once you have begun?', yes:0, no:2 },
+      { n:5, q:'Do you ever feel bad about your drug/alcohol use?', yes:1, no:0 },
+      { n:6, q:'Do friends or relatives think that your drug/alcohol use is normal?', yes:0, no:2 },
+      { n:7, q:'Are you always able to stop using drugs/alcohol when you want to?', yes:0, no:2 },
+      { n:8, q:'Have you ever gone to AA, NA, or other self-help groups for your drug/alcohol use?', yes:5, no:0 },
+      { n:9, q:'Have you ever gotten into fights while using drugs or alcohol?', yes:1, no:0 },
+      { n:10, q:'Has drug/alcohol use ever created problems with you and your spouse (or parents)?', yes:2, no:0 },
+      { n:11, q:'Has your spouse (or family member) ever gone to anyone for help about your drug/alcohol use?', yes:2, no:0 },
+      { n:12, q:'Have you ever lost friends, girlfriends, or boyfriends because of your drug/alcohol use?', yes:2, no:0 },
+      { n:13, q:'Have you ever gotten into trouble at school or at work because of your drug/alcohol use?', yes:2, no:0 },
+      { n:14, q:'Have you ever lost a job or been suspended / expelled from school because of your drug/alcohol use?', yes:2, no:0 },
+      { n:15, q:'Have you ever neglected obligations, family, work, or school for two or more days in a row because you were using drugs/alcohol?', yes:2, no:0 },
+      { n:16, q:'Do you ever use drugs/alcohol before noon?', yes:1, no:0 },
+      { n:17, q:'Have you ever been told that you have liver trouble?', yes:2, no:0 },
+      { n:18, q:'Have you ever had seizures, severe shaking, heard voices, seen things not there, or felt out of control and panicky after heavy drug/alcohol use?', yes:5, no:0 },
+      { n:19, q:'Have you ever gone to anyone for help about your drug/alcohol use?', yes:5, no:0 },
+      { n:20, q:'Have you ever gone to a hospital because of your drug/alcohol use?', yes:5, no:0 },
+      { n:21, q:'Have you ever been a patient in a psychiatric hospital or general hospital where drug/alcohol use was part of the problem?', yes:2, no:0 },
+      { n:22, q:'Have you ever been seen at a psychiatric or mental health clinic, or gone to a doctor, social worker, or clergyman for help with an emotional problem in which drug/alcohol use played a part?', yes:2, no:0 },
+      { n:23, q:'Have you ever been arrested, even for a few hours, because of behavior related to your drug/alcohol use?', yes:2, no:0 },
+      { n:24, q:'Have you ever been arrested for driving while intoxicated?', yes:2, no:0 }
     ];
 
-    const PLAN_PROBLEM_OPTIONS = [
-      '',
-      'Client continues substance use despite negative consequences.',
-      'Client demonstrates limited insight into the severity of substance use.',
-      'Client reports frequent cravings and difficulty managing triggers.',
-      'Client lacks relapse prevention skills.',
-      'Client has unstable recovery supports.',
-      'Client has legal consequences related to substance use.',
-      'Client has occupational impairment related to substance use.',
-      'Client has family / relationship conflict related to substance use.',
-      'Client has co-occurring emotional distress that increases relapse risk.',
-      'Client has inconsistent attendance / participation in treatment.'
+    const DAST_ITEMS = [
+      { n:1, q:'Have you used drugs other than those required for medical reasons?', riskYes:true },
+      { n:2, q:'Do you use more than one drug at a time?', riskYes:true },
+      { n:3, q:'Are you always able to stop using drugs when you want to?', riskYes:false },
+      { n:4, q:'Have you had blackouts or flashbacks as a result of drug use?', riskYes:true },
+      { n:5, q:'Do you ever feel bad or guilty about your drug use?', riskYes:true },
+      { n:6, q:'Does your spouse or a parent ever complain about your involvement with drugs?', riskYes:true },
+      { n:7, q:'Have you neglected your family because of your use of drugs?', riskYes:true },
+      { n:8, q:'Have you engaged in illegal activities in order to obtain drugs?', riskYes:true },
+      { n:9, q:'Have you ever experienced withdrawal symptoms when you stopped taking drugs?', riskYes:true },
+      { n:10, q:'Have you had medical problems as a result of your drug use?', riskYes:true }
     ];
 
-    const PLAN_GOAL_OPTIONS = [
-      '',
-      'Client will establish and maintain abstinence from all non-prescribed mood-altering substances.',
-      'Client will increase insight into substance use patterns and consequences.',
-      'Client will strengthen relapse prevention skills.',
-      'Client will identify and manage triggers and cravings effectively.',
-      'Client will build and use sober support systems.',
-      'Client will improve emotional regulation without substance use.',
-      'Client will comply with treatment and recovery recommendations.',
-      'Client will reduce risk of relapse and increase recovery stability.'
-    ];
-
-    const PLAN_OBJECTIVE_OPTIONS = [
-      '',
-      'Client will identify at least 5 triggers for substance use.',
-      'Client will identify at least 5 coping skills to manage cravings.',
-      'Client will complete a written relapse prevention plan.',
-      'Client will attend all scheduled counseling sessions.',
-      'Client will participate in at least 1 support meeting weekly.',
-      'Client will verbalize at least 3 negative consequences of substance use.',
-      'Client will identify supportive people and recovery resources.',
-      'Client will demonstrate refusal skills in high-risk situations.',
-      'Client will comply with drug testing / monitoring as required.'
-    ];
-
-    const PLAN_INTERVENTION_OPTIONS = [
-      '',
-      'Counselor will provide psychoeducation regarding addiction, recovery, and relapse prevention.',
-      'Counselor will use motivational interviewing to enhance readiness for change.',
-      'Counselor will use cognitive behavioral interventions to challenge risky thinking.',
-      'Counselor will assist client in identifying triggers, cravings, and warning signs.',
-      'Counselor will help client develop and update a relapse prevention plan.',
-      'Counselor will encourage participation in mutual support / recovery support activities.',
-      'Counselor will reinforce coping skills, refusal skills, and emotional regulation strategies.',
-      'Counselor will monitor treatment compliance and response to interventions.',
-      'Counselor will coordinate referrals and outside services as needed.',
-      'Counselor will review progress toward goals and update the plan as needed.'
-    ];
-
-    const APP_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwS4yzK4DA96PBkqXddLSZHytYmUXv-W-NZKCIrVbTmdjbshY8cWfJGRjZqO0AZ3cSgeQ/exec';
-    const MAX_FILE_SIZE = 4.5 * 1024 * 1024;
-
-    let state = { clients: [], notes: [], plans: [], documents: [] };
-    let selectedClientId = null;
-
-    let clientSignaturePad = null;
-    let counselorSignaturePad = null;
-    let noteSignaturePad = null;
-    let planClientSignaturePad = null;
-    let planCounselorSignaturePad = null;
-
-    function setStatus(text) {
-      const el = document.getElementById('serverStatus');
-      if (el) el.textContent = text;
+    function buildTables() {
+      const mastBody = document.getElementById('mastTable');
+      mastBody.innerHTML = MAST_ITEMS.map(item => `
+        <tr>
+          <td>${item.n}</td>
+          <td>${item.q}</td>
+          <td><input type="radio" name="mast_${item.n}" value="yes" onchange="calculateAll()"></td>
+          <td><input type="radio" name="mast_${item.n}" value="no" onchange="calculateAll()"></td>
+          <td>Yes=${item.yes} / No=${item.no}</td>
+        </tr>
+      `).join('');
+      const dastBody = document.getElementById('dastTable');
+      dastBody.innerHTML = DAST_ITEMS.map(item => `
+        <tr>
+          <td>${item.n}</td>
+          <td>${item.q}</td>
+          <td><input type="radio" name="dast_${item.n}" value="yes" onchange="calculateAll()"></td>
+          <td><input type="radio" name="dast_${item.n}" value="no" onchange="calculateAll()"></td>
+          <td>${item.riskYes ? 'Yes = 1' : 'No = 1'}</td>
+        </tr>
+      `).join('');
     }
 
-    function escapeHtml(str) {
-      return String(str || '')
-        .replace(/&/g, '&amp;')
-        .replace(/</g, '&lt;')
-        .replace(/>/g, '&gt;')
-        .replace(/"/g, '&quot;')
-        .replace(/'/g, '&#039;');
+    function getRadioValue(name) {
+      const el = document.querySelector(`input[name="${name}"]:checked`);
+      return el ? el.value : '';
     }
 
-    function formatDate(value) {
-      if (!value) return '—';
-      const str = String(value);
+    function getCheckedValues(name) {
+      return Array.from(document.querySelectorAll(`input[name="${name}"]:checked`)).map(el => el.value);
+    }
 
-      if (str.includes('T')) {
-        const plain = str.split('T')[0];
-        const parts = plain.split('-');
-        if (parts.length === 3) return `${parts[1]}/${parts[2]}/${parts[0]}`;
+    function calculateMAST() {
+      let total = 0;
+      MAST_ITEMS.forEach(item => {
+        const v = getRadioValue(`mast_${item.n}`);
+        if (v === 'yes') total += item.yes;
+        if (v === 'no') total += item.no;
+      });
+      let interpretation = 'Not calculated';
+      let cls = 'muted';
+      if (total <= 3) { interpretation = 'Probably no drug/alcohol addiction'; cls = 'result-good'; }
+      else if (total === 4) { interpretation = 'Borderline drug/alcohol addiction'; cls = 'result-warn'; }
+      else { interpretation = 'Probably drug/alcohol addiction'; cls = 'result-bad'; }
+      document.getElementById('mastScore').textContent = total;
+      const mi = document.getElementById('mastInterpretation');
+      mi.textContent = interpretation;
+      mi.className = cls;
+      return { total, interpretation };
+    }
+
+    function calculateDAST() {
+      let total = 0;
+      DAST_ITEMS.forEach(item => {
+        const v = getRadioValue(`dast_${item.n}`);
+        if (!v) return;
+        const score = item.riskYes ? (v === 'yes' ? 1 : 0) : (v === 'no' ? 1 : 0);
+        total += score;
+      });
+      let interpretation = 'Not calculated';
+      let cls = 'muted';
+      if (total === 0) { interpretation = 'No problems reported'; cls = 'result-good'; }
+      else if (total <= 2) { interpretation = 'Low level'; cls = 'result-good'; }
+      else if (total <= 5) { interpretation = 'Moderate level'; cls = 'result-warn'; }
+      else if (total <= 8) { interpretation = 'Substantial level'; cls = 'result-bad'; }
+      else { interpretation = 'Severe level'; cls = 'result-bad'; }
+      document.getElementById('dastScore').textContent = total;
+      const di = document.getElementById('dastInterpretation');
+      di.textContent = interpretation;
+      di.className = cls;
+      return { total, interpretation };
+    }
+
+    function calculateAll() {
+      const mast = calculateMAST();
+      const dast = calculateDAST();
+      let flag = 'Clinical Review';
+      let note = 'Use interview data, observed presentation, and history together with the instrument scores.';
+      if (mast.total >= 5 || dast.total >= 6) {
+        flag = 'High Concern';
+        note = 'Instrument scores suggest clinically significant substance-related risk.';
+      } else if (mast.total === 4 || (dast.total >= 3 && dast.total <= 5)) {
+        flag = 'Moderate Concern';
+        note = 'Instrument scores show a meaningful risk pattern that should be integrated into the evaluation.';
+      } else if (mast.total <= 3 && dast.total <= 2) {
+        flag = 'Lower Concern';
+        note = 'Scores alone do not indicate high severity, but they do not replace clinical judgment.';
       }
-
-      if (/^\d{4}-\d{2}-\d{2}$/.test(str)) {
-        const parts = str.split('-');
-        return `${parts[1]}/${parts[2]}/${parts[0]}`;
-      }
-
-      const d = new Date(str);
-      if (!isNaN(d.getTime())) return d.toLocaleDateString();
-      return str;
+      document.getElementById('combinedFlag').textContent = flag;
+      document.getElementById('combinedInterpretation').textContent = note;
+      document.querySelector('[name="instrumentSummary"]').value = `MAST: ${mast.total} (${mast.interpretation}); DAST-10: ${dast.total} (${dast.interpretation})`;
+      buildReport();
     }
 
-    function currentLocalDateString() {
-      const now = new Date();
-      const y = now.getFullYear();
-      const m = String(now.getMonth() + 1).padStart(2, '0');
-      const d = String(now.getDate()).padStart(2, '0');
-      return `${y}-${m}-${d}`;
-    }
-
-    function badgeClass(value) {
-      if (value === 'High' || value === 'Discharged') return 'badge badge-red';
-      if (value === 'Moderate' || value === 'Pending') return 'badge badge-yellow';
-      if (value === 'Active' || value === 'Action' || value === 'Maintenance') return 'badge badge-green';
-      return 'badge badge-purple';
-    }
-
-    async function apiRequest(action, payload) {
-      setStatus('Working...');
-      let response;
-
-      try {
-        response = await fetch(APP_SCRIPT_URL, {
-          method: 'POST',
-          headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-          body: JSON.stringify({ action, payload })
-        });
-      } catch (err) {
-        setStatus('Error');
-        throw new Error('Network request failed.');
-      }
-
-      const raw = await response.text();
-      let data = null;
-
-      try {
-        data = JSON.parse(raw);
-      } catch (err) {
-        const trimmed = (raw || '').trim();
-        const start = trimmed.indexOf('{');
-        const end = trimmed.lastIndexOf('}');
-        if (start !== -1 && end > start) {
-          try {
-            data = JSON.parse(trimmed.slice(start, end + 1));
-          } catch (_) {}
+    function formDataObject() {
+      const form = document.getElementById('sapForm');
+      const fd = new FormData(form);
+      const obj = {};
+      for (const [key, val] of fd.entries()) {
+        if (obj[key]) {
+          if (!Array.isArray(obj[key])) obj[key] = [obj[key]];
+          obj[key].push(val);
+        } else {
+          obj[key] = val;
         }
       }
+      ['identifiedProblem','otherAddictions','diagnosis','impairments','docsSigned','suicidal','homicidal'].forEach(name => {
+        obj[name] = getCheckedValues(name);
+      });
+      return obj;
+    }
 
-      if (!data) {
-        setStatus('Error');
-        throw new Error('Server response was not valid JSON.');
+    function recommendationValue(selectName, customName, valueName) {
+      const selected = document.querySelector(`[name="${selectName}"]`)?.value || '';
+      const custom = document.querySelector(`[name="${customName}"]`)?.value?.trim() || '';
+      const value = document.querySelector(`[name="${valueName}"]`)?.value?.trim() || '';
+      let label = '';
+      if (selected === 'Custom') label = custom;
+      else label = selected;
+      if (!label) return '';
+      return value ? `${label} (${value})` : label;
+    }
+
+    function buildRecommendationSummary() {
+      const education = [
+        recommendationValue('education1','education1Custom','education1Value'),
+        recommendationValue('education2','education2Custom','education2Value')
+      ].filter(Boolean);
+      const peer = [
+        recommendationValue('peer1','peer1Custom','peer1Value'),
+        recommendationValue('peer2','peer2Custom','peer2Value')
+      ].filter(Boolean);
+      const treatment = [
+        recommendationValue('treatment1','treatment1Custom','treatment1Value'),
+        recommendationValue('treatment2','treatment2Custom','treatment2Value')
+      ].filter(Boolean);
+      const lines = [];
+      if (education.length) lines.push(`Education: ${education.join('; ')}`);
+      if (peer.length) lines.push(`Peer support: ${peer.join('; ')}`);
+      if (treatment.length) lines.push(`Treatment / counseling: ${treatment.join('; ')}`);
+      const summary = lines.join('\n') || 'No structured recommendations selected yet.';
+      document.getElementById('recommendationSummary').textContent = summary;
+      const textArea = document.querySelector('[name="sapRecommendation"]');
+      if (textArea && (!textArea.value.trim() || textArea.dataset.autofill === 'true')) {
+        textArea.value = summary === 'No structured recommendations selected yet.' ? '' : summary;
+        textArea.dataset.autofill = 'true';
       }
+      return {education, peer, treatment, summary};
+    }
 
-      if (!response.ok || !data.ok) {
-        setStatus('Error');
-        throw new Error(data.error || 'Request failed.');
+    function buildReport() {
+      const d = formDataObject();
+      const rec = buildRecommendationSummary();
+      const mast = document.getElementById('mastScore')?.textContent || '';
+      const dast = document.getElementById('dastScore')?.textContent || '';
+      const caseLanguage = d.caseLanguage || 'DOT';
+      const violationLine = caseLanguage === 'DOT'
+        ? `This violation of the Department of Transportation's drug and alcohol testing rules occurred on ${d.violationDate || ''}.`
+        : `This referral / policy event occurred on ${d.violationDate || ''}.`;
+      const opening = caseLanguage === 'DOT'
+        ? `${d.clientName || 'Employee'} was assessed face-to-face remotely using Google Workspace on ${d.evalDate || ''} because ${d.clientName || 'the employee'} ${d.violationLabel || d.reason || ''} for ${d.companyName || d.employer || ''}.`
+        : `${d.clientName || 'Client'} was assessed face-to-face remotely using Google Workspace on ${d.evalDate || ''} for a non-DOT referral involving ${d.violationLabel || d.reason || ''}${d.companyName || d.employer ? ' for ' + (d.companyName || d.employer) : ''}.`;
+      const report = `${caseLanguage} SAP INITIAL REPORT PREVIEW\n\nDate: ${d.evalDate || ''}\nTo: ${d.derName || ''}${d.derContact ? ' | ' + d.derContact : ''}\nCompany: ${d.companyName || d.employer || ''}\nCompany Address: ${d.companyAddress || ''}\nRe: ${d.clientName || ''}${d.ssn ? ' | ' + d.ssn : ''}\n\n${opening}\n\n${violationLine}\n\nAssessment Summary:\n- Reason for assessment: ${d.reason || ''}\n- Type of test: ${d.typeOfTest || ''}\n- Industry / mode: ${d.industry || ''}${d.industry === 'Other' && d.otherPosition ? ' - ' + d.otherPosition : ''}\n- Identified substances / problem areas: ${(d.identifiedProblem || []).join(', ') || 'None listed'}\n- MAST score: ${mast}\n- DAST-10 score: ${dast}\n- Instrument summary: ${d.instrumentSummary || ''}\n\nRecommendations:\n${d.sapRecommendation || rec.summary}\n\nAdditional report note:\n${d.dotReportNote || ''}\n\n${caseLanguage === 'DOT' ? 'This report is limited to SAP recommendations and return-to-duty related information. No diagnosis or protected medical history is included.' : 'This non-DOT report is limited to the referral findings and recommendations requested. No diagnosis or protected medical history is included unless separately authorized.'}\n\nSAP Signature: ${d.sapName || ''}${d.sapCredentials ? ', ' + d.sapCredentials : ''}\nSAP Signature Date: ${d.sapSigDate || ''}`;
+      document.getElementById('reportPreview').textContent = report;
+    }
+
+
+    document.addEventListener('DOMContentLoaded', () => {
+      const recBox = document.querySelector('[name="sapRecommendation"]');
+      if (recBox) {
+        recBox.addEventListener('input', () => {
+          recBox.dataset.autofill = recBox.value.trim() ? 'false' : 'true';
+        });
       }
-
-      setStatus('Ready');
-      return data.result;
+    });
+    function saveDraft() {
+      const data = formDataObject();
+      MAST_ITEMS.forEach(i => data[`mast_${i.n}`] = getRadioValue(`mast_${i.n}`));
+      DAST_ITEMS.forEach(i => data[`dast_${i.n}`] = getRadioValue(`dast_${i.n}`));
+      data.sapSignatureData = document.getElementById('sapSignature').toDataURL('image/png');
+      localStorage.setItem('arsSapStandaloneDraft', JSON.stringify(data));
+      document.getElementById('saveStatus').textContent = 'Draft saved locally in this browser.';
     }
 
-    function showView(viewId) {
-      document.querySelectorAll('main section').forEach(function(el) {
-        el.classList.add('hidden');
+    function loadDraft() {
+      const raw = localStorage.getItem('arsSapStandaloneDraft');
+      if (!raw) {
+        document.getElementById('saveStatus').textContent = 'No saved draft found in this browser.';
+        return;
+      }
+      const data = JSON.parse(raw);
+      Object.keys(data).forEach(key => {
+        const fields = document.querySelectorAll(`[name="${key}"]`);
+        if (!fields.length) return;
+        fields.forEach(field => {
+          if (field.type === 'checkbox') {
+            const arr = Array.isArray(data[key]) ? data[key] : [data[key]];
+            field.checked = arr.includes(field.value);
+          } else if (field.type === 'radio') {
+            field.checked = field.value === data[key];
+          } else {
+            field.value = data[key];
+          }
+        });
       });
-
-      const section = document.getElementById(viewId);
-      if (section) section.classList.remove('hidden');
-
-      document.querySelectorAll('.nav-btn').forEach(function(btn) {
-        btn.classList.remove('active');
-        if (btn.dataset.view === viewId) btn.classList.add('active');
-      });
-
-      requestAnimationFrame(function() {
-        [clientSignaturePad, counselorSignaturePad, noteSignaturePad, planClientSignaturePad, planCounselorSignaturePad]
-          .filter(Boolean)
-          .forEach(function(pad) { pad.resize(); });
-      });
+      if (data.sapSignatureData) drawImageOnPad('sapSignature', data.sapSignatureData);
+      calculateAll();
+      document.getElementById('saveStatus').textContent = 'Saved draft loaded.';
     }
 
-    function populateSelectOptions(selectId, options, labelText) {
-      const select = document.getElementById(selectId);
-      if (!select) return;
-      select.innerHTML = options.map(function(opt) {
-        const text = opt || ('Select ' + labelText);
-        return `<option value="${escapeHtml(opt)}">${escapeHtml(text)}</option>`;
-      }).join('');
+    function clearDraft() {
+      localStorage.removeItem('arsSapStandaloneDraft');
+      document.getElementById('saveStatus').textContent = 'Saved draft cleared from this browser.';
     }
 
-    function wireTemplateSelect(selectId, textareaId) {
-      const select = document.getElementById(selectId);
-      const textarea = document.getElementById(textareaId);
-      if (!select || !textarea) return;
-
-      select.addEventListener('change', function() {
-        if (select.value) textarea.value = select.value;
-      });
-    }
-
-    function setupSignaturePad(canvasId, clearBtnId, labelId) {
-      const canvas = document.getElementById(canvasId);
-      const clearBtn = document.getElementById(clearBtnId);
-      const label = document.getElementById(labelId);
-      if (!canvas) return null;
-
+    function initPad(id) {
+      const canvas = document.getElementById(id);
+      if (!canvas) return;
       const ctx = canvas.getContext('2d');
       let drawing = false;
-      let signedAt = '';
+      let lastX = 0;
+      let lastY = 0;
 
-      function setLabel() {
-        label.textContent = 'Signature date: ' + (signedAt ? formatDate(signedAt) : 'today');
-      }
-
-      function resizeCanvas() {
-        const rect = canvas.getBoundingClientRect();
-        if (!rect.width || !rect.height) return;
-
+      function resize() {
         const ratio = window.devicePixelRatio || 1;
-        const snapshot = canvas.width && canvas.height ? canvas.toDataURL('image/png') : null;
-
-        canvas.width = Math.max(1, Math.floor(rect.width * ratio));
-        canvas.height = Math.max(1, Math.floor(rect.height * ratio));
-
+        const current = canvas.toDataURL('image/png');
+        canvas.width = canvas.offsetWidth * ratio;
+        canvas.height = canvas.offsetHeight * ratio;
         ctx.setTransform(1,0,0,1,0,0);
         ctx.scale(ratio, ratio);
         ctx.lineWidth = 2;
         ctx.lineCap = 'round';
         ctx.lineJoin = 'round';
         ctx.strokeStyle = '#111827';
-
-        if (snapshot && snapshot !== 'data:,') {
-          const img = new Image();
-          img.onload = function() {
-            ctx.drawImage(img, 0, 0, rect.width, rect.height);
-          };
-          img.src = snapshot;
-        }
+        if (current && current !== 'data:,') drawImageOnPad(id, current);
       }
 
       function getPoint(e) {
@@ -789,648 +844,59 @@
         return { x: e.clientX - rect.left, y: e.clientY - rect.top };
       }
 
-      function start(e) {
+      function startDraw(e) {
         drawing = true;
-        if (!signedAt) {
-          signedAt = currentLocalDateString();
-          setLabel();
-        }
+        const p = getPoint(e);
+        lastX = p.x;
+        lastY = p.y;
+      }
+
+      function moveDraw(e) {
+        if (!drawing) return;
+        e.preventDefault();
         const p = getPoint(e);
         ctx.beginPath();
-        ctx.moveTo(p.x, p.y);
-        e.preventDefault();
-      }
-
-      function move(e) {
-        if (!drawing) return;
-        const p = getPoint(e);
+        ctx.moveTo(lastX, lastY);
         ctx.lineTo(p.x, p.y);
         ctx.stroke();
-        e.preventDefault();
+        lastX = p.x;
+        lastY = p.y;
       }
 
-      function end() {
-        drawing = false;
-      }
+      function endDraw() { drawing = false; }
 
-      canvas.addEventListener('pointerdown', start);
-      canvas.addEventListener('pointermove', move);
-      canvas.addEventListener('pointerup', end);
-      canvas.addEventListener('pointerleave', end);
-      canvas.addEventListener('pointercancel', end);
+      canvas.style.touchAction = 'none';
+      canvas.addEventListener('pointerdown', startDraw);
+      canvas.addEventListener('pointermove', moveDraw);
+      canvas.addEventListener('pointerup', endDraw);
+      canvas.addEventListener('pointerleave', endDraw);
+      canvas.addEventListener('pointercancel', endDraw);
+      resize();
+      window.addEventListener('resize', resize);
+    }
 
-      clearBtn.addEventListener('click', function() {
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
-        signedAt = '';
-        setLabel();
-      });
+    function clearPad(id) {
+      const canvas = document.getElementById(id);
+      const ctx = canvas.getContext('2d');
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+    }
 
-      window.addEventListener('resize', resizeCanvas);
-      setLabel();
-
-      return {
-        getDataUrl: function() { return canvas.toDataURL('image/png'); },
-        getSignedAt: function() { return signedAt; },
-        clear: function() {
-          ctx.clearRect(0, 0, canvas.width, canvas.height);
-          signedAt = '';
-          setLabel();
-        },
-        resize: function() { resizeCanvas(); }
+    function drawImageOnPad(id, dataUrl) {
+      const canvas = document.getElementById(id);
+      const ctx = canvas.getContext('2d');
+      const img = new Image();
+      img.onload = function() {
+        ctx.clearRect(0,0,canvas.width,canvas.height);
+        ctx.drawImage(img, 0, 0, canvas.width / window.devicePixelRatio, canvas.height / window.devicePixelRatio);
       };
+      img.src = dataUrl;
     }
 
-    function populateClientSelects() {
-      const options = state.clients.map(function(c) {
-        return `<option value="${c.id}">${escapeHtml(c.name)} (${escapeHtml(c.mrn)})</option>`;
-      }).join('');
-
-      ['noteClient','planClient','documentClient'].forEach(function(id) {
-        const el = document.getElementById(id);
-        if (el) el.innerHTML = options;
-      });
-    }
-
-    function renderDashboard() {
-      document.getElementById('statClients').textContent = state.clients.filter(function(c){ return c.status === 'Active'; }).length;
-      document.getElementById('statHighRisk').textContent = state.clients.filter(function(c){ return c.riskLevel === 'High'; }).length;
-      document.getElementById('statNotes').textContent = state.notes.length;
-
-      const recent = state.clients.slice().sort(function(a,b){
-        return new Date(b.createdAt || 0) - new Date(a.createdAt || 0);
-      }).slice(0,5);
-
-      document.getElementById('recentClients').innerHTML = recent.length
-        ? recent.map(function(c){
-            return `<div class="mini-item"><strong>${escapeHtml(c.name)}</strong><br><span class="small">${escapeHtml(c.primarySubstance || '—')} • Added ${escapeHtml(formatDate(c.createdAt))}</span></div>`;
-          }).join('')
-        : '<div class="empty">No client records yet.</div>';
-    }
-
-    function renderClients() {
-      const q = (document.getElementById('clientSearch').value || '').toLowerCase();
-      const results = state.clients.filter(function(c) {
-        return [c.name,c.mrn,c.primarySubstance,c.secondarySubstance,c.status,c.diagnosis].join(' ').toLowerCase().includes(q);
-      });
-
-      const wrap = document.getElementById('clientList');
-
-      if (!results.length) {
-        wrap.innerHTML = '<div class="empty">No matching clients found.</div>';
-        document.getElementById('clientDetail').innerHTML = '<div class="empty">Select a client to view details.</div>';
-        return;
-      }
-
-      if (!selectedClientId || !results.some(function(c){ return c.id === selectedClientId; })) {
-        selectedClientId = results[0].id;
-      }
-
-      wrap.innerHTML = results.map(function(c) {
-        return `<div class="client-item" data-client-id="${c.id}">
-          <div>
-            <div style="font-weight:700;">${escapeHtml(c.name)}</div>
-            <div class="small">${escapeHtml(c.primarySubstance || 'No substance listed')} • ${escapeHtml(c.status || '')}</div>
-          </div>
-          <div style="text-align:right;">
-            <div class="${badgeClass(c.status)}">${escapeHtml(c.status)}</div>
-            <div style="height:6px;"></div>
-            <div class="${badgeClass(c.riskLevel)}">${escapeHtml(c.riskLevel)} Risk</div>
-          </div>
-        </div>`;
-      }).join('');
-
-      document.querySelectorAll('.client-item').forEach(function(item) {
-        item.addEventListener('click', function() {
-          selectedClientId = item.dataset.clientId;
-          renderClientDetail();
-        });
-      });
-
-      renderClientDetail();
-    }
-
-    function renderClientDetail() {
-      const c = state.clients.find(function(x){ return x.id === selectedClientId; });
-      const box = document.getElementById('clientDetail');
-
-      if (!c) {
-        box.innerHTML = '<div class="empty">Select a client to view details.</div>';
-        return;
-      }
-
-      const notes = state.notes.filter(function(n){ return n.clientId === c.id; });
-      const plans = state.plans.filter(function(p){ return p.clientId === c.id; });
-      const docs = state.documents.filter(function(d){ return d.clientId === c.id; });
-
-      box.innerHTML = `
-        <div style="margin-bottom:12px;">
-          <div style="font-size:22px;font-weight:700;">${escapeHtml(c.name)}</div>
-          <div class="small">${c.dob ? 'DOB ' + escapeHtml(formatDate(c.dob)) : ''}</div>
-        </div>
-        <div class="chip-row" style="margin-bottom:14px;">
-          <div class="chip">Primary: ${escapeHtml(c.primarySubstance || '—')}</div>
-          <div class="chip">Secondary: ${escapeHtml(c.secondarySubstance || '—')}</div>
-          <div class="chip">Stage: ${escapeHtml(c.stageOfChange || '—')}</div>
-        </div>
-        <div class="mini-list">
-          <div class="mini-item"><strong>Diagnosis:</strong><br>${escapeHtml(c.diagnosis || '—')}</div>
-          <div class="mini-item"><strong>Presenting Problem:</strong><br>${escapeHtml(c.presentingProblem || '—')}</div>
-          <div class="mini-item"><strong>Goals:</strong><br>${escapeHtml(c.goals || '—')}</div>
-          <div class="mini-item"><strong>Supports:</strong><br>${escapeHtml(c.supports || '—')}</div>
-          <div class="mini-item"><strong>Alerts / Safety Notes:</strong><br>${escapeHtml(c.alerts || '—')}</div>
-          <div class="mini-item"><strong>Counts:</strong><br>${notes.length} notes • ${plans.length} plans • ${docs.length} documents</div>
-        </div>
-        <div class="row-actions">
-          <button id="exportIntakeBtn" class="primary-btn" type="button">Export Intake PDF</button>
-          <button id="deleteClientBtn" class="danger-btn" type="button">Delete Client</button>
-        </div>
-      `;
-
-      document.getElementById('exportIntakeBtn').addEventListener('click', function() {
-        exportClientIntakePDF(c.id);
-      });
-
-      document.getElementById('deleteClientBtn').addEventListener('click', async function() {
-        if (!confirm('Delete this client and all related notes, plans, and documents?')) return;
-        try {
-          await apiRequest('deleteClient', { id: c.id });
-          selectedClientId = null;
-          await loadAllDataFromServer();
-        } catch (err) {
-          setStatus('Error');
-          alert(err.message);
-        }
-      });
-    }
-
-    async function saveClient(e) {
-      e.preventDefault();
-
-      const client = {
-        name: document.getElementById('name').value,
-        mrn: document.getElementById('mrn').value,
-        dob: document.getElementById('dob').value,
-        phone: document.getElementById('phone').value,
-        email: document.getElementById('email').value,
-        admissionDate: document.getElementById('admissionDate').value,
-        primarySubstance: document.getElementById('primarySubstance').value,
-        secondarySubstance: document.getElementById('secondarySubstance').value,
-        diagnosis: document.getElementById('diagnosis').value,
-        stageOfChange: document.getElementById('stageOfChange').value,
-        riskLevel: document.getElementById('riskLevel').value,
-        status: document.getElementById('status').value,
-        presentingProblem: document.getElementById('presentingProblem').value,
-        goals: document.getElementById('goals').value,
-        supports: document.getElementById('supports').value,
-        alerts: document.getElementById('alerts').value,
-        clientSignature: clientSignaturePad ? clientSignaturePad.getDataUrl() : '',
-        clientSignatureDate: clientSignaturePad ? clientSignaturePad.getSignedAt() : '',
-        counselorSignature: counselorSignaturePad ? counselorSignaturePad.getDataUrl() : '',
-        counselorSignatureDate: counselorSignaturePad ? counselorSignaturePad.getSignedAt() : ''
-      };
-
-      try {
-        await apiRequest('saveClient', client);
-        document.getElementById('newClientForm').reset();
-        if (clientSignaturePad) clientSignaturePad.clear();
-        if (counselorSignaturePad) counselorSignaturePad.clear();
-        await loadAllDataFromServer();
-        showView('clientsView');
-      } catch (err) {
-        setStatus('Error');
-        alert(err.message);
-      }
-    }
-
-    async function saveNote(e) {
-      e.preventDefault();
-
-      const note = {
-        clientId: document.getElementById('noteClient').value,
-        date: document.getElementById('noteDate').value,
-        type: document.getElementById('noteType').value,
-        data: document.getElementById('noteData').value,
-        assessment: document.getElementById('noteAssessment').value,
-        plan: document.getElementById('notePlan').value,
-        signature: noteSignaturePad ? noteSignaturePad.getDataUrl() : '',
-        signatureDate: noteSignaturePad ? noteSignaturePad.getSignedAt() : ''
-      };
-
-      try {
-        await apiRequest('saveNote', note);
-        document.getElementById('noteForm').reset();
-        document.getElementById('noteDate').valueAsDate = new Date();
-        if (noteSignaturePad) noteSignaturePad.clear();
-        await loadAllDataFromServer();
-      } catch (err) {
-        setStatus('Error');
-        alert(err.message);
-      }
-    }
-
-    async function savePlan(e) {
-      e.preventDefault();
-
-      const plan = {
-        clientId: document.getElementById('planClient').value,
-        reviewDate: document.getElementById('planReviewDate').value,
-        problem: document.getElementById('planProblem').value,
-        goal: document.getElementById('planGoal').value,
-        objectives: document.getElementById('planObjectives').value,
-        interventions: document.getElementById('planInterventions').value,
-        clientSignature: planClientSignaturePad ? planClientSignaturePad.getDataUrl() : '',
-        clientSignatureDate: planClientSignaturePad ? planClientSignaturePad.getSignedAt() : '',
-        counselorSignature: planCounselorSignaturePad ? planCounselorSignaturePad.getDataUrl() : '',
-        counselorSignatureDate: planCounselorSignaturePad ? planCounselorSignaturePad.getSignedAt() : ''
-      };
-
-      try {
-        await apiRequest('savePlan', plan);
-        document.getElementById('planForm').reset();
-        if (planClientSignaturePad) planClientSignaturePad.clear();
-        if (planCounselorSignaturePad) planCounselorSignaturePad.clear();
-        await loadAllDataFromServer();
-      } catch (err) {
-        setStatus('Error');
-        alert(err.message);
-      }
-    }
-
-    function fileToBase64(file) {
-      return new Promise(function(resolve, reject) {
-        const reader = new FileReader();
-        reader.onload = function() {
-          resolve(reader.result.split(',')[1]);
-        };
-        reader.onerror = reject;
-        reader.readAsDataURL(file);
-      });
-    }
-
-    async function saveDocument(e) {
-      e.preventDefault();
-      const file = document.getElementById('documentFile').files[0];
-
-      if (!file) {
-        alert('Please choose a file.');
-        return;
-      }
-
-      if (file.size > MAX_FILE_SIZE) {
-        alert('That file is too large for this upload method. Try a smaller file.');
-        return;
-      }
-
-      try {
-        const base64 = await fileToBase64(file);
-        const payload = {
-          clientId: document.getElementById('documentClient').value,
-          type: document.getElementById('documentType').value,
-          date: document.getElementById('documentDate').value,
-          title: document.getElementById('documentTitle').value || file.name,
-          notes: document.getElementById('documentNotes').value,
-          fileName: file.name,
-          mimeType: file.type || 'application/octet-stream',
-          base64: base64
-        };
-
-        await apiRequest('saveDocument', payload);
-        document.getElementById('documentForm').reset();
-        document.getElementById('documentDate').valueAsDate = new Date();
-        await loadAllDataFromServer();
-      } catch (err) {
-        setStatus('Error');
-        alert('Document save failed: ' + err.message);
-      }
-    }
-
-    function renderNotes() {
-      const box = document.getElementById('notesList');
-
-      if (!state.notes.length) {
-        box.innerHTML = '<div class="empty">No notes saved yet.</div>';
-        return;
-      }
-
-      box.innerHTML = state.notes.map(function(n) {
-        const c = state.clients.find(function(x){ return x.id === n.clientId; });
-        return `<div class="mini-item">
-          <div style="display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;">
-            <strong>${escapeHtml(c ? c.name : 'Unknown Client')}</strong>
-            <span class="small">${escapeHtml(formatDate(n.date))} • ${escapeHtml(n.type)}</span>
-          </div>
-          <div style="margin-top:8px;"><strong>Data:</strong> ${escapeHtml(n.data)}</div>
-          <div style="margin-top:8px;"><strong>Assessment:</strong> ${escapeHtml(n.assessment)}</div>
-          <div style="margin-top:8px;"><strong>Plan:</strong> ${escapeHtml(n.plan)}</div>
-          <div class="row-actions">
-            <button class="primary-btn export-note-btn" data-note-id="${n.id}" type="button">Export Note PDF</button>
-            <button class="danger-btn delete-note-btn" data-note-id="${n.id}" type="button">Delete</button>
-          </div>
-        </div>`;
-      }).join('');
-
-      document.querySelectorAll('.export-note-btn').forEach(function(btn) {
-        btn.addEventListener('click', function() {
-          exportNotePDF(btn.dataset.noteId);
-        });
-      });
-
-      document.querySelectorAll('.delete-note-btn').forEach(function(btn) {
-        btn.addEventListener('click', async function() {
-          if (!confirm('Delete this note?')) return;
-          try {
-            await apiRequest('deleteNote', { id: btn.dataset.noteId });
-            await loadAllDataFromServer();
-          } catch (err) {
-            setStatus('Error');
-            alert(err.message);
-          }
-        });
-      });
-    }
-
-    function renderPlans() {
-      const box = document.getElementById('plansList');
-
-      if (!state.plans.length) {
-        box.innerHTML = '<div class="empty">No treatment plans saved yet.</div>';
-        return;
-      }
-
-      box.innerHTML = state.plans.map(function(p) {
-        const c = state.clients.find(function(x){ return x.id === p.clientId; });
-        return `<div class="mini-item">
-          <div style="display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;">
-            <strong>${escapeHtml(c ? c.name : 'Unknown Client')}</strong>
-            <span class="small">Review: ${escapeHtml(formatDate(p.reviewDate))}</span>
-          </div>
-          <div style="margin-top:8px;"><strong>Problem:</strong> ${escapeHtml(p.problem)}</div>
-          <div style="margin-top:8px;"><strong>Goal:</strong> ${escapeHtml(p.goal)}</div>
-          <div style="margin-top:8px;"><strong>Objectives:</strong> ${escapeHtml(p.objectives)}</div>
-          <div style="margin-top:8px;"><strong>Interventions:</strong> ${escapeHtml(p.interventions)}</div>
-          <div class="row-actions">
-            <button class="primary-btn export-plan-btn" data-plan-id="${p.id}" type="button">Export Plan PDF</button>
-            <button class="danger-btn delete-plan-btn" data-plan-id="${p.id}" type="button">Delete</button>
-          </div>
-        </div>`;
-      }).join('');
-
-      document.querySelectorAll('.export-plan-btn').forEach(function(btn) {
-        btn.addEventListener('click', function() {
-          exportPlanPDF(btn.dataset.planId);
-        });
-      });
-
-      document.querySelectorAll('.delete-plan-btn').forEach(function(btn) {
-        btn.addEventListener('click', async function() {
-          if (!confirm('Delete this plan?')) return;
-          try {
-            await apiRequest('deletePlan', { id: btn.dataset.planId });
-            await loadAllDataFromServer();
-          } catch (err) {
-            setStatus('Error');
-            alert(err.message);
-          }
-        });
-      });
-    }
-
-    function renderDocuments() {
-      const box = document.getElementById('documentsList');
-
-      if (!state.documents.length) {
-        box.innerHTML = '<div class="empty">No documents saved yet.</div>';
-        return;
-      }
-
-      box.innerHTML = state.documents.map(function(d) {
-        const c = state.clients.find(function(x){ return x.id === d.clientId; });
-        return `<div class="mini-item">
-          <div style="display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;">
-            <strong>${escapeHtml(d.title || d.fileName)}</strong>
-            <span class="small">${escapeHtml(formatDate(d.date))} • ${escapeHtml(d.type || '—')}</span>
-          </div>
-          <div style="margin-top:8px;"><strong>Client:</strong> ${escapeHtml(c ? c.name : 'Unknown Client')}</div>
-          <div style="margin-top:8px;"><strong>File:</strong> ${escapeHtml(d.fileName || '—')}</div>
-          <div style="margin-top:8px;"><strong>Notes:</strong> ${escapeHtml(d.notes || '—')}</div>
-          <div class="row-actions">
-            ${d.fileUrl ? `<a class="primary-btn" style="text-decoration:none;display:inline-block;" href="${escapeHtml(d.fileUrl)}" target="_blank">Open</a>` : ''}
-            <button class="danger-btn delete-document-btn" data-document-id="${d.id}" type="button">Delete</button>
-          </div>
-        </div>`;
-      }).join('');
-
-      document.querySelectorAll('.delete-document-btn').forEach(function(btn) {
-        btn.addEventListener('click', async function() {
-          if (!confirm('Delete this document?')) return;
-          try {
-            await apiRequest('deleteDocument', { id: btn.dataset.documentId });
-            await loadAllDataFromServer();
-          } catch (err) {
-            setStatus('Error');
-            alert(err.message);
-          }
-        });
-      });
-    }
-
-    function renderReports() {
-      const byStatus = {};
-      const bySubstance = {};
-
-      state.clients.forEach(function(c) {
-        byStatus[c.status] = (byStatus[c.status] || 0) + 1;
-        const sub = c.primarySubstance || 'Unspecified';
-        bySubstance[sub] = (bySubstance[sub] || 0) + 1;
-      });
-
-      document.getElementById('statusReport').innerHTML = Object.keys(byStatus).length
-        ? Object.keys(byStatus).map(function(k){
-            return `<div class="mini-item">${escapeHtml(k)}: <strong>${byStatus[k]}</strong></div>`;
-          }).join('')
-        : '<div class="empty">No data yet.</div>';
-
-      document.getElementById('substanceReport').innerHTML = Object.keys(bySubstance).length
-        ? Object.keys(bySubstance).map(function(k){
-            return `<div class="mini-item">${escapeHtml(k)}: <strong>${bySubstance[k]}</strong></div>`;
-          }).join('')
-        : '<div class="empty">No data yet.</div>';
-    }
-
-    function buildSignatureBlock(title, signatureData, signatureDate) {
-      if (!signatureData) return '';
-      return '<h2>' + escapeHtml(title) + '</h2>' +
-        '<div class="box">' +
-          '<div class="signature-row">' +
-            '<div><img src="' + signatureData + '" style="max-width:320px;max-height:120px;"></div>' +
-            '<div class="signature-meta">' +
-              (signatureDate ? '<div><strong>Date Signed:</strong><br>' + escapeHtml(formatDate(signatureDate)) + '</div>' : '') +
-            '</div>' +
-          '</div>' +
-        '</div>';
-    }
-
-    function printDocument(title, bodyHtml) {
-      const w = window.open('', '_blank');
-      if (!w) {
-        alert('Pop-up blocked. Allow pop-ups for PDF export.');
-        return;
-      }
-
-      const html = '<!DOCTYPE html><html><head><meta charset="UTF-8"><title>' + escapeHtml(title) + '</title>' +
-        '<style>' +
-        'body{font-family:Arial,Helvetica,sans-serif;color:#111827;margin:36px;line-height:1.45;}' +
-        'h1{font-size:24px;margin:0 0 8px;}' +
-        'h2{font-size:16px;margin:22px 0 8px;border-bottom:1px solid #cbd5e1;padding-bottom:6px;}' +
-        '.meta{color:#475569;font-size:13px;margin-bottom:18px;}' +
-        '.block{margin-bottom:14px;}' +
-        '.label{font-weight:700;display:block;margin-bottom:4px;}' +
-        '.box{border:1px solid #cbd5e1;border-radius:8px;padding:10px 12px;white-space:pre-wrap;}' +
-        '.grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;}' +
-        '.signature-row{display:flex;align-items:flex-end;justify-content:space-between;gap:18px;}' +
-        '.signature-meta{min-width:140px;text-align:right;color:#475569;font-size:13px;}' +
-        '</style></head><body>' + bodyHtml + '</body></html>';
-
-      w.document.open();
-      w.document.write(html);
-      w.document.close();
-      w.focus();
-      setTimeout(function(){ w.print(); }, 250);
-    }
-
-    function exportClientIntakePDF(clientId) {
-      const c = state.clients.find(function(x){ return x.id === clientId; });
-      if (!c) return;
-
-      const html =
-        '<h1>Client Intake Summary</h1>' +
-        '<div class="meta">' + escapeHtml(c.name) + (c.admissionDate ? ' • Intake Date: ' + escapeHtml(formatDate(c.admissionDate)) : '') + '</div>' +
-        '<div class="grid">' +
-          '<div class="block"><span class="label">Client Name</span><div class="box">' + escapeHtml(c.name) + '</div></div>' +
-          '<div class="block"><span class="label">MRN / Client ID</span><div class="box">' + escapeHtml(c.mrn) + '</div></div>' +
-          '<div class="block"><span class="label">Date of Birth</span><div class="box">' + escapeHtml(formatDate(c.dob)) + '</div></div>' +
-          '<div class="block"><span class="label">Admission Date</span><div class="box">' + escapeHtml(formatDate(c.admissionDate)) + '</div></div>' +
-          '<div class="block"><span class="label">Phone</span><div class="box">' + escapeHtml(c.phone || '—') + '</div></div>' +
-          '<div class="block"><span class="label">Email</span><div class="box">' + escapeHtml(c.email || '—') + '</div></div>' +
-          '<div class="block"><span class="label">Primary Substance</span><div class="box">' + escapeHtml(c.primarySubstance || '—') + '</div></div>' +
-          '<div class="block"><span class="label">Secondary Substance</span><div class="box">' + escapeHtml(c.secondarySubstance || '—') + '</div></div>' +
-          '<div class="block"><span class="label">Diagnosis</span><div class="box">' + escapeHtml(c.diagnosis || '—') + '</div></div>' +
-          '<div class="block"><span class="label">Stage of Change</span><div class="box">' + escapeHtml(c.stageOfChange || '—') + '</div></div>' +
-          '<div class="block"><span class="label">Risk Level</span><div class="box">' + escapeHtml(c.riskLevel || '—') + '</div></div>' +
-          '<div class="block"><span class="label">Status</span><div class="box">' + escapeHtml(c.status || '—') + '</div></div>' +
-        '</div>' +
-        '<h2>Presenting Problem</h2><div class="box">' + escapeHtml(c.presentingProblem || '—') + '</div>' +
-        '<h2>Goals</h2><div class="box">' + escapeHtml(c.goals || '—') + '</div>' +
-        '<h2>Supports / Recovery Capital</h2><div class="box">' + escapeHtml(c.supports || '—') + '</div>' +
-        '<h2>Alerts / Safety Notes</h2><div class="box">' + escapeHtml(c.alerts || '—') + '</div>' +
-        buildSignatureBlock('Client Signature', c.clientSignature, c.clientSignatureDate) +
-        buildSignatureBlock('Counselor Signature', c.counselorSignature, c.counselorSignatureDate);
-
-      printDocument('Intake - ' + c.name, html);
-    }
-
-    function exportNotePDF(noteId) {
-      const n = state.notes.find(function(x){ return x.id === noteId; });
-      if (!n) return;
-      const c = state.clients.find(function(x){ return x.id === n.clientId; });
-
-      const html =
-        '<h1>Progress Note</h1>' +
-        '<div class="meta">' + escapeHtml(c ? c.name : 'Unknown Client') +
-        (n.date ? ' • Session Date: ' + escapeHtml(formatDate(n.date)) : '') +
-        (n.type ? ' • ' + escapeHtml(n.type) : '') + '</div>' +
-        '<h2>Data / Presentation</h2><div class="box">' + escapeHtml(n.data || '—') + '</div>' +
-        '<h2>Assessment / Clinical Impression</h2><div class="box">' + escapeHtml(n.assessment || '—') + '</div>' +
-        '<h2>Plan / Next Steps</h2><div class="box">' + escapeHtml(n.plan || '—') + '</div>' +
-        buildSignatureBlock('Counselor Signature', n.signature, n.signatureDate);
-
-      printDocument('Note - ' + (c ? c.name : 'Client'), html);
-    }
-
-    function exportPlanPDF(planId) {
-      const p = state.plans.find(function(x){ return x.id === planId; });
-      if (!p) return;
-      const c = state.clients.find(function(x){ return x.id === p.clientId; });
-
-      const html =
-        '<h1>Treatment Plan</h1>' +
-        '<div class="meta">' + escapeHtml(c ? c.name : 'Unknown Client') +
-        (p.reviewDate ? ' • Review Date: ' + escapeHtml(formatDate(p.reviewDate)) : '') + '</div>' +
-        '<h2>Problem</h2><div class="box">' + escapeHtml(p.problem || '—') + '</div>' +
-        '<h2>Goal</h2><div class="box">' + escapeHtml(p.goal || '—') + '</div>' +
-        '<h2>Objectives</h2><div class="box">' + escapeHtml(p.objectives || '—') + '</div>' +
-        '<h2>Interventions</h2><div class="box">' + escapeHtml(p.interventions || '—') + '</div>' +
-        buildSignatureBlock('Client Signature', p.clientSignature, p.clientSignatureDate) +
-        buildSignatureBlock('Counselor Signature', p.counselorSignature, p.counselorSignatureDate);
-
-      printDocument('Treatment Plan - ' + (c ? c.name : 'Client'), html);
-    }
-
-    async function loadAllDataFromServer() {
-      try {
-        const result = await apiRequest('getAllData', {});
-        state = result || { clients: [], notes: [], plans: [], documents: [] };
-        if (!state.documents) state.documents = [];
-        if (!selectedClientId && state.clients.length) selectedClientId = state.clients[0].id;
-        refreshAll();
-      } catch (err) {
-        setStatus('Error');
-        alert(err.message);
-      }
-    }
-
-    function refreshAll() {
-      populateClientSelects();
-      renderDashboard();
-      renderClients();
-      renderNotes();
-      renderPlans();
-      renderDocuments();
-      renderReports();
-    }
-
-    document.querySelectorAll('.nav-btn').forEach(function(btn) {
-      btn.addEventListener('click', function() {
-        showView(btn.dataset.view);
-      });
-    });
-
-    document.getElementById('reloadBtn').addEventListener('click', loadAllDataFromServer);
-    document.getElementById('clientSearch').addEventListener('input', renderClients);
-
-    document.getElementById('newClientForm').addEventListener('submit', saveClient);
-    document.getElementById('noteForm').addEventListener('submit', saveNote);
-    document.getElementById('planForm').addEventListener('submit', savePlan);
-    document.getElementById('documentForm').addEventListener('submit', saveDocument);
-
-    document.getElementById('clearClientFormBtn').addEventListener('click', function() {
-      document.getElementById('newClientForm').reset();
-      if (clientSignaturePad) clientSignaturePad.clear();
-      if (counselorSignaturePad) counselorSignaturePad.clear();
-    });
-
-    populateSelectOptions('diagnosis', DIAGNOSIS_OPTIONS, 'diagnosis');
-    populateSelectOptions('planProblemSelect', PLAN_PROBLEM_OPTIONS, 'problem');
-    populateSelectOptions('planGoalSelect', PLAN_GOAL_OPTIONS, 'goal');
-    populateSelectOptions('planObjectivesSelect', PLAN_OBJECTIVE_OPTIONS, 'objective');
-    populateSelectOptions('planInterventionsSelect', PLAN_INTERVENTION_OPTIONS, 'intervention');
-
-    wireTemplateSelect('planProblemSelect', 'planProblem');
-    wireTemplateSelect('planGoalSelect', 'planGoal');
-    wireTemplateSelect('planObjectivesSelect', 'planObjectives');
-    wireTemplateSelect('planInterventionsSelect', 'planInterventions');
-
-    clientSignaturePad = setupSignaturePad('clientSignatureCanvas', 'clearClientSignatureBtn', 'clientSignatureDateText');
-    counselorSignaturePad = setupSignaturePad('counselorSignatureCanvas', 'clearCounselorSignatureBtn', 'counselorSignatureDateText');
-    noteSignaturePad = setupSignaturePad('noteSignatureCanvas', 'clearNoteSignatureBtn', 'noteSignatureDateText');
-    planClientSignaturePad = setupSignaturePad('planClientSignatureCanvas', 'clearPlanClientSignatureBtn', 'planClientSignatureDateText');
-    planCounselorSignaturePad = setupSignaturePad('planCounselorSignatureCanvas', 'clearPlanCounselorSignatureBtn', 'planCounselorSignatureDateText');
-
-    document.getElementById('noteDate').valueAsDate = new Date();
-    document.getElementById('documentDate').valueAsDate = new Date();
-
-    showView('dashboardView');
-    loadAllDataFromServer();
+    buildTables();
+    initPad('sapSignature');
+    calculateAll();
+    buildRecommendationSummary();
+    buildReport();
   </script>
 </body>
 </html>
