@@ -886,6 +886,7 @@
         ctx.stroke();
         hasStroke = true;
         if (e && typeof e.preventDefault === 'function') e.preventDefault();
+        e.preventDefault();
       }
 
       function end() {
@@ -920,6 +921,11 @@
           clientY: t.clientY,
           preventDefault: function() { e.preventDefault(); }
         });
+        start(e.touches[0]);
+      }, { passive: false });
+      canvas.addEventListener('touchmove', function(e) {
+        if (!e.touches || !e.touches[0]) return;
+        move(e.touches[0]);
       }, { passive: false });
       canvas.addEventListener('touchend', end);
       canvas.addEventListener('touchcancel', end);
