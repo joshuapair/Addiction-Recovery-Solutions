@@ -812,11 +812,27 @@
       }
 
       let data;
+      const rawBody = await res.text();
+
       try {
-        data = await res.json();
+        data = JSON.parse(rawBody);
       } catch (err) {
-        setStatus('Error');
-        throw new Error('Server did not return valid JSON.');
+        const trimmed = (rawBody || '').trim();
+        const start = trimmed.indexOf('{');
+        const end = trimmed.lastIndexOf('}');
+
+        if (start !== -1 && end > start) {
+          try {
+            data = JSON.parse(trimmed.slice(start, end + 1));
+          } catch (_) {
+            data = null;
+          }
+        }
+
+        if (!data) {
+          setStatus('Error');
+          throw new Error('Server response was not valid JSON. Check Apps Script deployment and CORS settings.');
+        }
       }
 
       if (!res.ok || !data.ok) {
