@@ -329,6 +329,7 @@
 
       <button id="loginBtn" style="width:100%; border:none; border-radius:12px; padding:12px 14px; background:#7c3aed; color:white; font-weight:700; cursor:pointer;">Login</button>
       <div id="loginError" style="margin-top:12px; color:#dc2626; font-size:14px;"></div>
+          <div id="loginHint" style="margin-top:8px; color:#64748b; font-size:12px;"></div>
     </div>
   </div>
 
@@ -767,12 +768,21 @@
       document.getElementById('appShell').classList.add('hidden');
     }
 
+       function normalizeUsername(value) {
+      return String(value || '').trim().toLowerCase();
+    }
+
+    function isValidLogin(user, pass) {
+      return normalizeUsername(user) === normalizeUsername(LOCAL_USERNAME)
+        && String(pass || '').trim() === LOCAL_PASSWORD;
+    }
+
     function attemptLogin() {
-      const user = document.getElementById('loginUsername').value.trim();
+      const user = document.getElementById('loginUsername').value;
       const pass = document.getElementById('loginPassword').value;
       const error = document.getElementById('loginError');
 
-      if (user === LOCAL_USERNAME && pass === LOCAL_PASSWORD) {
+      if (isValidLogin(user, pass)) {
         sessionStorage.setItem(LOGIN_STORAGE_KEY, 'yes');
         error.textContent = '';
         showApp();
@@ -786,7 +796,12 @@
       const ok = sessionStorage.getItem(LOGIN_STORAGE_KEY) === 'yes';
       if (ok) showApp(); else showLogin();
 
+      document.getElementById('loginHint').textContent = `Demo login: ${LOCAL_USERNAME} / ${LOCAL_PASSWORD}`;
+
       document.getElementById('loginBtn').addEventListener('click', attemptLogin);
+      document.getElementById('loginUsername').addEventListener('keydown', function(e) {
+        if (e.key === 'Enter') attemptLogin();
+      });
       document.getElementById('loginPassword').addEventListener('keydown', function(e) {
         if (e.key === 'Enter') attemptLogin();
       });
@@ -812,41 +827,27 @@
       }
 
       let data;
-      if
-      }
+      const rawBody = await res.text();
 
-      if (!res.ok || !data.ok) {
-        setStatus('Error');
-        throw new Error(data.error || 'Request failed');
-      }
+      try {
+        data = JSON.parse(rawBody);
+      } catch (err) {
+        const trimmed = (rawBody || '').trim();
+        const start = trimmed.indexOf('{');
+        const end = trimmed.lastIndexOf('}');
 
-      setStatus('Ready');
-      return data.result;
-    }
+        if (start !== -1 && end > start) {
+          try {
+            data = JSON.parse(trimmed.slice(start, end + 1));
+          } catch (_) {
+            data = null;
+          }
+        }
 
-    function escapeHtml(str) {
-      return String(str || '')
-        .replace(/&/g, '&amp;')
-        .replace(/</g, '&lt;')
-        .replace(/>/g, '&gt;')
-        .replace(/"/g, '&quot;')
-        .replace(/'/g, '&#039;');
-    }
-
-    function badgeClass(value) {
-      if (value === 'High' || value === 'Discharged') return 'badge badge-red';
-      if (value === 'Moderate' || value === 'Pending') return 'badge badge-yellow';
-      if (value === 'Active' || value === 'Action' || value === 'Maintenance') return 'badge badge-green';
-      return 'badge badge-purple';
-    }
-
-    function showView(viewId) {
-      document.querySelectorAll('main section').forEach(el => el.classList.add('hidden'));
-      const section = document.getElementById(viewId);
-      if (section) section.classList.remove('hidden');
-
-      document.querySelectorAll('.nav-btn').forEach(function(btn) {
-        btn.classList.remove('active');
+        if (!data) {
+          setStatus('Error');
+          throw new Error('Server response was not valid JSON. Check Apps Script deployment and CORS settings.');
+        }
         if (btn.dataset.view === viewId) btn.classList.add('active');
       });
 
