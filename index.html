@@ -564,8 +564,14 @@
             <div class="field"><label class="label">Problem</label><textarea id="planProblem" required></textarea></div>
             <div class="field"><label class="label">Goal Template</label><select id="planGoalSelect"></select></div>
             <div class="field"><label class="label">Goal</label><textarea id="planGoal" required></textarea></div>
-            <div class="field"><label class="label">Objective Template</label><select id="planObjectivesSelect"></select></div>
-            <div class="field"><label class="label">Objectives</label><textarea id="planObjectives" required></textarea></div>
+            <div class="grid grid-3">
+              <div class="field"><label class="label">Objective 1 Template</label><select id="planObjective1Select"></select></div>
+              <div class="field"><label class="label">Objective 2 Template</label><select id="planObjective2Select"></select></div>
+              <div class="field"><label class="label">Objective 3 Template</label><select id="planObjective3Select"></select></div>
+            </div>
+            <div class="field"><label class="label">Objectives</label><textarea id="planObjectives" placeholder="1. Objective one
+2. Objective two
+3. Objective three" required></textarea></div>
             <div class="field"><label class="label">Intervention Template</label><select id="planInterventionsSelect"></select></div>
             <div class="field"><label class="label">Interventions</label><textarea id="planInterventions" required></textarea></div>
 
@@ -1115,7 +1121,6 @@
   </div>
 
   <script>
-    const APP_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwS4yzK4DA96PBkqXddLSZHytYmUXv-W-NZKCIrVbTmdjbshY8cWfJGRjZqO0AZ3cSgeQ/exec';
     const MAX_FILE_SIZE = 4.5 * 1024 * 1024;
 
     const DIAGNOSIS_OPTIONS = [
@@ -1170,14 +1175,14 @@
 
     const PLAN_OBJECTIVE_OPTIONS = [
       '',
-      'Client will identify at least 5 triggers for substance use.',
+      'Client will identify at least 5 personal triggers for substance use.',
       'Client will identify at least 5 coping skills to manage cravings.',
-      'Client will complete a written relapse prevention plan.',
-      'Client will attend all scheduled counseling sessions.',
-      'Client will participate in at least 1 support meeting weekly.',
       'Client will verbalize at least 3 negative consequences of substance use.',
+      'Client will complete a written relapse prevention plan.',
       'Client will identify supportive people and recovery resources.',
       'Client will demonstrate refusal skills in high-risk situations.',
+      'Client will attend all scheduled counseling sessions.',
+      'Client will participate in at least 1 support meeting weekly.',
       'Client will comply with drug testing / monitoring as required.'
     ];
 
@@ -1294,49 +1299,72 @@
       return 'badge badge-purple';
     }
 
-    async function apiRequest(action, payload) {
+    function apiRequest(action, payload) {
       setStatus('Working...');
-      let response;
-
-      try {
-        response = await fetch(APP_SCRIPT_URL, {
-          method: 'POST',
-          headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-          body: JSON.stringify({ action, payload })
-        });
-      } catch (err) {
-        setStatus('Error');
-        throw new Error('Network request failed.');
-      }
-
-      const raw = await response.text();
-      let data = null;
-
-      try {
-        data = JSON.parse(raw);
-      } catch (err) {
-        const trimmed = (raw || '').trim();
-        const start = trimmed.indexOf('{');
-        const end = trimmed.lastIndexOf('}');
-        if (start !== -1 && end > start) {
-          try {
-            data = JSON.parse(trimmed.slice(start, end + 1));
-          } catch (_) {}
+      return new Promise(function(resolve, reject) {
+        if (!window.google || !google.script || !google.script.run) {
+          setStatus('Error');
+          reject(new Error('This app must be served by Google Apps Script as Index.html so google.script.run is available.'));
+          return;
         }
-      }
 
-      if (!data) {
-        setStatus('Error');
-        throw new Error('Server response was not valid JSON.');
-      }
+        const successHandler = function(result) {
+          setStatus('Ready');
+          resolve(result);
+        };
 
-      if (!response.ok || !data.ok) {
-        setStatus('Error');
-        throw new Error(data.error || 'Request failed.');
-      }
+        const failureHandler = function(error) {
+          setStatus('Error');
+          console.error('Apps Script call failed.', { action, error });
+          reject(new Error(error && error.message ? error.message : 'Server request failed.'));
+        };
 
-      setStatus('Ready');
-      return data.result;
+        const runner = google.script.run
+          .withSuccessHandler(successHandler)
+          .withFailureHandler(failureHandler);
+
+        switch (action) {
+          case 'ping':
+            runner.pingServer();
+            break;
+          case 'getAllData':
+            runner.getBootstrapData();
+            break;
+          case 'saveClient':
+            runner.saveClient(payload || {});
+            break;
+          case 'saveNote':
+            runner.saveNote(payload || {});
+            break;
+          case 'savePlan':
+            runner.savePlan(payload || {});
+            break;
+          case 'saveDocument':
+            runner.saveDocument(payload || {});
+            break;
+          case 'saveSapEvaluation':
+            runner.saveSapEvaluation(payload || {});
+            break;
+          case 'deleteClient':
+            runner.deleteClient(payload || {});
+            break;
+          case 'deleteNote':
+            runner.deleteNote(payload || {});
+            break;
+          case 'deletePlan':
+            runner.deletePlan(payload || {});
+            break;
+          case 'deleteDocument':
+            runner.deleteDocument(payload || {});
+            break;
+          case 'deleteSapEvaluation':
+            runner.deleteSapEvaluation(payload || {});
+            break;
+          default:
+            setStatus('Error');
+            reject(new Error('Unknown action: ' + action));
+        }
+      });
     }
 
     function showView(viewId) {
@@ -1382,6 +1410,87 @@
       select.addEventListener('change', function() {
         if (select.value) textarea.value = select.value;
       });
+    }
+
+    function getPlanObjectiveSelectIds() {
+      return ['planObjective1Select', 'planObjective2Select', 'planObjective3Select'];
+    }
+
+    function populatePlanObjectiveSelects() {
+      const selectIds = getPlanObjectiveSelectIds();
+      const selections = {};
+
+      selectIds.forEach(function(id) {
+        const el = document.getElementById(id);
+        selections[id] = el ? el.value : '';
+      });
+
+      selectIds.forEach(function(id, index) {
+        const select = document.getElementById(id);
+        if (!select) return;
+
+        const currentValue = selections[id] || '';
+        const usedElsewhere = new Set(
+          selectIds
+            .filter(otherId => otherId !== id)
+            .map(otherId => selections[otherId])
+            .filter(Boolean)
+        );
+
+        const options = PLAN_OBJECTIVE_OPTIONS.filter(function(opt) {
+          return !opt || opt === currentValue || !usedElsewhere.has(opt);
+        });
+
+        select.innerHTML = options.map(function(opt) {
+          const text = opt || ('Select objective ' + (index + 1));
+          const selected = opt === currentValue ? ' selected' : '';
+          return `<option value="${escapeHtml(opt)}"${selected}>${escapeHtml(text)}</option>`;
+        }).join('');
+      });
+    }
+
+    function syncPlanObjectivesFromSelects() {
+      const textarea = document.getElementById('planObjectives');
+      if (!textarea) return;
+
+      const lines = getPlanObjectiveSelectIds()
+        .map(function(id) {
+          const el = document.getElementById(id);
+          return el ? el.value.trim() : '';
+        })
+        .filter(Boolean)
+        .map(function(value, index) {
+          const cleanValue = value.replace(/^\d+\.\s*/, '');
+          return (index + 1) + '. ' + cleanValue;
+        });
+
+      textarea.value = lines.join('\n');
+    }
+
+    function setupPlanObjectiveCascading() {
+      const selectIds = getPlanObjectiveSelectIds();
+
+      selectIds.forEach(function(id) {
+        const select = document.getElementById(id);
+        if (!select) return;
+
+        select.addEventListener('change', function() {
+          populatePlanObjectiveSelects();
+          syncPlanObjectivesFromSelects();
+        });
+      });
+
+      populatePlanObjectiveSelects();
+      syncPlanObjectivesFromSelects();
+    }
+
+    function resetPlanObjectiveCascading() {
+      getPlanObjectiveSelectIds().forEach(function(id) {
+        const select = document.getElementById(id);
+        if (select) select.value = '';
+      });
+      populatePlanObjectiveSelects();
+      syncPlanObjectivesFromSelects();
     }
 
     function setupSignaturePad(canvasId, clearBtnId, labelId) {
@@ -1717,6 +1826,7 @@
       try {
         await apiRequest('savePlan', plan);
         document.getElementById('planForm').reset();
+        resetPlanObjectiveCascading();
         if (planClientSignaturePad) planClientSignaturePad.clear();
         if (planCounselorSignaturePad) planCounselorSignaturePad.clear();
         await loadAllDataFromServer();
@@ -2537,10 +2647,15 @@ SAP Signature Date: ${sigDate}`;
     async function loadAllDataFromServer() {
       try {
         const result = await apiRequest('getAllData', {});
-        state = result || { clients: [], notes: [], plans: [], documents: [], sapEvaluations: [] };
+        state = (result && result.data) ? result.data : { clients: [], notes: [], plans: [], documents: [], sapEvaluations: [] };
+        if (!state.clients) state.clients = [];
+        if (!state.notes) state.notes = [];
+        if (!state.plans) state.plans = [];
         if (!state.documents) state.documents = [];
         if (!state.sapEvaluations) state.sapEvaluations = [];
-        if (!selectedClientId && state.clients.length) selectedClientId = state.clients[0].id;
+        if (!selectedClientId && state.clients.length) {
+          selectedClientId = state.clients[0].id;
+        }
         refreshAll();
       } catch (err) {
         setStatus('Error');
@@ -2592,13 +2707,12 @@ SAP Signature Date: ${sigDate}`;
     populateSelectOptions('diagnosis', DIAGNOSIS_OPTIONS, 'diagnosis');
     populateSelectOptions('planProblemSelect', PLAN_PROBLEM_OPTIONS, 'problem');
     populateSelectOptions('planGoalSelect', PLAN_GOAL_OPTIONS, 'goal');
-    populateSelectOptions('planObjectivesSelect', PLAN_OBJECTIVE_OPTIONS, 'objective');
     populateSelectOptions('planInterventionsSelect', PLAN_INTERVENTION_OPTIONS, 'intervention');
 
     wireTemplateSelect('planProblemSelect', 'planProblem');
     wireTemplateSelect('planGoalSelect', 'planGoal');
-    wireTemplateSelect('planObjectivesSelect', 'planObjectives');
     wireTemplateSelect('planInterventionsSelect', 'planInterventions');
+    setupPlanObjectiveCascading();
 
     clientSignaturePad = setupSignaturePad('clientSignatureCanvas', 'clearClientSignatureBtn', 'clientSignatureDateText');
     counselorSignaturePad = setupSignaturePad('counselorSignatureCanvas', 'clearCounselorSignatureBtn', 'counselorSignatureDateText');
