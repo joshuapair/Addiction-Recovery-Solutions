@@ -1312,7 +1312,8 @@
         });
       } catch (err) {
         setStatus('Error');
-        throw new Error('Network request failed.');
+        console.error('Apps Script network failure.', { action, url: APP_SCRIPT_URL, error: err });
+        throw new Error('Could not reach the Google Apps Script web app. No data was saved. Verify the /exec URL, deployment access, and browser/network permissions.');
       }
 
       const raw = await response.text();
@@ -1333,12 +1334,29 @@
 
       if (!data) {
         setStatus('Error');
-        throw new Error('Server response was not valid JSON.');
+        console.error('Apps Script returned a non-JSON response.', {
+          action,
+          url: APP_SCRIPT_URL,
+          status: response.status,
+          statusText: response.statusText,
+          bodyPreview: (raw || '').slice(0, 300)
+        });
+        if (!response.ok) {
+          throw new Error(`Google Apps Script returned HTTP ${response.status}. Verify the web app deployment, permissions, and current /exec URL.`);
+        }
+        throw new Error('Google Apps Script returned an invalid response. Check the Apps Script deployment and execution logs.');
       }
 
       if (!response.ok || !data.ok) {
         setStatus('Error');
-        throw new Error(data.error || 'Request failed.');
+        console.error('Apps Script request failed.', {
+          action,
+          url: APP_SCRIPT_URL,
+          status: response.status,
+          statusText: response.statusText,
+          data: data
+        });
+        throw new Error(data.error || `Google Apps Script request failed with HTTP ${response.status}.`);
       }
 
       setStatus('Ready');
