@@ -1307,6 +1307,8 @@
       try {
         response = await fetch(APP_SCRIPT_URL, {
           method: 'POST',
+          mode: 'cors',
+          credentials: 'include',
           headers: { 'Content-Type': 'text/plain;charset=utf-8' },
           body: JSON.stringify({ action, payload })
         });
@@ -1326,6 +1328,7 @@
         const start = trimmed.indexOf('{');
         const end = trimmed.lastIndexOf('}');
         if (start !== -1 && end > start) {
+          try { data = JSON.parse(trimmed.slice(start, end + 1)); } catch (_) {}
           try {
             data = JSON.parse(trimmed.slice(start, end + 1));
           } catch (_) {}
@@ -2643,6 +2646,15 @@ SAP Signature Date: ${sigDate}`;
     async function loadAllDataFromServer() {
       try {
         const result = await apiRequest('getAllData', {});
+        state = (result && result.data) ? result.data : { clients: [], notes: [], plans: [], documents: [], sapEvaluations: [] };
+        if (!state.clients) state.clients = [];
+        if (!state.notes) state.notes = [];
+        if (!state.plans) state.plans = [];
+        if (!state.documents) state.documents = [];
+        if (!state.sapEvaluations) state.sapEvaluations = [];
+        if (!selectedClientId && state.clients.length) {
+          selectedClientId = state.clients[0].id;
+        }
         state = result || { clients: [], notes: [], plans: [], documents: [], sapEvaluations: [] };
         if (!state.documents) state.documents = [];
         if (!state.sapEvaluations) state.sapEvaluations = [];
