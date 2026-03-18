@@ -1299,15 +1299,34 @@
       return 'badge badge-purple';
     }
 
+    function waitForAppsScriptRun(maxAttempts, delayMs) {
+      maxAttempts = maxAttempts || 40;
+      delayMs = delayMs || 100;
+
+      return new Promise(function(resolve, reject) {
+        function tryResolve(remaining) {
+          if (window.google && google.script && google.script.run) {
+            resolve(google.script.run);
+            return;
+          }
+
+          if (remaining <= 0) {
+            reject(new Error('This app must be served by Google Apps Script as Index.html so google.script.run is available.'));
+            return;
+          }
+
+          window.setTimeout(function() {
+            tryResolve(remaining - 1);
+          }, delayMs);
+        }
+
+        tryResolve(maxAttempts);
+      });
+    }
+
     function apiRequest(action, payload) {
       setStatus('Working...');
       return new Promise(function(resolve, reject) {
-        if (!window.google || !google.script || !google.script.run) {
-          setStatus('Error');
-          reject(new Error('This app must be served by Google Apps Script as Index.html so google.script.run is available.'));
-          return;
-        }
-
         const successHandler = function(result) {
           setStatus('Ready');
           resolve(result);
@@ -1319,51 +1338,56 @@
           reject(new Error(error && error.message ? error.message : 'Server request failed.'));
         };
 
-        const runner = google.script.run
-          .withSuccessHandler(successHandler)
-          .withFailureHandler(failureHandler);
+        waitForAppsScriptRun().then(function(scriptRun) {
+          const runner = scriptRun
+            .withSuccessHandler(successHandler)
+            .withFailureHandler(failureHandler);
 
-        switch (action) {
-          case 'ping':
-            runner.pingServer();
-            break;
-          case 'getAllData':
-            runner.getBootstrapData();
-            break;
-          case 'saveClient':
-            runner.saveClient(payload || {});
-            break;
-          case 'saveNote':
-            runner.saveNote(payload || {});
-            break;
-          case 'savePlan':
-            runner.savePlan(payload || {});
-            break;
-          case 'saveDocument':
-            runner.saveDocument(payload || {});
-            break;
-          case 'saveSapEvaluation':
-            runner.saveSapEvaluation(payload || {});
-            break;
-          case 'deleteClient':
-            runner.deleteClient(payload || {});
-            break;
-          case 'deleteNote':
-            runner.deleteNote(payload || {});
-            break;
-          case 'deletePlan':
-            runner.deletePlan(payload || {});
-            break;
-          case 'deleteDocument':
-            runner.deleteDocument(payload || {});
-            break;
-          case 'deleteSapEvaluation':
-            runner.deleteSapEvaluation(payload || {});
-            break;
-          default:
-            setStatus('Error');
-            reject(new Error('Unknown action: ' + action));
-        }
+          switch (action) {
+            case 'ping':
+              runner.pingServer();
+              break;
+            case 'getAllData':
+              runner.getBootstrapData();
+              break;
+            case 'saveClient':
+              runner.saveClient(payload || {});
+              break;
+            case 'saveNote':
+              runner.saveNote(payload || {});
+              break;
+            case 'savePlan':
+              runner.savePlan(payload || {});
+              break;
+            case 'saveDocument':
+              runner.saveDocument(payload || {});
+              break;
+            case 'saveSapEvaluation':
+              runner.saveSapEvaluation(payload || {});
+              break;
+            case 'deleteClient':
+              runner.deleteClient(payload || {});
+              break;
+            case 'deleteNote':
+              runner.deleteNote(payload || {});
+              break;
+            case 'deletePlan':
+              runner.deletePlan(payload || {});
+              break;
+            case 'deleteDocument':
+              runner.deleteDocument(payload || {});
+              break;
+            case 'deleteSapEvaluation':
+              runner.deleteSapEvaluation(payload || {});
+              break;
+            default:
+              setStatus('Error');
+              reject(new Error('Unknown action: ' + action));
+          }
+        }).catch(function(err) {
+          setStatus('Error');
+          reject(err);
+        });
       });
     }
 
