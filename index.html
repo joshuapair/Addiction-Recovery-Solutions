@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Recovery EHR + SAP</title>
+  <title>Recovery EHR + Integrated SAP</title>
   <style>
     :root{
       --bg:#0f172a;
@@ -21,19 +21,24 @@
       --ok:#065f46;
       --warn:#92400e;
     }
+
     *{box-sizing:border-box}
+
     body{
       margin:0;
       font-family:Arial,Helvetica,sans-serif;
       background:linear-gradient(180deg,var(--bg),var(--bg2));
       color:var(--text);
     }
+
     .hidden{display:none!important}
+
     .app{
       display:grid;
       grid-template-columns:280px 1fr;
       min-height:100vh;
     }
+
     .sidebar{
       background:rgba(15,23,42,.96);
       border-right:1px solid var(--border);
@@ -43,8 +48,10 @@
       height:100vh;
       overflow:auto;
     }
+
     .brand{font-size:22px;font-weight:700;margin-bottom:6px}
     .subtitle{font-size:13px;color:var(--muted);line-height:1.4;margin-bottom:18px}
+
     .warning{
       background:rgba(220,38,38,.12);
       border:1px solid rgba(220,38,38,.35);
@@ -55,6 +62,7 @@
       line-height:1.4;
       margin-bottom:18px;
     }
+
     .nav-btn,.primary-btn,.secondary-btn,.danger-btn,.ghost-btn{
       width:100%;
       border:none;
@@ -65,22 +73,27 @@
       font-weight:700;
       transition:.2s ease;
     }
+
     .nav-btn{
       background:var(--panel);
       color:var(--text);
       text-align:left;
       border:1px solid var(--border);
     }
+
     .nav-btn.active,.nav-btn:hover{
       background:rgba(124,58,237,.18);
       border-color:var(--accent);
     }
+
     .primary-btn{background:var(--accent);color:#fff}
     .primary-btn:hover{background:#6d28d9}
     .secondary-btn{background:#e5e7eb;color:#111827}
     .ghost-btn{background:#f8fafc;color:#111827;border:1px solid #cbd5e1}
     .danger-btn{background:var(--danger);color:#fff}
+
     .content{padding:28px}
+
     .toolbar{
       display:flex;
       justify-content:space-between;
@@ -89,12 +102,14 @@
       flex-wrap:wrap;
       margin-bottom:22px;
     }
+
     .toolbar .left{
       display:flex;
       align-items:center;
       gap:10px;
       flex-wrap:wrap;
     }
+
     input,select,textarea{
       width:100%;
       padding:11px 12px;
@@ -104,12 +119,14 @@
       color:#111827;
       font-size:14px;
     }
+
     textarea{min-height:100px;resize:vertical}
     .search{min-width:260px;max-width:360px}
     .grid{display:grid;gap:16px}
     .grid-2{grid-template-columns:repeat(2,minmax(0,1fr))}
     .grid-3{grid-template-columns:repeat(3,minmax(0,1fr))}
     .grid-4{grid-template-columns:repeat(4,minmax(0,1fr))}
+
     .card{
       background:var(--card);
       color:#111827;
@@ -117,12 +134,36 @@
       box-shadow:var(--shadow);
       padding:18px;
     }
+
     .section-title{font-size:20px;font-weight:700;margin:0 0 4px;color:#0f172a}
     .section-subtitle{font-size:14px;color:#475569;margin-bottom:16px}
-    .label{display:block;font-size:13px;font-weight:700;color:#334155;margin-bottom:6px}
+    .sub-head{
+      font-size:18px;
+      font-weight:700;
+      margin:24px 0 12px;
+      color:#4c1d95;
+      border-bottom:2px solid #ede9fe;
+      padding-bottom:8px;
+    }
+
+    .label{
+      display:block;
+      font-size:13px;
+      font-weight:700;
+      color:#334155;
+      margin-bottom:6px;
+    }
+
     .field{margin-bottom:14px}
-    .detail-grid{display:grid;grid-template-columns:1.2fr 1fr;gap:16px}
+
+    .detail-grid{
+      display:grid;
+      grid-template-columns:1.2fr 1fr;
+      gap:16px;
+    }
+
     .client-list,.mini-list{display:grid;gap:10px}
+
     .client-item{
       display:flex;
       justify-content:space-between;
@@ -135,14 +176,18 @@
       color:#111827;
       cursor:pointer;
     }
+
     .client-item:hover{border-color:var(--accent);background:#faf5ff}
+
     .mini-item{
       border:1px solid var(--soft);
       border-radius:12px;
       padding:12px;
       background:#f8fafc;
     }
+
     .small{font-size:12px;color:#64748b}
+
     .empty{
       text-align:center;
       padding:28px;
@@ -151,6 +196,7 @@
       color:#64748b;
       background:#fff;
     }
+
     .badge{
       display:inline-block;
       padding:6px 10px;
@@ -158,11 +204,14 @@
       font-size:12px;
       font-weight:700;
     }
+
     .badge-green{background:#d1fae5;color:#065f46}
     .badge-yellow{background:#fef3c7;color:#92400e}
     .badge-red{background:#fee2e2;color:#991b1b}
     .badge-purple{background:#ede9fe;color:#5b21b6}
+
     .chip-row{display:flex;gap:8px;flex-wrap:wrap}
+
     .chip{
       padding:7px 10px;
       border-radius:999px;
@@ -171,22 +220,26 @@
       font-size:12px;
       color:#334155;
     }
+
     .row-actions{
       display:flex;
       gap:8px;
       flex-wrap:wrap;
       margin-top:12px;
     }
+
     .row-actions button,.row-actions a{
       width:auto;
       margin-bottom:0;
     }
+
     .signature-wrap{
       border:1px solid #cbd5e1;
       border-radius:12px;
       background:#fff;
       padding:10px;
     }
+
     .signature-canvas{
       width:100%;
       height:180px;
@@ -197,57 +250,70 @@
       touch-action:none;
       cursor:crosshair;
     }
+
+    .check-grid{
+      display:grid;
+      gap:8px 12px;
+      grid-template-columns:repeat(auto-fit,minmax(180px,1fr));
+    }
+
+    .option{
+      display:flex;
+      gap:8px;
+      align-items:flex-start;
+      font-size:14px;
+      color:#111827;
+    }
+
     .score-box{
       background:#faf5ff;
       border:1px solid #ddd6fe;
       border-radius:14px;
       padding:14px;
     }
+
     .score-grid{
       display:grid;
       grid-template-columns:repeat(4,minmax(0,1fr));
       gap:12px;
     }
+
     .score-item{
       background:#fff;
       border:1px solid #cbd5e1;
       border-radius:12px;
       padding:12px;
     }
+
     .score-item strong{
       display:block;
       font-size:24px;
       color:var(--accent);
       margin-top:4px;
     }
+
     .result-good{color:var(--ok);font-weight:700}
     .result-warn{color:var(--warn);font-weight:700}
     .result-bad{color:var(--danger);font-weight:700}
-    .check-grid{
-      display:grid;
-      gap:8px 12px;
-      grid-template-columns:repeat(auto-fit,minmax(180px,1fr));
-    }
-    .option{
-      display:flex;
-      gap:8px;
-      align-items:flex-start;
-      font-size:14px;
-    }
+
     .instrument-table{
       width:100%;
       border-collapse:collapse;
     }
+
     .instrument-table th,.instrument-table td{
       border:1px solid #cbd5e1;
       padding:8px;
       vertical-align:top;
       font-size:14px;
+      color:#111827;
     }
+
     .instrument-table th{
       background:#f9fafb;
       text-align:left;
     }
+
     .report-preview{
       white-space:pre-wrap;
       background:#fff;
@@ -257,7 +323,19 @@
       min-height:220px;
       font-size:14px;
       line-height:1.5;
+      color:#111827;
     }
+
+    .sap-two-col{
+      display:grid;
+      grid-template-columns:1.35fr .95fr;
+      gap:16px;
+    }
+
+    @media (max-width:1200px){
+      .sap-two-col{grid-template-columns:1fr}
+    }
+
     @media (max-width:1000px){
       .app{grid-template-columns:1fr}
       .sidebar{position:relative;height:auto}
@@ -272,7 +350,7 @@
       <div class="subtitle">Integrated EHR + SAP</div>
 
       <div class="warning">
-        SAP evaluations are now tied to client records instead of loading in a separate iframe.
+        SAP assessments are built into this app and tied directly to the selected client record.
       </div>
 
       <button class="nav-btn active" data-view="dashboardView" type="button">Dashboard</button>
@@ -335,7 +413,7 @@
 
           <div class="card">
             <div class="section-title">Client Details</div>
-            <div class="section-subtitle">Intake summary and SAP link</div>
+            <div class="section-subtitle">Intake summary and SAP linkage</div>
             <div id="clientDetail"></div>
           </div>
         </div>
@@ -574,14 +652,15 @@
           <div class="left"><h1 style="margin:0;font-size:30px;">SAP Assessment</h1></div>
         </div>
 
-        <div class="grid grid-2">
+        <div class="sap-two-col">
           <div class="card">
-            <div class="section-title">Integrated SAP Form</div>
-            <div class="section-subtitle">Linked directly to the selected client</div>
+            <div class="section-title">Integrated Full SAP Evaluation</div>
+            <div class="section-subtitle">Linked to the selected client and saved into SapEvaluations</div>
 
             <form id="sapForm">
               <input type="hidden" id="sapRecordId">
-              <div class="grid grid-2">
+
+              <div class="grid grid-3">
                 <div class="field">
                   <label class="label">Client</label>
                   <select id="sapClientId" required></select>
@@ -591,50 +670,41 @@
                   <input id="sapEvalDate" type="date">
                 </div>
                 <div class="field">
-                  <label class="label">Client Name</label>
-                  <input id="sapClientName" type="text">
-                </div>
-                <div class="field">
-                  <label class="label">DOB</label>
-                  <input id="sapDob" type="date">
-                </div>
-                <div class="field">
-                  <label class="label">SSN / Last 4</label>
-                  <input id="sapSsn" type="text">
-                </div>
-                <div class="field">
-                  <label class="label">Employer / Company</label>
-                  <input id="sapCompany" type="text">
-                </div>
-                <div class="field">
-                  <label class="label">DER / Contact Name</label>
-                  <input id="sapDerName" type="text">
-                </div>
-                <div class="field">
-                  <label class="label">DER / Contact Email or Fax</label>
-                  <input id="sapDerContact" type="text">
-                </div>
-                <div class="field">
-                  <label class="label">DOT / Non-DOT</label>
-                  <select id="sapDotType">
-                    <option value="DOT">DOT</option>
-                    <option value="Non-DOT">Non-DOT</option>
+                  <label class="label">Case Status</label>
+                  <select id="sapStatus">
+                    <option value="Completed">Completed</option>
+                    <option value="Draft">Draft</option>
                   </select>
                 </div>
+              </div>
+
+              <div class="sub-head">Client / Referral Information</div>
+
+              <div class="grid grid-4">
+                <div class="field"><label class="label">Client Name</label><input id="sapClientName" type="text"></div>
+                <div class="field"><label class="label">SSN / Last 4</label><input id="sapSsn" type="text"></div>
+                <div class="field"><label class="label">DOB</label><input id="sapDob" type="date"></div>
+                <div class="field"><label class="label">Case / Reference #</label><input id="sapCaseNumber" type="text"></div>
+              </div>
+
+              <div class="grid grid-3">
                 <div class="field">
-                  <label class="label">Industry / Agency</label>
-                  <select id="sapAgency">
-                    <option value="">Select</option>
-                    <option value="FMCSA">FMCSA</option>
-                    <option value="FAA">FAA</option>
-                    <option value="FRA">FRA</option>
-                    <option value="FTA">FTA</option>
-                    <option value="USCG">USCG</option>
-                    <option value="PHMSA">PHMSA</option>
-                    <option value="Non-Transportation">Non-Transportation</option>
-                    <option value="Other">Other</option>
-                  </select>
+                  <label class="label">Signed Paperwork</label>
+                  <div class="signature-wrap">
+                    <div class="check-grid">
+                      <label class="option"><input type="checkbox" name="sapDocsSigned" value="Statement of Understanding"> Statement of Understanding</label>
+                      <label class="option"><input type="checkbox" name="sapDocsSigned" value="Consent/ROI"> Consent / ROI</label>
+                      <label class="option"><input type="checkbox" name="sapDocsSigned" value="Other"> Other</label>
+                    </div>
+                  </div>
                 </div>
+                <div class="field"><label class="label">Other paperwork details</label><input id="sapDocsOther" type="text"></div>
+                <div class="field"><label class="label">Employer / Entity</label><input id="sapEmployer" type="text"></div>
+              </div>
+
+              <div class="sub-head">Assessment Reason / Industry</div>
+
+              <div class="grid grid-3">
                 <div class="field">
                   <label class="label">Reason for Assessment</label>
                   <select id="sapReason">
@@ -651,27 +721,147 @@
                     <option>Not Applicable</option>
                   </select>
                 </div>
+                <div class="field"><label class="label">Positive Test Date</label><input id="sapPositiveTestDate" type="date"></div>
+                <div class="field"><label class="label">Type of Test</label><input id="sapTestType" type="text" placeholder="Urine, BAT, Oral Fluid"></div>
+                <div class="field"><label class="label">Reason Notes</label><input id="sapReasonNotes" type="text"></div>
                 <div class="field">
-                  <label class="label">Type of Test</label>
-                  <input id="sapTestType" type="text">
+                  <label class="label">DOT / Non-DOT</label>
+                  <select id="sapDotType">
+                    <option value="DOT">DOT</option>
+                    <option value="Non-DOT">Non-DOT</option>
+                  </select>
                 </div>
                 <div class="field">
-                  <label class="label">Date of Violation / Referral Event</label>
-                  <input id="sapViolationDate" type="date">
-                </div>
-                <div class="field">
-                  <label class="label">Violation / Referral Description</label>
-                  <input id="sapViolationText" type="text">
+                  <label class="label">Industry / Agency</label>
+                  <select id="sapAgency">
+                    <option value="">Select</option>
+                    <option>FMCSA</option>
+                    <option>FAA</option>
+                    <option>FRA</option>
+                    <option>FTA</option>
+                    <option>USCG</option>
+                    <option>PHMSA</option>
+                    <option>Non-Transportation</option>
+                    <option>Other</option>
+                  </select>
                 </div>
               </div>
+
+              <div class="grid grid-3">
+                <div class="field"><label class="label">Other Position / Industry</label><input id="sapOtherPosition" type="text"></div>
+                <div class="field"><label class="label">Violation Date</label><input id="sapViolationDate" type="date"></div>
+                <div class="field"><label class="label">Violation / Referral Description</label><input id="sapViolationText" type="text"></div>
+              </div>
+
+              <div class="sub-head">Identified Problem / Substance History</div>
 
               <div class="field">
-                <label class="label">Clinical Notes / History</label>
-                <textarea id="sapClinicalNotes"></textarea>
+                <label class="label">Description of identified problem — check all that apply</label>
+                <div class="signature-wrap">
+                  <div class="check-grid">
+                    <label class="option"><input type="checkbox" name="sapIdentifiedProblem" value="Alcohol"> Alcohol</label>
+                    <label class="option"><input type="checkbox" name="sapIdentifiedProblem" value="Opiates"> Opiates</label>
+                    <label class="option"><input type="checkbox" name="sapIdentifiedProblem" value="Ketamine"> Ketamine</label>
+                    <label class="option"><input type="checkbox" name="sapIdentifiedProblem" value="Tranquilizers"> Tranquilizers</label>
+                    <label class="option"><input type="checkbox" name="sapIdentifiedProblem" value="Amphetamines"> Amphetamines</label>
+                    <label class="option"><input type="checkbox" name="sapIdentifiedProblem" value="PCP"> PCP</label>
+                    <label class="option"><input type="checkbox" name="sapIdentifiedProblem" value="GHB"> GHB</label>
+                    <label class="option"><input type="checkbox" name="sapIdentifiedProblem" value="Hallucinogens"> Hallucinogens</label>
+                    <label class="option"><input type="checkbox" name="sapIdentifiedProblem" value="Cocaine"> Cocaine</label>
+                    <label class="option"><input type="checkbox" name="sapIdentifiedProblem" value="Inhalants"> Inhalants</label>
+                    <label class="option"><input type="checkbox" name="sapIdentifiedProblem" value="Prescription Drugs"> Prescription Drugs</label>
+                    <label class="option"><input type="checkbox" name="sapIdentifiedProblem" value="Cannabis"> Cannabis</label>
+                    <label class="option"><input type="checkbox" name="sapIdentifiedProblem" value="Ecstasy"> Ecstasy</label>
+                    <label class="option"><input type="checkbox" name="sapIdentifiedProblem" value="Other"> Other</label>
+                  </div>
+                </div>
               </div>
 
-              <div class="score-box">
-                <div class="section-title" style="font-size:18px;">MAST / DAST</div>
+              <div class="grid grid-3">
+                <div class="field"><label class="label">Alcohol — Quantity / $ spent</label><input id="sapAlcoholQty" type="text"></div>
+                <div class="field"><label class="label">Alcohol — First use</label><input id="sapAlcoholFirstUse" type="text"></div>
+                <div class="field"><label class="label">Alcohol — Last use / Frequency</label><input id="sapAlcoholLastFrequency" type="text"></div>
+
+                <div class="field"><label class="label">Drug 1 — Name</label><input id="sapDrug1Name" type="text"></div>
+                <div class="field"><label class="label">Drug 1 — Quantity / $ spent</label><input id="sapDrug1Qty" type="text"></div>
+                <div class="field"><label class="label">Drug 1 — First / Last / Frequency</label><input id="sapDrug1Details" type="text"></div>
+
+                <div class="field"><label class="label">Drug 2 — Name</label><input id="sapDrug2Name" type="text"></div>
+                <div class="field"><label class="label">Drug 2 — Quantity / $ spent</label><input id="sapDrug2Qty" type="text"></div>
+                <div class="field"><label class="label">Drug 2 — First / Last / Frequency</label><input id="sapDrug2Details" type="text"></div>
+              </div>
+
+              <div class="grid grid-2">
+                <div class="field"><label class="label">History of Positive Tests</label><textarea id="sapHistoryPositiveTests"></textarea></div>
+                <div class="field"><label class="label">History of DWI / DUI</label><textarea id="sapHistoryDwi"></textarea></div>
+                <div class="field">
+                  <label class="label">History of previous substance abuse treatment</label>
+                  <select id="sapPreviousTreatment">
+                    <option value="">Select</option>
+                    <option>Yes</option>
+                    <option>No</option>
+                  </select>
+                </div>
+                <div class="field"><label class="label">Previous treatment explanation</label><textarea id="sapPreviousTreatmentExplain"></textarea></div>
+              </div>
+
+              <div class="field"><label class="label">History and background of the problem</label><textarea id="sapProblemHistory"></textarea></div>
+
+              <div class="sub-head">Mental Status / Addictions / Clinical</div>
+
+              <div class="grid grid-3">
+                <div class="field">
+                  <label class="label">Intoxicated</label>
+                  <select id="sapIntoxicated">
+                    <option value="">Select</option>
+                    <option>Yes</option>
+                    <option>No</option>
+                  </select>
+                </div>
+                <div class="field"><label class="label">Orientation (x3)</label><input id="sapOrientation" type="text"></div>
+                <div class="field"><label class="label">Physical Presentation / Behavior / Affect</label><input id="sapPhysicalPresentation" type="text"></div>
+              </div>
+
+              <div class="field"><label class="label">Presentation Comments</label><textarea id="sapPresentationComments"></textarea></div>
+
+              <div class="field">
+                <label class="label">Other Addictions</label>
+                <div class="signature-wrap">
+                  <div class="check-grid">
+                    <label class="option"><input type="checkbox" name="sapOtherAddictions" value="Nicotine"> Nicotine</label>
+                    <label class="option"><input type="checkbox" name="sapOtherAddictions" value="Spending"> Spending</label>
+                    <label class="option"><input type="checkbox" name="sapOtherAddictions" value="Gambling"> Gambling</label>
+                    <label class="option"><input type="checkbox" name="sapOtherAddictions" value="Sexual Behaviors"> Sexual Behaviors</label>
+                    <label class="option"><input type="checkbox" name="sapOtherAddictions" value="Eating"> Eating</label>
+                    <label class="option"><input type="checkbox" name="sapOtherAddictions" value="Other"> Other</label>
+                  </div>
+                </div>
+              </div>
+
+              <div class="field"><label class="label">Other Addictions Comments</label><textarea id="sapOtherAddictionsComments"></textarea></div>
+
+              <div class="grid grid-3">
+                <div class="field">
+                  <label class="label">Client acknowledges a problem</label>
+                  <select id="sapAcknowledgeProblem">
+                    <option value="">Select</option>
+                    <option>Yes</option>
+                    <option>No</option>
+                  </select>
+                </div>
+                <div class="field">
+                  <label class="label">Denial factors evident</label>
+                  <select id="sapDenial">
+                    <option value="">Select</option>
+                    <option>Yes</option>
+                    <option>No</option>
+                  </select>
+                </div>
+                <div class="field"><label class="label">Denial Comments</label><textarea id="sapDenialComments"></textarea></div>
+              </div>
+
+              <div class="score-box" style="margin-top:18px;">
+                <div class="section-title" style="font-size:18px;">Instrument Scores</div>
                 <div class="score-grid">
                   <div class="score-item">
                     <div>MAST Score</div>
@@ -694,39 +884,175 @@
                     <div class="small">Scores update automatically</div>
                   </div>
                 </div>
+              </div>
 
-                <div class="grid grid-2" style="margin-top:16px;">
-                  <div class="card" style="box-shadow:none;border:1px solid #ddd6fe;">
-                    <div class="section-title" style="font-size:16px;">MAST</div>
-                    <table class="instrument-table">
-                      <thead>
-                        <tr><th>#</th><th>Question</th><th>Yes</th><th>No</th></tr>
-                      </thead>
-                      <tbody id="sapMastTable"></tbody>
-                    </table>
+              <div class="grid grid-2" style="margin-top:16px;">
+                <div class="card" style="box-shadow:none;border:1px solid #ddd6fe;">
+                  <div class="section-title" style="font-size:16px;">MAST</div>
+                  <table class="instrument-table">
+                    <thead>
+                      <tr><th>#</th><th>Question</th><th>Yes</th><th>No</th></tr>
+                    </thead>
+                    <tbody id="sapMastTable"></tbody>
+                  </table>
+                </div>
+
+                <div class="card" style="box-shadow:none;border:1px solid #ddd6fe;">
+                  <div class="section-title" style="font-size:16px;">DAST-10</div>
+                  <table class="instrument-table">
+                    <thead>
+                      <tr><th>#</th><th>Question</th><th>Yes</th><th>No</th></tr>
+                    </thead>
+                    <tbody id="sapDastTable"></tbody>
+                  </table>
+                </div>
+              </div>
+
+              <div class="field" style="margin-top:16px;">
+                <label class="label">Diagnosis Checklist (free text or codes)</label>
+                <textarea id="sapDiagnosisList"></textarea>
+              </div>
+
+              <div class="field"><label class="label">Diagnosis Comments</label><textarea id="sapDiagnosisComments"></textarea></div>
+
+              <div class="sub-head">Safety / Psychiatric / Medications</div>
+
+              <div class="grid grid-2">
+                <div class="field">
+                  <label class="label">Suicidal Ideation</label>
+                  <div class="signature-wrap">
+                    <div class="check-grid">
+                      <label class="option"><input type="checkbox" name="sapSuicidal" value="Yes"> Yes</label>
+                      <label class="option"><input type="checkbox" name="sapSuicidal" value="No"> No</label>
+                      <label class="option"><input type="checkbox" name="sapSuicidal" value="Plans"> Plans</label>
+                      <label class="option"><input type="checkbox" name="sapSuicidal" value="Means"> Means</label>
+                      <label class="option"><input type="checkbox" name="sapSuicidal" value="History"> History</label>
+                    </div>
                   </div>
+                </div>
 
-                  <div class="card" style="box-shadow:none;border:1px solid #ddd6fe;">
-                    <div class="section-title" style="font-size:16px;">DAST-10</div>
-                    <table class="instrument-table">
-                      <thead>
-                        <tr><th>#</th><th>Question</th><th>Yes</th><th>No</th></tr>
-                      </thead>
-                      <tbody id="sapDastTable"></tbody>
-                    </table>
+                <div class="field">
+                  <label class="label">Homicidal Ideation</label>
+                  <div class="signature-wrap">
+                    <div class="check-grid">
+                      <label class="option"><input type="checkbox" name="sapHomicidal" value="Yes"> Yes</label>
+                      <label class="option"><input type="checkbox" name="sapHomicidal" value="No"> No</label>
+                      <label class="option"><input type="checkbox" name="sapHomicidal" value="Plans"> Plans</label>
+                      <label class="option"><input type="checkbox" name="sapHomicidal" value="Means"> Means</label>
+                      <label class="option"><input type="checkbox" name="sapHomicidal" value="History"> History</label>
+                    </div>
                   </div>
                 </div>
               </div>
 
-              <div class="grid grid-2" style="margin-top:16px;">
-                <div class="field">
-                  <label class="label">Recommendation Summary</label>
-                  <textarea id="sapRecommendation"></textarea>
+              <div class="grid grid-2">
+                <div class="field"><label class="label">Victim info if applicable</label><textarea id="sapVictimInfo"></textarea></div>
+                <div class="field"><label class="label">Action taken by SAP</label><textarea id="sapActionTaken"></textarea></div>
+                <div class="field"><label class="label">Suicidal / Homicidal Explanation</label><textarea id="sapSafetyExplanation"></textarea></div>
+                <div class="field"><label class="label">Relevant Psychiatric Treatment History</label><textarea id="sapPsychTxHistory"></textarea></div>
+                <div class="field"><label class="label">Relevant Psychiatric Medication History</label><textarea id="sapPsychMedHistory"></textarea></div>
+                <div class="field"><label class="label">Relevant Counseling History</label><textarea id="sapCounselingHistory"></textarea></div>
+              </div>
+
+              <div class="field"><label class="label">Relevant Current Prescribed Medications</label><textarea id="sapCurrentMeds"></textarea></div>
+
+              <div class="sub-head">Impairments / Medical / Legal / Social</div>
+
+              <div class="field">
+                <label class="label">Impairments — check all that apply</label>
+                <div class="signature-wrap">
+                  <div class="check-grid">
+                    <label class="option"><input type="checkbox" name="sapImpairments" value="Onset Insomnia"> Onset Insomnia</label>
+                    <label class="option"><input type="checkbox" name="sapImpairments" value="Terminal Insomnia"> Terminal Insomnia</label>
+                    <label class="option"><input type="checkbox" name="sapImpairments" value="Global Insomnia"> Global Insomnia</label>
+                    <label class="option"><input type="checkbox" name="sapImpairments" value="Appetite"> Appetite</label>
+                    <label class="option"><input type="checkbox" name="sapImpairments" value="Speech"> Speech</label>
+                    <label class="option"><input type="checkbox" name="sapImpairments" value="Mood"> Mood</label>
+                    <label class="option"><input type="checkbox" name="sapImpairments" value="Vision"> Vision</label>
+                    <label class="option"><input type="checkbox" name="sapImpairments" value="Weight Changes"> Weight Changes</label>
+                    <label class="option"><input type="checkbox" name="sapImpairments" value="Energy"> Energy</label>
+                    <label class="option"><input type="checkbox" name="sapImpairments" value="Memory"> Memory</label>
+                    <label class="option"><input type="checkbox" name="sapImpairments" value="Concentration"> Concentration</label>
+                    <label class="option"><input type="checkbox" name="sapImpairments" value="Headaches"> Headaches</label>
+                    <label class="option"><input type="checkbox" name="sapImpairments" value="Changes in gait"> Changes in gait</label>
+                    <label class="option"><input type="checkbox" name="sapImpairments" value="Tremors"> Tremors</label>
+                    <label class="option"><input type="checkbox" name="sapImpairments" value="Perception"> Perception</label>
+                    <label class="option"><input type="checkbox" name="sapImpairments" value="Thought Process"> Thought Process</label>
+                    <label class="option"><input type="checkbox" name="sapImpairments" value="Thought Content"> Thought Content</label>
+                    <label class="option"><input type="checkbox" name="sapImpairments" value="Loss of balance"> Loss of balance</label>
+                    <label class="option"><input type="checkbox" name="sapImpairments" value="Hallucinations"> Hallucinations</label>
+                  </div>
                 </div>
+              </div>
+
+              <div class="grid grid-3">
+                <div class="field"><label class="label">Weight changes details</label><input id="sapWeightChanges" type="text"></div>
+                <div class="field"><label class="label">Impairment comments</label><textarea id="sapImpairmentComments"></textarea></div>
+                <div class="field"><label class="label">Support system currently in place</label><textarea id="sapSupportSystem"></textarea></div>
+              </div>
+
+              <div class="grid grid-2">
                 <div class="field">
-                  <label class="label">Employer-Facing Report Note</label>
-                  <textarea id="sapReportNote"></textarea>
+                  <label class="label">Medical / Health Problems History</label>
+                  <select id="sapMedicalHistory">
+                    <option value="">Select</option>
+                    <option>Yes</option>
+                    <option>No</option>
+                  </select>
                 </div>
+                <div class="field"><label class="label">Medical explanation</label><textarea id="sapMedicalExplain"></textarea></div>
+                <div class="field"><label class="label">Medications</label><textarea id="sapMedicalMeds"></textarea></div>
+                <div class="field"><label class="label">Doctor name / phone</label><input id="sapDoctorInfo" type="text"></div>
+
+                <div class="field">
+                  <label class="label">Legal Problems</label>
+                  <select id="sapLegalProblems">
+                    <option value="">Select</option>
+                    <option>Yes</option>
+                    <option>No</option>
+                  </select>
+                </div>
+                <div class="field"><label class="label">Legal explanation</label><textarea id="sapLegalExplain"></textarea></div>
+
+                <div class="field"><label class="label">Court Date</label><input id="sapCourtDate" type="date"></div>
+                <div class="field"></div>
+
+                <div class="field">
+                  <label class="label">Financial Problems</label>
+                  <select id="sapFinancialProblems">
+                    <option value="">Select</option>
+                    <option>Yes</option>
+                    <option>No</option>
+                  </select>
+                </div>
+                <div class="field"><label class="label">Financial explanation</label><textarea id="sapFinancialExplain"></textarea></div>
+
+                <div class="field">
+                  <label class="label">Work Related Issues</label>
+                  <select id="sapWorkIssues">
+                    <option value="">Select</option>
+                    <option>Yes</option>
+                    <option>No</option>
+                  </select>
+                </div>
+                <div class="field"><label class="label">Work explanation</label><textarea id="sapWorkExplain"></textarea></div>
+
+                <div class="field">
+                  <label class="label">Significant Losses in Last 12 Months</label>
+                  <select id="sapLosses">
+                    <option value="">Select</option>
+                    <option>Yes</option>
+                    <option>No</option>
+                  </select>
+                </div>
+                <div class="field"><label class="label">Loss explanation</label><textarea id="sapLossesExplain"></textarea></div>
+              </div>
+
+              <div class="sub-head">Recommendations / Report / Signature</div>
+
+              <div class="grid grid-2">
+                <div class="field"><label class="label">Recommendation Summary</label><textarea id="sapRecommendation"></textarea></div>
+                <div class="field"><label class="label">Employer-Facing Report Note</label><textarea id="sapReportNote"></textarea></div>
               </div>
 
               <div class="field">
@@ -735,18 +1061,9 @@
               </div>
 
               <div class="grid grid-3">
-                <div class="field">
-                  <label class="label">SAP Full Name</label>
-                  <input id="sapName" type="text" value="Joshua Pair">
-                </div>
-                <div class="field">
-                  <label class="label">SAP Credentials</label>
-                  <input id="sapCredentials" type="text" value="LCDC, SAP">
-                </div>
-                <div class="field">
-                  <label class="label">SAP Signature Date</label>
-                  <input id="sapSignatureDate" type="date">
-                </div>
+                <div class="field"><label class="label">SAP Full Name</label><input id="sapName" type="text" value="Joshua Pair"></div>
+                <div class="field"><label class="label">SAP Credentials</label><input id="sapCredentials" type="text" value="LCDC, SAP"></div>
+                <div class="field"><label class="label">SAP Signature Date</label><input id="sapSignatureDate" type="date"></div>
               </div>
 
               <div class="field">
@@ -798,6 +1115,9 @@
   </div>
 
   <script>
+    const APP_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwS4yzK4DA96PBkqXddLSZHytYmUXv-W-NZKCIrVbTmdjbshY8cWfJGRjZqO0AZ3cSgeQ/exec';
+    const MAX_FILE_SIZE = 4.5 * 1024 * 1024;
+
     const DIAGNOSIS_OPTIONS = [
       '',
       'F10.10 Alcohol Use Disorder, Mild',
@@ -875,48 +1195,46 @@
       'Counselor will review progress toward goals and update the plan as needed.'
     ];
 
-    const APP_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwS4yzK4DA96PBkqXddLSZHytYmUXv-W-NZKCIrVbTmdjbshY8cWfJGRjZqO0AZ3cSgeQ/exec';
-    const MAX_FILE_SIZE = 4.5 * 1024 * 1024;
-
     const SAP_MAST_ITEMS = [
-  { n:1, q:'Do you consider your drug/alcohol behavior normal?', yes:0, no:2 },
-  { n:2, q:'Do you ever experience memory loss or convulsions the day after heavy drug/alcohol use?', yes:2, no:0 },
-  { n:3, q:'Does your spouse (or parents) ever worry or complain about your drug/alcohol use?', yes:1, no:0 },
-  { n:4, q:'Can you stop using drugs/alcohol without a struggle once you have begun?', yes:0, no:2 },
-  { n:5, q:'Do you ever feel bad about your drug/alcohol use?', yes:1, no:0 },
-  { n:6, q:'Do friends or relatives think that your drug/alcohol use is normal?', yes:0, no:2 },
-  { n:7, q:'Are you always able to stop using drugs/alcohol when you want to?', yes:0, no:2 },
-  { n:8, q:'Have you ever gone to AA, NA, or other self-help groups for your drug/alcohol use?', yes:5, no:0 },
-  { n:9, q:'Have you ever gotten into fights while using drugs or alcohol?', yes:1, no:0 },
-  { n:10, q:'Has drug/alcohol use ever created problems with you and your spouse (or parents)?', yes:2, no:0 },
-  { n:11, q:'Has your spouse (or family member) ever gone to anyone for help about your drug/alcohol use?', yes:2, no:0 },
-  { n:12, q:'Have you ever lost friends, girlfriends, or boyfriends because of your drug/alcohol use?', yes:2, no:0 },
-  { n:13, q:'Have you ever gotten into trouble at school or at work because of your drug/alcohol use?', yes:2, no:0 },
-  { n:14, q:'Have you ever lost a job or been suspended / expelled from school because of your drug/alcohol use?', yes:2, no:0 },
-  { n:15, q:'Have you ever neglected obligations, family, work, or school for two or more days in a row because you were using drugs/alcohol?', yes:2, no:0 },
-  { n:16, q:'Do you ever use drugs/alcohol before noon?', yes:1, no:0 },
-  { n:17, q:'Have you ever been told that you have liver trouble?', yes:2, no:0 },
-  { n:18, q:'Have you ever had seizures, severe shaking, heard voices, seen things not there, or felt out of control and panicky after heavy drug/alcohol use?', yes:5, no:0 },
-  { n:19, q:'Have you ever gone to anyone for help about your drug/alcohol use?', yes:5, no:0 },
-  { n:20, q:'Have you ever gone to a hospital because of your drug/alcohol use?', yes:5, no:0 },
-  { n:21, q:'Have you ever been a patient in a psychiatric hospital or general hospital where drug/alcohol use was part of the problem?', yes:2, no:0 },
-  { n:22, q:'Have you ever been seen at a psychiatric or mental health clinic, or gone to a doctor, social worker, or clergyman for help with an emotional problem in which drug/alcohol use played a part?', yes:2, no:0 },
-  { n:23, q:'Have you ever been arrested, even for a few hours, because of behavior related to your drug/alcohol use?', yes:2, no:0 },
-  { n:24, q:'Have you ever been arrested for driving while intoxicated?', yes:2, no:0 }
-];
+      { n:1, q:'Do you consider your drug/alcohol behavior normal?', yes:0, no:2 },
+      { n:2, q:'Do you ever experience memory loss or convulsions the day after heavy drug/alcohol use?', yes:2, no:0 },
+      { n:3, q:'Does your spouse (or parents) ever worry or complain about your drug/alcohol use?', yes:1, no:0 },
+      { n:4, q:'Can you stop using drugs/alcohol without a struggle once you have begun?', yes:0, no:2 },
+      { n:5, q:'Do you ever feel bad about your drug/alcohol use?', yes:1, no:0 },
+      { n:6, q:'Do friends or relatives think that your drug/alcohol use is normal?', yes:0, no:2 },
+      { n:7, q:'Are you always able to stop using drugs/alcohol when you want to?', yes:0, no:2 },
+      { n:8, q:'Have you ever gone to AA, NA, or other self-help groups for your drug/alcohol use?', yes:5, no:0 },
+      { n:9, q:'Have you ever gotten into fights while using drugs or alcohol?', yes:1, no:0 },
+      { n:10, q:'Has drug/alcohol use ever created problems with you and your spouse (or parents)?', yes:2, no:0 },
+      { n:11, q:'Has your spouse (or family member) ever gone to anyone for help about your drug/alcohol use?', yes:2, no:0 },
+      { n:12, q:'Have you ever lost friends, girlfriends, or boyfriends because of your drug/alcohol use?', yes:2, no:0 },
+      { n:13, q:'Have you ever gotten into trouble at school or at work because of your drug/alcohol use?', yes:2, no:0 },
+      { n:14, q:'Have you ever lost a job or been suspended / expelled from school because of your drug/alcohol use?', yes:2, no:0 },
+      { n:15, q:'Have you ever neglected obligations, family, work, or school for two or more days in a row because you were using drugs/alcohol?', yes:2, no:0 },
+      { n:16, q:'Do you ever use drugs/alcohol before noon?', yes:1, no:0 },
+      { n:17, q:'Have you ever been told that you have liver trouble?', yes:2, no:0 },
+      { n:18, q:'Have you ever had seizures, severe shaking, heard voices, seen things not there, or felt out of control and panicky after heavy drug/alcohol use?', yes:5, no:0 },
+      { n:19, q:'Have you ever gone to anyone for help about your drug/alcohol use?', yes:5, no:0 },
+      { n:20, q:'Have you ever gone to a hospital because of your drug/alcohol use?', yes:5, no:0 },
+      { n:21, q:'Have you ever been a patient in a psychiatric hospital or general hospital where drug/alcohol use was part of the problem?', yes:2, no:0 },
+      { n:22, q:'Have you ever been seen at a psychiatric or mental health clinic, or gone to a doctor, social worker, or clergyman for help with an emotional problem in which drug/alcohol use played a part?', yes:2, no:0 },
+      { n:23, q:'Have you ever been arrested, even for a few hours, because of behavior related to your drug/alcohol use?', yes:2, no:0 },
+      { n:24, q:'Have you ever been arrested for driving while intoxicated?', yes:2, no:0 }
+    ];
 
-const SAP_DAST_ITEMS = [
-  { n:1, q:'Have you used drugs other than those required for medical reasons?', riskYes:true },
-  { n:2, q:'Do you use more than one drug at a time?', riskYes:true },
-  { n:3, q:'Are you always able to stop using drugs when you want to?', riskYes:false },
-  { n:4, q:'Have you had blackouts or flashbacks as a result of drug use?', riskYes:true },
-  { n:5, q:'Do you ever feel bad or guilty about your drug use?', riskYes:true },
-  { n:6, q:'Does your spouse or a parent ever complain about your involvement with drugs?', riskYes:true },
-  { n:7, q:'Have you neglected your family because of your use of drugs?', riskYes:true },
-  { n:8, q:'Have you engaged in illegal activities in order to obtain drugs?', riskYes:true },
-  { n:9, q:'Have you ever experienced withdrawal symptoms when you stopped taking drugs?', riskYes:true },
-  { n:10, q:'Have you had medical problems as a result of your drug use?', riskYes:true }
-];
+    const SAP_DAST_ITEMS = [
+      { n:1, q:'Have you used drugs other than those required for medical reasons?', riskYes:true },
+      { n:2, q:'Do you use more than one drug at a time?', riskYes:true },
+      { n:3, q:'Are you always able to stop using drugs when you want to?', riskYes:false },
+      { n:4, q:'Have you had blackouts or flashbacks as a result of drug use?', riskYes:true },
+      { n:5, q:'Do you ever feel bad or guilty about your drug use?', riskYes:true },
+      { n:6, q:'Does your spouse or a parent ever complain about your involvement with drugs?', riskYes:true },
+      { n:7, q:'Have you neglected your family because of your use of drugs?', riskYes:true },
+      { n:8, q:'Have you engaged in illegal activities in order to obtain drugs?', riskYes:true },
+      { n:9, q:'Have you ever experienced withdrawal symptoms when you stopped taking drugs?', riskYes:true },
+      { n:10, q:'Have you had medical problems as a result of your drug use?', riskYes:true }
+    ];
+
     let state = { clients: [], notes: [], plans: [], documents: [], sapEvaluations: [] };
     let selectedClientId = null;
 
@@ -944,15 +1262,18 @@ const SAP_DAST_ITEMS = [
     function formatDate(value) {
       if (!value) return '—';
       const str = String(value);
+
       if (str.includes('T')) {
         const plain = str.split('T')[0];
         const parts = plain.split('-');
         if (parts.length === 3) return `${parts[1]}/${parts[2]}/${parts[0]}`;
       }
+
       if (/^\d{4}-\d{2}-\d{2}$/.test(str)) {
         const parts = str.split('-');
         return `${parts[1]}/${parts[2]}/${parts[0]}`;
       }
+
       const d = new Date(str);
       if (!isNaN(d.getTime())) return d.toLocaleDateString();
       return str;
@@ -1057,6 +1378,7 @@ const SAP_DAST_ITEMS = [
       const select = document.getElementById(selectId);
       const textarea = document.getElementById(textareaId);
       if (!select || !textarea) return;
+
       select.addEventListener('change', function() {
         if (select.value) textarea.value = select.value;
       });
@@ -1127,7 +1449,9 @@ const SAP_DAST_ITEMS = [
         e.preventDefault();
       }
 
-      function end() { drawing = false; }
+      function end() {
+        drawing = false;
+      }
 
       canvas.addEventListener('pointerdown', start);
       canvas.addEventListener('pointermove', move);
@@ -1158,6 +1482,23 @@ const SAP_DAST_ITEMS = [
       };
     }
 
+    function getCheckedValuesByName(name) {
+      return Array.from(document.querySelectorAll(`input[name="${name}"]:checked`)).map(el => el.value);
+    }
+
+    function setCheckedValuesByName(name, values) {
+      const arr = Array.isArray(values) ? values : (values ? [values] : []);
+      document.querySelectorAll(`input[name="${name}"]`).forEach(el => {
+        el.checked = arr.includes(el.value);
+      });
+    }
+
+    function safeParseJson(value) {
+      if (!value) return {};
+      if (typeof value === 'object') return value;
+      try { return JSON.parse(value); } catch (e) { return {}; }
+    }
+
     function populateClientSelects() {
       const options = state.clients.map(c =>
         `<option value="${c.id}">${escapeHtml(c.name)} (${escapeHtml(c.mrn)})</option>`
@@ -1177,8 +1518,6 @@ const SAP_DAST_ITEMS = [
       document.getElementById('statClients').textContent = state.clients.filter(c => c.status === 'Active').length;
       document.getElementById('statHighRisk').textContent = state.clients.filter(c => c.riskLevel === 'High').length;
       document.getElementById('statNotes').textContent = state.notes.length;
-      const sapStat = document.getElementById('statSap');
-if (sapStat) sapStat.textContent = state.sapEvaluations.length;
       document.getElementById('statSap').textContent = state.sapEvaluations.length;
 
       const recent = state.clients.slice().sort((a,b) => new Date(b.createdAt || 0) - new Date(a.createdAt || 0)).slice(0,5);
@@ -1273,8 +1612,7 @@ if (sapStat) sapStat.textContent = state.sapEvaluations.length;
       document.getElementById('openSapBtn').addEventListener('click', function() {
         showView('sapAssessmentView');
         document.getElementById('sapClientId').value = c.id;
-        syncSapClientContext();
-        clearSapForm(false);
+        clearSapForm(true);
       });
 
       document.getElementById('exportIntakeBtn').addEventListener('click', function() {
@@ -1436,6 +1774,32 @@ if (sapStat) sapStat.textContent = state.sapEvaluations.length;
       }
     }
 
+    function buildSapTables() {
+      const mastBody = document.getElementById('sapMastTable');
+      if (mastBody) {
+        mastBody.innerHTML = SAP_MAST_ITEMS.map(item => `
+          <tr>
+            <td>${item.n}</td>
+            <td>${escapeHtml(item.q)}</td>
+            <td><input type="radio" name="sap_mast_${item.n}" value="yes"></td>
+            <td><input type="radio" name="sap_mast_${item.n}" value="no"></td>
+          </tr>
+        `).join('');
+      }
+
+      const dastBody = document.getElementById('sapDastTable');
+      if (dastBody) {
+        dastBody.innerHTML = SAP_DAST_ITEMS.map(item => `
+          <tr>
+            <td>${item.n}</td>
+            <td>${escapeHtml(item.q)}</td>
+            <td><input type="radio" name="sap_dast_${item.n}" value="yes"></td>
+            <td><input type="radio" name="sap_dast_${item.n}" value="no"></td>
+          </tr>
+        `).join('');
+      }
+    }
+
     function getSapMastAnswer(n) {
       const el = document.querySelector(`input[name="sap_mast_${n}"]:checked`);
       return el ? el.value : '';
@@ -1444,28 +1808,6 @@ if (sapStat) sapStat.textContent = state.sapEvaluations.length;
     function getSapDastAnswer(n) {
       const el = document.querySelector(`input[name="sap_dast_${n}"]:checked`);
       return el ? el.value : '';
-    }
-
-    function buildSapTables() {
-      const mastBody = document.getElementById('sapMastTable');
-      mastBody.innerHTML = SAP_MAST_ITEMS.map(item => `
-        <tr>
-          <td>${item.n}</td>
-          <td>${escapeHtml(item.q)}</td>
-          <td><input type="radio" name="sap_mast_${item.n}" value="yes"></td>
-          <td><input type="radio" name="sap_mast_${item.n}" value="no"></td>
-        </tr>
-      `).join('');
-
-      const dastBody = document.getElementById('sapDastTable');
-      dastBody.innerHTML = SAP_DAST_ITEMS.map(item => `
-        <tr>
-          <td>${item.n}</td>
-          <td>${escapeHtml(item.q)}</td>
-          <td><input type="radio" name="sap_dast_${item.n}" value="yes"></td>
-          <td><input type="radio" name="sap_dast_${item.n}" value="no"></td>
-        </tr>
-      `).join('');
     }
 
     function calculateSapScores() {
@@ -1480,8 +1822,7 @@ if (sapStat) sapStat.textContent = state.sapEvaluations.length;
       SAP_DAST_ITEMS.forEach(item => {
         const v = getSapDastAnswer(item.n);
         if (!v) return;
-        const score = item.riskYes ? (v === 'yes' ? 1 : 0) : (v === 'no' ? 1 : 0);
-        dast += score;
+        dast += item.riskYes ? (v === 'yes' ? 1 : 0) : (v === 'no' ? 1 : 0);
       });
 
       let mastText = 'Not calculated';
@@ -1529,9 +1870,7 @@ if (sapStat) sapStat.textContent = state.sapEvaluations.length;
     function buildSapReportPreview() {
       const clientName = document.getElementById('sapClientName').value || '';
       const evalDate = document.getElementById('sapEvalDate').value || '';
-      const derName = document.getElementById('sapDerName').value || '';
-      const derContact = document.getElementById('sapDerContact').value || '';
-      const company = document.getElementById('sapCompany').value || '';
+      const company = document.getElementById('sapEmployer').value || '';
       const ssn = document.getElementById('sapSsn').value || '';
       const dotType = document.getElementById('sapDotType').value || '';
       const reason = document.getElementById('sapReason').value || '';
@@ -1558,7 +1897,6 @@ if (sapStat) sapStat.textContent = state.sapEvaluations.length;
       const report = `${dotType} SAP INITIAL REPORT PREVIEW
 
 Date: ${evalDate}
-To: ${derName}${derContact ? ' | ' + derContact : ''}
 Company: ${company}
 Re: ${clientName}${ssn ? ' | ' + ssn : ''}
 
@@ -1592,13 +1930,15 @@ SAP Signature Date: ${sigDate}`;
     function syncSapClientContext() {
       const sapClientId = document.getElementById('sapClientId');
       if (!sapClientId) return;
+
       if (selectedClientId) sapClientId.value = selectedClientId;
 
       const c = state.clients.find(x => x.id === sapClientId.value);
       if (!c) return;
 
-      document.getElementById('sapClientName').value = c.name || '';
-      document.getElementById('sapDob').value = c.dob || '';
+      if (!document.getElementById('sapClientName').value) document.getElementById('sapClientName').value = c.name || '';
+      if (!document.getElementById('sapDob').value) document.getElementById('sapDob').value = c.dob || '';
+
       buildSapReportPreview();
       renderSapEvaluations();
     }
@@ -1608,29 +1948,35 @@ SAP Signature Date: ${sigDate}`;
       document.getElementById('sapForm').reset();
       document.getElementById('sapRecordId').value = '';
       if (sapSignaturePad) sapSignaturePad.clear();
+
       if (keepClient) {
         document.getElementById('sapClientId').value = currentClient || selectedClientId || '';
+        document.getElementById('sapClientName').value = '';
+        document.getElementById('sapDob').value = '';
         syncSapClientContext();
       }
+
       document.getElementById('sapEvalDate').valueAsDate = new Date();
       document.getElementById('sapSignatureDate').valueAsDate = new Date();
-      buildSapReportPreview();
+
       calculateSapScores();
+      buildSapReportPreview();
     }
 
     function collectSapPayload() {
       const scores = calculateSapScores();
 
       const mastAnswers = {};
-      SAP_MAST_ITEMS.forEach(item => mastAnswers['mast_' + item.n] = getSapMastAnswer(item.n) || '');
+      SAP_MAST_ITEMS.forEach(item => { mastAnswers['mast_' + item.n] = getSapMastAnswer(item.n) || ''; });
 
       const dastAnswers = {};
-      SAP_DAST_ITEMS.forEach(item => dastAnswers['dast_' + item.n] = getSapDastAnswer(item.n) || '');
+      SAP_DAST_ITEMS.forEach(item => { dastAnswers['dast_' + item.n] = getSapDastAnswer(item.n) || ''; });
 
       return {
         id: document.getElementById('sapRecordId').value || '',
         clientId: document.getElementById('sapClientId').value || '',
-        status: 'Completed',
+        status: document.getElementById('sapStatus').value || 'Completed',
+
         evalDate: document.getElementById('sapEvalDate').value || '',
         dotType: document.getElementById('sapDotType').value || '',
         sapName: document.getElementById('sapName').value || '',
@@ -1639,10 +1985,13 @@ SAP Signature Date: ${sigDate}`;
         sapEmail: '',
         sapSignature: sapSignaturePad ? sapSignaturePad.getDataUrl() : '',
         sapSignatureDate: document.getElementById('sapSignatureDate').value || '',
-        derName: document.getElementById('sapDerName').value || '',
-        company: document.getElementById('sapCompany').value || '',
+
+        derName: document.getElementById('sapEmployer').value || '',
+        derContact: '',
+        company: document.getElementById('sapEmployer').value || '',
         companyAddress1: '',
         companyAddress2: '',
+
         employeeName: document.getElementById('sapClientName').value || '',
         employeeAddress1: '',
         employeeAddress2: '',
@@ -1650,28 +1999,96 @@ SAP Signature Date: ${sigDate}`;
         dob: document.getElementById('sapDob').value || '',
         phone: '',
         email: '',
+
         reasonForAssessment: document.getElementById('sapReason').value || '',
         testType: document.getElementById('sapTestType').value || '',
         dateOfViolation: document.getElementById('sapViolationDate').value || '',
         violationText: document.getElementById('sapViolationText').value || '',
         agency: document.getElementById('sapAgency').value || '',
+
         mastScore: String(scores.mast),
         mastSeverity: scores.mastText,
         dastScore: String(scores.dast),
         dastSeverity: scores.dastText,
         mastAnswers: mastAnswers,
         dastAnswers: dastAnswers,
+
         educationHours: '',
         groupCount: '',
         sessionCount: '',
+
         recommendations: {
-          freeTextSummary: document.getElementById('sapRecommendation').value || '',
-          reportNote: document.getElementById('sapReportNote').value || ''
+          recommendation: document.getElementById('sapRecommendation').value || '',
+          reportNote: document.getElementById('sapReportNote').value || '',
+          caseNumber: document.getElementById('sapCaseNumber').value || '',
+          docsSigned: getCheckedValuesByName('sapDocsSigned'),
+          docsOther: document.getElementById('sapDocsOther').value || '',
+          positiveTestDate: document.getElementById('sapPositiveTestDate').value || '',
+          reasonNotes: document.getElementById('sapReasonNotes').value || '',
+          otherPosition: document.getElementById('sapOtherPosition').value || '',
+
+          identifiedProblem: getCheckedValuesByName('sapIdentifiedProblem'),
+          alcoholQty: document.getElementById('sapAlcoholQty').value || '',
+          alcoholFirstUse: document.getElementById('sapAlcoholFirstUse').value || '',
+          alcoholLastFrequency: document.getElementById('sapAlcoholLastFrequency').value || '',
+          drug1Name: document.getElementById('sapDrug1Name').value || '',
+          drug1Qty: document.getElementById('sapDrug1Qty').value || '',
+          drug1Details: document.getElementById('sapDrug1Details').value || '',
+          drug2Name: document.getElementById('sapDrug2Name').value || '',
+          drug2Qty: document.getElementById('sapDrug2Qty').value || '',
+          drug2Details: document.getElementById('sapDrug2Details').value || '',
+          historyPositiveTests: document.getElementById('sapHistoryPositiveTests').value || '',
+          historyDwi: document.getElementById('sapHistoryDwi').value || '',
+          previousTreatment: document.getElementById('sapPreviousTreatment').value || '',
+          previousTreatmentExplain: document.getElementById('sapPreviousTreatmentExplain').value || '',
+          problemHistory: document.getElementById('sapProblemHistory').value || '',
+
+          intoxicated: document.getElementById('sapIntoxicated').value || '',
+          orientation: document.getElementById('sapOrientation').value || '',
+          physicalPresentation: document.getElementById('sapPhysicalPresentation').value || '',
+          presentationComments: document.getElementById('sapPresentationComments').value || '',
+          otherAddictions: getCheckedValuesByName('sapOtherAddictions'),
+          otherAddictionsComments: document.getElementById('sapOtherAddictionsComments').value || '',
+          acknowledgeProblem: document.getElementById('sapAcknowledgeProblem').value || '',
+          denial: document.getElementById('sapDenial').value || '',
+          denialComments: document.getElementById('sapDenialComments').value || '',
+
+          diagnosisList: document.getElementById('sapDiagnosisList').value || '',
+          diagnosisComments: document.getElementById('sapDiagnosisComments').value || '',
+
+          suicidal: getCheckedValuesByName('sapSuicidal'),
+          homicidal: getCheckedValuesByName('sapHomicidal'),
+          victimInfo: document.getElementById('sapVictimInfo').value || '',
+          actionTaken: document.getElementById('sapActionTaken').value || '',
+          safetyExplanation: document.getElementById('sapSafetyExplanation').value || '',
+          psychTxHistory: document.getElementById('sapPsychTxHistory').value || '',
+          psychMedHistory: document.getElementById('sapPsychMedHistory').value || '',
+          counselingHistory: document.getElementById('sapCounselingHistory').value || '',
+          currentMeds: document.getElementById('sapCurrentMeds').value || '',
+
+          impairments: getCheckedValuesByName('sapImpairments'),
+          weightChanges: document.getElementById('sapWeightChanges').value || '',
+          impairmentComments: document.getElementById('sapImpairmentComments').value || '',
+          supportSystem: document.getElementById('sapSupportSystem').value || '',
+          medicalHistory: document.getElementById('sapMedicalHistory').value || '',
+          medicalExplain: document.getElementById('sapMedicalExplain').value || '',
+          medicalMeds: document.getElementById('sapMedicalMeds').value || '',
+          doctorInfo: document.getElementById('sapDoctorInfo').value || '',
+          legalProblems: document.getElementById('sapLegalProblems').value || '',
+          legalExplain: document.getElementById('sapLegalExplain').value || '',
+          courtDate: document.getElementById('sapCourtDate').value || '',
+          financialProblems: document.getElementById('sapFinancialProblems').value || '',
+          financialExplain: document.getElementById('sapFinancialExplain').value || '',
+          workIssues: document.getElementById('sapWorkIssues').value || '',
+          workExplain: document.getElementById('sapWorkExplain').value || '',
+          losses: document.getElementById('sapLosses').value || '',
+          lossesExplain: document.getElementById('sapLossesExplain').value || ''
         },
+
         customRecommendationText: document.getElementById('sapRecommendation').value || '',
+        clinicalNotes: document.getElementById('sapProblemHistory').value || '',
         reportHtml: document.getElementById('sapReportPreview').innerHTML || '',
-        reportText: document.getElementById('sapReportPreview').textContent || '',
-        clinicalNotes: document.getElementById('sapClinicalNotes').value || ''
+        reportText: document.getElementById('sapReportPreview').textContent || ''
       };
     }
 
@@ -1694,6 +2111,124 @@ SAP Signature Date: ${sigDate}`;
         setStatus('Error');
         alert('SAP save failed: ' + err.message);
       }
+    }
+
+    function loadSapIntoForm(id) {
+      const s = state.sapEvaluations.find(x => String(x.id) === String(id));
+      if (!s) return;
+
+      const r = safeParseJson(s.recommendations);
+
+      showView('sapAssessmentView');
+
+      document.getElementById('sapRecordId').value = s.id || '';
+      document.getElementById('sapClientId').value = s.clientId || '';
+      document.getElementById('sapStatus').value = s.status || 'Completed';
+      document.getElementById('sapEvalDate').value = s.evalDate || '';
+      document.getElementById('sapDotType').value = s.dotType || 'DOT';
+      document.getElementById('sapName').value = s.sapName || 'Joshua Pair';
+      document.getElementById('sapCredentials').value = s.sapCredentials || 'LCDC, SAP';
+      document.getElementById('sapSignatureDate').value = s.sapSignatureDate || '';
+      document.getElementById('sapEmployer').value = s.company || '';
+      document.getElementById('sapClientName').value = s.employeeName || '';
+      document.getElementById('sapSsn').value = s.ssnLast4 || '';
+      document.getElementById('sapDob').value = s.dob || '';
+      document.getElementById('sapReason').value = s.reasonForAssessment || '';
+      document.getElementById('sapTestType').value = s.testType || '';
+      document.getElementById('sapViolationDate').value = s.dateOfViolation || '';
+      document.getElementById('sapViolationText').value = s.violationText || '';
+      document.getElementById('sapAgency').value = s.agency || '';
+      document.getElementById('sapRecommendation').value = s.customRecommendationText || r.recommendation || '';
+      document.getElementById('sapReportNote').value = r.reportNote || '';
+
+      document.getElementById('sapCaseNumber').value = r.caseNumber || '';
+      document.getElementById('sapDocsOther').value = r.docsOther || '';
+      document.getElementById('sapPositiveTestDate').value = r.positiveTestDate || '';
+      document.getElementById('sapReasonNotes').value = r.reasonNotes || '';
+      document.getElementById('sapOtherPosition').value = r.otherPosition || '';
+
+      document.getElementById('sapAlcoholQty').value = r.alcoholQty || '';
+      document.getElementById('sapAlcoholFirstUse').value = r.alcoholFirstUse || '';
+      document.getElementById('sapAlcoholLastFrequency').value = r.alcoholLastFrequency || '';
+      document.getElementById('sapDrug1Name').value = r.drug1Name || '';
+      document.getElementById('sapDrug1Qty').value = r.drug1Qty || '';
+      document.getElementById('sapDrug1Details').value = r.drug1Details || '';
+      document.getElementById('sapDrug2Name').value = r.drug2Name || '';
+      document.getElementById('sapDrug2Qty').value = r.drug2Qty || '';
+      document.getElementById('sapDrug2Details').value = r.drug2Details || '';
+      document.getElementById('sapHistoryPositiveTests').value = r.historyPositiveTests || '';
+      document.getElementById('sapHistoryDwi').value = r.historyDwi || '';
+      document.getElementById('sapPreviousTreatment').value = r.previousTreatment || '';
+      document.getElementById('sapPreviousTreatmentExplain').value = r.previousTreatmentExplain || '';
+      document.getElementById('sapProblemHistory').value = r.problemHistory || '';
+
+      document.getElementById('sapIntoxicated').value = r.intoxicated || '';
+      document.getElementById('sapOrientation').value = r.orientation || '';
+      document.getElementById('sapPhysicalPresentation').value = r.physicalPresentation || '';
+      document.getElementById('sapPresentationComments').value = r.presentationComments || '';
+      document.getElementById('sapOtherAddictionsComments').value = r.otherAddictionsComments || '';
+      document.getElementById('sapAcknowledgeProblem').value = r.acknowledgeProblem || '';
+      document.getElementById('sapDenial').value = r.denial || '';
+      document.getElementById('sapDenialComments').value = r.denialComments || '';
+
+      document.getElementById('sapDiagnosisList').value = r.diagnosisList || '';
+      document.getElementById('sapDiagnosisComments').value = r.diagnosisComments || '';
+      document.getElementById('sapVictimInfo').value = r.victimInfo || '';
+      document.getElementById('sapActionTaken').value = r.actionTaken || '';
+      document.getElementById('sapSafetyExplanation').value = r.safetyExplanation || '';
+      document.getElementById('sapPsychTxHistory').value = r.psychTxHistory || '';
+      document.getElementById('sapPsychMedHistory').value = r.psychMedHistory || '';
+      document.getElementById('sapCounselingHistory').value = r.counselingHistory || '';
+      document.getElementById('sapCurrentMeds').value = r.currentMeds || '';
+
+      document.getElementById('sapWeightChanges').value = r.weightChanges || '';
+      document.getElementById('sapImpairmentComments').value = r.impairmentComments || '';
+      document.getElementById('sapSupportSystem').value = r.supportSystem || '';
+      document.getElementById('sapMedicalHistory').value = r.medicalHistory || '';
+      document.getElementById('sapMedicalExplain').value = r.medicalExplain || '';
+      document.getElementById('sapMedicalMeds').value = r.medicalMeds || '';
+      document.getElementById('sapDoctorInfo').value = r.doctorInfo || '';
+      document.getElementById('sapLegalProblems').value = r.legalProblems || '';
+      document.getElementById('sapLegalExplain').value = r.legalExplain || '';
+      document.getElementById('sapCourtDate').value = r.courtDate || '';
+      document.getElementById('sapFinancialProblems').value = r.financialProblems || '';
+      document.getElementById('sapFinancialExplain').value = r.financialExplain || '';
+      document.getElementById('sapWorkIssues').value = r.workIssues || '';
+      document.getElementById('sapWorkExplain').value = r.workExplain || '';
+      document.getElementById('sapLosses').value = r.losses || '';
+      document.getElementById('sapLossesExplain').value = r.lossesExplain || '';
+
+      setCheckedValuesByName('sapDocsSigned', r.docsSigned || []);
+      setCheckedValuesByName('sapIdentifiedProblem', r.identifiedProblem || []);
+      setCheckedValuesByName('sapOtherAddictions', r.otherAddictions || []);
+      setCheckedValuesByName('sapSuicidal', r.suicidal || []);
+      setCheckedValuesByName('sapHomicidal', r.homicidal || []);
+      setCheckedValuesByName('sapImpairments', r.impairments || []);
+
+      const mastAnswers = safeParseJson(s.mastAnswers);
+      SAP_MAST_ITEMS.forEach(item => {
+        const answer = mastAnswers['mast_' + item.n];
+        if (answer) {
+          const el = document.querySelector(`input[name="sap_mast_${item.n}"][value="${answer}"]`);
+          if (el) el.checked = true;
+        }
+      });
+
+      const dastAnswers = safeParseJson(s.dastAnswers);
+      SAP_DAST_ITEMS.forEach(item => {
+        const answer = dastAnswers['dast_' + item.n];
+        if (answer) {
+          const el = document.querySelector(`input[name="sap_dast_${item.n}"][value="${answer}"]`);
+          if (el) el.checked = true;
+        }
+      });
+
+      if (sapSignaturePad) sapSignaturePad.clear();
+
+      selectedClientId = s.clientId || selectedClientId;
+      calculateSapScores();
+      buildSapReportPreview();
+      renderSapEvaluations();
     }
 
     function renderNotes() {
@@ -1828,7 +2363,9 @@ SAP Signature Date: ${sigDate}`;
 
     function renderSapEvaluations() {
       const box = document.getElementById('sapEvaluationsList');
-      const clientId = selectedClientId || document.getElementById('sapClientId').value || '';
+      if (!box) return;
+
+      const clientId = selectedClientId || (document.getElementById('sapClientId') ? document.getElementById('sapClientId').value : '');
       const items = clientId ? state.sapEvaluations.filter(s => s.clientId === clientId) : state.sapEvaluations;
 
       if (!items.length) {
@@ -1857,64 +2394,6 @@ SAP Signature Date: ${sigDate}`;
           loadSapIntoForm(btn.dataset.sapId);
         });
       });
-    }
-
-    function loadSapIntoForm(id) {
-      const s = state.sapEvaluations.find(x => String(x.id) === String(id));
-      if (!s) return;
-
-      showView('sapAssessmentView');
-      document.getElementById('sapRecordId').value = s.id || '';
-      document.getElementById('sapClientId').value = s.clientId || '';
-      document.getElementById('sapEvalDate').value = s.evalDate || '';
-      document.getElementById('sapClientName').value = s.employeeName || '';
-      document.getElementById('sapDob').value = s.dob || '';
-      document.getElementById('sapSsn').value = s.ssnLast4 || '';
-      document.getElementById('sapCompany').value = s.company || '';
-      document.getElementById('sapDerName').value = s.derName || '';
-      document.getElementById('sapDerContact').value = s.derContact || '';
-      document.getElementById('sapDotType').value = s.dotType || 'DOT';
-      document.getElementById('sapAgency').value = s.agency || '';
-      document.getElementById('sapReason').value = s.reasonForAssessment || '';
-      document.getElementById('sapTestType').value = s.testType || '';
-      document.getElementById('sapViolationDate').value = s.dateOfViolation || '';
-      document.getElementById('sapViolationText').value = s.violationText || '';
-      document.getElementById('sapRecommendation').value = s.customRecommendationText || '';
-      document.getElementById('sapReportNote').value = (s.recommendations && s.recommendations.reportNote) || '';
-      document.getElementById('sapName').value = s.sapName || 'Joshua Pair';
-      document.getElementById('sapCredentials').value = s.sapCredentials || 'LCDC, SAP';
-      document.getElementById('sapSignatureDate').value = s.sapSignatureDate || '';
-      document.getElementById('sapClinicalNotes').value = s.clinicalNotes || '';
-
-      if (sapSignaturePad) sapSignaturePad.clear();
-
-      const mastAnswers = typeof s.mastAnswers === 'string' ? safeParseJson(s.mastAnswers) : (s.mastAnswers || {});
-      const dastAnswers = typeof s.dastAnswers === 'string' ? safeParseJson(s.dastAnswers) : (s.dastAnswers || {});
-
-      SAP_MAST_ITEMS.forEach(item => {
-        const answer = mastAnswers['mast_' + item.n];
-        if (answer) {
-          const el = document.querySelector(`input[name="sap_mast_${item.n}"][value="${answer}"]`);
-          if (el) el.checked = true;
-        }
-      });
-
-      SAP_DAST_ITEMS.forEach(item => {
-        const answer = dastAnswers['dast_' + item.n];
-        if (answer) {
-          const el = document.querySelector(`input[name="sap_dast_${item.n}"][value="${answer}"]`);
-          if (el) el.checked = true;
-        }
-      });
-
-      selectedClientId = s.clientId || selectedClientId;
-      calculateSapScores();
-      buildSapReportPreview();
-      renderSapEvaluations();
-    }
-
-    function safeParseJson(value) {
-      try { return JSON.parse(value); } catch { return {}; }
     }
 
     function renderReports() {
@@ -2136,580 +2615,19 @@ SAP Signature Date: ${sigDate}`;
     document.getElementById('sapSignatureDate').valueAsDate = new Date();
 
     document.addEventListener('input', function(e) {
-      if (
-        e.target.closest('#sapForm') &&
-        (
-          e.target.matches('input') ||
-          e.target.matches('textarea') ||
-          e.target.matches('select')
-        )
-      ) {
+      if (e.target.closest('#sapForm')) {
         calculateSapScores();
       }
     });
 
     document.addEventListener('change', function(e) {
-      if (
-        e.target.closest('#sapForm') &&
-        (
-          e.target.matches('input') ||
-          e.target.matches('textarea') ||
-          e.target.matches('select')
-        )
-      ) {
+      if (e.target.closest('#sapForm')) {
         calculateSapScores();
       }
     });
 
     showView('dashboardView');
     loadAllDataFromServer();
-function getCheckedValuesByName(name) {
-  return Array.from(document.querySelectorAll(`input[name="${name}"]:checked`)).map(el => el.value);
-}
-
-function setCheckedValuesByName(name, values) {
-  const arr = Array.isArray(values) ? values : (values ? [values] : []);
-  document.querySelectorAll(`input[name="${name}"]`).forEach(el => {
-    el.checked = arr.includes(el.value);
-  });
-}
-
-function getSapRadioValue(name) {
-  const el = document.querySelector(`input[name="${name}"]:checked`);
-  return el ? el.value : '';
-}
-
-function safeParseJson(value) {
-  if (!value) return {};
-  if (typeof value === 'object') return value;
-  try { return JSON.parse(value); } catch (e) { return {}; }
-}
-function buildSapTables() {
-  const mastBody = document.getElementById('sapMastTable');
-  if (mastBody) {
-    mastBody.innerHTML = SAP_MAST_ITEMS.map(item => `
-      <tr>
-        <td>${item.n}</td>
-        <td>${escapeHtml(item.q)}</td>
-        <td><input type="radio" name="sap_mast_${item.n}" value="yes"></td>
-        <td><input type="radio" name="sap_mast_${item.n}" value="no"></td>
-      </tr>
-    `).join('');
-  }
-
-  const dastBody = document.getElementById('sapDastTable');
-  if (dastBody) {
-    dastBody.innerHTML = SAP_DAST_ITEMS.map(item => `
-      <tr>
-        <td>${item.n}</td>
-        <td>${escapeHtml(item.q)}</td>
-        <td><input type="radio" name="sap_dast_${item.n}" value="yes"></td>
-        <td><input type="radio" name="sap_dast_${item.n}" value="no"></td>
-      </tr>
-    `).join('');
-  }
-}
-
-function getSapMastAnswer(n) {
-  return getSapRadioValue(`sap_mast_${n}`);
-}
-
-function getSapDastAnswer(n) {
-  return getSapRadioValue(`sap_dast_${n}`);
-}
-
-function calculateSapScores() {
-  let mast = 0;
-  SAP_MAST_ITEMS.forEach(item => {
-    const v = getSapMastAnswer(item.n);
-    if (v === 'yes') mast += item.yes;
-    if (v === 'no') mast += item.no;
-  });
-
-  let dast = 0;
-  SAP_DAST_ITEMS.forEach(item => {
-    const v = getSapDastAnswer(item.n);
-    if (!v) return;
-    dast += item.riskYes ? (v === 'yes' ? 1 : 0) : (v === 'no' ? 1 : 0);
-  });
-
-  let mastText = 'Not calculated';
-  let mastClass = 'small';
-  if (mast <= 3) { mastText = 'Probably no drug/alcohol addiction'; mastClass = 'result-good'; }
-  else if (mast === 4) { mastText = 'Borderline drug/alcohol addiction'; mastClass = 'result-warn'; }
-  else { mastText = 'Probably drug/alcohol addiction'; mastClass = 'result-bad'; }
-
-  let dastText = 'Not calculated';
-  let dastClass = 'small';
-  if (dast === 0) { dastText = 'No problems reported'; dastClass = 'result-good'; }
-  else if (dast <= 2) { dastText = 'Low level'; dastClass = 'result-good'; }
-  else if (dast <= 5) { dastText = 'Moderate level'; dastClass = 'result-warn'; }
-  else if (dast <= 8) { dastText = 'Substantial level'; dastClass = 'result-bad'; }
-  else { dastText = 'Severe level'; dastClass = 'result-bad'; }
-
-  document.getElementById('sapMastScore').textContent = mast;
-  document.getElementById('sapDastScore').textContent = dast;
-  document.getElementById('sapMastInterpretation').textContent = mastText;
-  document.getElementById('sapMastInterpretation').className = mastClass;
-  document.getElementById('sapDastInterpretation').textContent = dastText;
-  document.getElementById('sapDastInterpretation').className = dastClass;
-
-  let flag = 'Clinical Review';
-  let note = 'Use interview data, observed presentation, and history together with the instrument scores.';
-  if (mast >= 5 || dast >= 6) {
-    flag = 'High Concern';
-    note = 'Instrument scores suggest clinically significant substance-related risk.';
-  } else if (mast === 4 || (dast >= 3 && dast <= 5)) {
-    flag = 'Moderate Concern';
-    note = 'Scores show a meaningful risk pattern that should be integrated into the evaluation.';
-  } else if (mast <= 3 && dast <= 2) {
-    flag = 'Lower Concern';
-    note = 'Scores alone do not indicate high severity, but they do not replace clinical judgment.';
-  }
-
-  document.getElementById('sapCombinedFlag').textContent = flag;
-  document.getElementById('sapCombinedInterpretation').textContent = note;
-  document.getElementById('sapScoreStatus').textContent = 'Updated';
-
-  buildSapReportPreview();
-
-  return { mast, dast, mastText, dastText, flag, note };
-}
-
-function buildSapReportPreview() {
-  const clientName = document.getElementById('sapClientName').value || '';
-  const evalDate = document.getElementById('sapEvalDate').value || '';
-  const derName = document.getElementById('sapEmployer').value || '';
-  const derContact = '';
-  const company = document.getElementById('sapEmployer').value || '';
-  const ssn = document.getElementById('sapSsn').value || '';
-  const dotType = document.getElementById('sapDotType').value || '';
-  const reason = document.getElementById('sapReason').value || '';
-  const testType = document.getElementById('sapTestType').value || '';
-  const violationDate = document.getElementById('sapViolationDate').value || '';
-  const violationText = document.getElementById('sapViolationText').value || '';
-  const agency = document.getElementById('sapAgency').value || '';
-  const recommendation = document.getElementById('sapRecommendation').value || '';
-  const note = document.getElementById('sapReportNote').value || '';
-  const mast = document.getElementById('sapMastScore').textContent || '0';
-  const dast = document.getElementById('sapDastScore').textContent || '0';
-  const sapName = document.getElementById('sapName').value || '';
-  const sapCredentials = document.getElementById('sapCredentials').value || '';
-  const sigDate = document.getElementById('sapSignatureDate').value || '';
-
-  const opening = dotType === 'DOT'
-    ? `${clientName || 'Employee'} was assessed on ${evalDate} because ${clientName || 'the employee'} ${violationText || reason} for ${company}.`
-    : `${clientName || 'Client'} was assessed on ${evalDate} for a non-DOT referral involving ${violationText || reason}${company ? ' for ' + company : ''}.`;
-
-  const violationLine = dotType === 'DOT'
-    ? `This violation of the Department of Transportation's drug and alcohol testing rules occurred on ${violationDate}.`
-    : `This referral / policy event occurred on ${violationDate}.`;
-
-  const report = `${dotType} SAP INITIAL REPORT PREVIEW
-
-Date: ${evalDate}
-To: ${derName}${derContact ? ' | ' + derContact : ''}
-Company: ${company}
-Re: ${clientName}${ssn ? ' | ' + ssn : ''}
-
-${opening}
-
-${violationLine}
-
-Assessment Summary:
-- Reason for assessment: ${reason}
-- Type of test: ${testType}
-- Industry / mode: ${agency}
-- MAST score: ${mast}
-- DAST-10 score: ${dast}
-
-Recommendations:
-${recommendation}
-
-Additional report note:
-${note}
-
-${dotType === 'DOT'
-  ? 'This report is limited to SAP recommendations and return-to-duty related information. No diagnosis or protected medical history is included.'
-  : 'This non-DOT report is limited to the referral findings and recommendations requested. No diagnosis or protected medical history is included unless separately authorized.'}
-
-SAP Signature: ${sapName}${sapCredentials ? ', ' + sapCredentials : ''}
-SAP Signature Date: ${sigDate}`;
-
-  document.getElementById('sapReportPreview').textContent = report;
-}
-
-function syncSapClientContext() {
-  const sapClientId = document.getElementById('sapClientId');
-  if (!sapClientId) return;
-
-  if (selectedClientId) sapClientId.value = selectedClientId;
-
-  const c = state.clients.find(x => x.id === sapClientId.value);
-  if (!c) return;
-
-  if (!document.getElementById('sapClientName').value) document.getElementById('sapClientName').value = c.name || '';
-  if (!document.getElementById('sapDob').value) document.getElementById('sapDob').value = c.dob || '';
-
-  buildSapReportPreview();
-  renderSapEvaluations();
-}
-
-function clearSapForm(keepClient = true) {
-  const currentClient = keepClient ? document.getElementById('sapClientId').value : '';
-  document.getElementById('sapForm').reset();
-  document.getElementById('sapRecordId').value = '';
-  if (sapSignaturePad) sapSignaturePad.clear();
-
-  if (keepClient) {
-    document.getElementById('sapClientId').value = currentClient || selectedClientId || '';
-    syncSapClientContext();
-  }
-
-  document.getElementById('sapEvalDate').valueAsDate = new Date();
-  document.getElementById('sapSignatureDate').valueAsDate = new Date();
-
-  calculateSapScores();
-  buildSapReportPreview();
-}
-
-function collectSapPayload() {
-  const scores = calculateSapScores();
-
-  const mastAnswers = {};
-  SAP_MAST_ITEMS.forEach(item => {
-    mastAnswers['mast_' + item.n] = getSapMastAnswer(item.n) || '';
-  });
-
-  const dastAnswers = {};
-  SAP_DAST_ITEMS.forEach(item => {
-    dastAnswers['dast_' + item.n] = getSapDastAnswer(item.n) || '';
-  });
-
-  return {
-    id: document.getElementById('sapRecordId').value || '',
-    clientId: document.getElementById('sapClientId').value || '',
-    status: document.getElementById('sapStatus').value || 'Completed',
-
-    evalDate: document.getElementById('sapEvalDate').value || '',
-    dotType: document.getElementById('sapDotType').value || '',
-    sapName: document.getElementById('sapName').value || '',
-    sapCredentials: document.getElementById('sapCredentials').value || '',
-    sapPhone: '903.445.8953',
-    sapEmail: '',
-    sapSignature: sapSignaturePad ? sapSignaturePad.getDataUrl() : '',
-    sapSignatureDate: document.getElementById('sapSignatureDate').value || '',
-
-    derName: document.getElementById('sapEmployer').value || '',
-    derContact: '',
-    company: document.getElementById('sapEmployer').value || '',
-    companyAddress1: '',
-    companyAddress2: '',
-
-    employeeName: document.getElementById('sapClientName').value || '',
-    employeeAddress1: '',
-    employeeAddress2: '',
-    ssnLast4: document.getElementById('sapSsn').value || '',
-    dob: document.getElementById('sapDob').value || '',
-    phone: '',
-    email: '',
-
-    reasonForAssessment: document.getElementById('sapReason').value || '',
-    testType: document.getElementById('sapTestType').value || '',
-    dateOfViolation: document.getElementById('sapViolationDate').value || '',
-    violationText: document.getElementById('sapViolationText').value || '',
-    agency: document.getElementById('sapAgency').value || '',
-
-    mastScore: String(scores.mast),
-    mastSeverity: scores.mastText,
-    dastScore: String(scores.dast),
-    dastSeverity: scores.dastText,
-    mastAnswers: mastAnswers,
-    dastAnswers: dastAnswers,
-
-    educationHours: '',
-    groupCount: '',
-    sessionCount: '',
-
-    recommendations: {
-      recommendation: document.getElementById('sapRecommendation').value || '',
-      reportNote: document.getElementById('sapReportNote').value || '',
-      docsSigned: getCheckedValuesByName('sapDocsSigned'),
-      identifiedProblem: getCheckedValuesByName('sapIdentifiedProblem'),
-      otherAddictions: getCheckedValuesByName('sapOtherAddictions'),
-      suicidal: getCheckedValuesByName('sapSuicidal'),
-      homicidal: getCheckedValuesByName('sapHomicidal'),
-      impairments: getCheckedValuesByName('sapImpairments'),
-
-      caseNumber: document.getElementById('sapCaseNumber').value || '',
-      docsOther: document.getElementById('sapDocsOther').value || '',
-      positiveTestDate: document.getElementById('sapPositiveTestDate').value || '',
-      reasonNotes: document.getElementById('sapReasonNotes').value || '',
-      otherPosition: document.getElementById('sapOtherPosition').value || '',
-
-      alcoholQty: document.getElementById('sapAlcoholQty').value || '',
-      alcoholFirstUse: document.getElementById('sapAlcoholFirstUse').value || '',
-      alcoholLastFrequency: document.getElementById('sapAlcoholLastFrequency').value || '',
-      drug1Name: document.getElementById('sapDrug1Name').value || '',
-      drug1Qty: document.getElementById('sapDrug1Qty').value || '',
-      drug1Details: document.getElementById('sapDrug1Details').value || '',
-      drug2Name: document.getElementById('sapDrug2Name').value || '',
-      drug2Qty: document.getElementById('sapDrug2Qty').value || '',
-      drug2Details: document.getElementById('sapDrug2Details').value || '',
-
-      historyPositiveTests: document.getElementById('sapHistoryPositiveTests').value || '',
-      historyDwi: document.getElementById('sapHistoryDwi').value || '',
-      previousTreatment: document.getElementById('sapPreviousTreatment').value || '',
-      previousTreatmentExplain: document.getElementById('sapPreviousTreatmentExplain').value || '',
-      problemHistory: document.getElementById('sapProblemHistory').value || '',
-
-      intoxicated: document.getElementById('sapIntoxicated').value || '',
-      orientation: document.getElementById('sapOrientation').value || '',
-      physicalPresentation: document.getElementById('sapPhysicalPresentation').value || '',
-      presentationComments: document.getElementById('sapPresentationComments').value || '',
-      otherAddictionsComments: document.getElementById('sapOtherAddictionsComments').value || '',
-      acknowledgeProblem: document.getElementById('sapAcknowledgeProblem').value || '',
-      denial: document.getElementById('sapDenial').value || '',
-      denialComments: document.getElementById('sapDenialComments').value || '',
-
-      diagnosisList: document.getElementById('sapDiagnosisList').value || '',
-      diagnosisComments: document.getElementById('sapDiagnosisComments').value || '',
-      victimInfo: document.getElementById('sapVictimInfo').value || '',
-      actionTaken: document.getElementById('sapActionTaken').value || '',
-      safetyExplanation: document.getElementById('sapSafetyExplanation').value || '',
-      psychTxHistory: document.getElementById('sapPsychTxHistory').value || '',
-      psychMedHistory: document.getElementById('sapPsychMedHistory').value || '',
-      counselingHistory: document.getElementById('sapCounselingHistory').value || '',
-      currentMeds: document.getElementById('sapCurrentMeds').value || '',
-
-      weightChanges: document.getElementById('sapWeightChanges').value || '',
-      impairmentComments: document.getElementById('sapImpairmentComments').value || '',
-      supportSystem: document.getElementById('sapSupportSystem').value || '',
-      medicalHistory: document.getElementById('sapMedicalHistory').value || '',
-      medicalExplain: document.getElementById('sapMedicalExplain').value || '',
-      medicalMeds: document.getElementById('sapMedicalMeds').value || '',
-      doctorInfo: document.getElementById('sapDoctorInfo').value || '',
-      legalProblems: document.getElementById('sapLegalProblems').value || '',
-      legalExplain: document.getElementById('sapLegalExplain').value || '',
-      courtDate: document.getElementById('sapCourtDate').value || '',
-      financialProblems: document.getElementById('sapFinancialProblems').value || '',
-      financialExplain: document.getElementById('sapFinancialExplain').value || '',
-      workIssues: document.getElementById('sapWorkIssues').value || '',
-      workExplain: document.getElementById('sapWorkExplain').value || '',
-      losses: document.getElementById('sapLosses').value || '',
-      lossesExplain: document.getElementById('sapLossesExplain').value || ''
-    },
-
-    customRecommendationText: document.getElementById('sapRecommendation').value || '',
-    clinicalNotes: document.getElementById('sapProblemHistory').value || '',
-    reportHtml: document.getElementById('sapReportPreview').innerHTML || '',
-    reportText: document.getElementById('sapReportPreview').textContent || ''
-  };
-}
-
-async function saveSapEvaluation(e) {
-  e.preventDefault();
-  const payload = collectSapPayload();
-
-  if (!payload.clientId) {
-    alert('Please select a client for this SAP evaluation.');
-    return;
-  }
-
-  try {
-    const result = await apiRequest('saveSapEvaluation', payload);
-    if (result && result.id) document.getElementById('sapRecordId').value = result.id;
-    selectedClientId = payload.clientId;
-    await loadAllDataFromServer();
-    showView('sapAssessmentView');
-  } catch (err) {
-    setStatus('Error');
-    alert('SAP save failed: ' + err.message);
-  }
-}
-
-function loadSapIntoForm(id) {
-  const s = state.sapEvaluations.find(x => String(x.id) === String(id));
-  if (!s) return;
-
-  const r = safeParseJson(s.recommendations);
-
-  showView('sapAssessmentView');
-
-  document.getElementById('sapRecordId').value = s.id || '';
-  document.getElementById('sapClientId').value = s.clientId || '';
-  document.getElementById('sapStatus').value = s.status || 'Completed';
-  document.getElementById('sapEvalDate').value = s.evalDate || '';
-  document.getElementById('sapDotType').value = s.dotType || 'DOT';
-  document.getElementById('sapName').value = s.sapName || 'Joshua Pair';
-  document.getElementById('sapCredentials').value = s.sapCredentials || 'LCDC, SAP';
-  document.getElementById('sapSignatureDate').value = s.sapSignatureDate || '';
-  document.getElementById('sapEmployer').value = s.company || '';
-  document.getElementById('sapClientName').value = s.employeeName || '';
-  document.getElementById('sapSsn').value = s.ssnLast4 || '';
-  document.getElementById('sapDob').value = s.dob || '';
-  document.getElementById('sapReason').value = s.reasonForAssessment || '';
-  document.getElementById('sapTestType').value = s.testType || '';
-  document.getElementById('sapViolationDate').value = s.dateOfViolation || '';
-  document.getElementById('sapViolationText').value = s.violationText || '';
-  document.getElementById('sapAgency').value = s.agency || '';
-  document.getElementById('sapRecommendation').value = s.customRecommendationText || r.recommendation || '';
-  document.getElementById('sapReportNote').value = r.reportNote || '';
-
-  document.getElementById('sapCaseNumber').value = r.caseNumber || '';
-  document.getElementById('sapDocsOther').value = r.docsOther || '';
-  document.getElementById('sapPositiveTestDate').value = r.positiveTestDate || '';
-  document.getElementById('sapReasonNotes').value = r.reasonNotes || '';
-  document.getElementById('sapOtherPosition').value = r.otherPosition || '';
-
-  document.getElementById('sapAlcoholQty').value = r.alcoholQty || '';
-  document.getElementById('sapAlcoholFirstUse').value = r.alcoholFirstUse || '';
-  document.getElementById('sapAlcoholLastFrequency').value = r.alcoholLastFrequency || '';
-  document.getElementById('sapDrug1Name').value = r.drug1Name || '';
-  document.getElementById('sapDrug1Qty').value = r.drug1Qty || '';
-  document.getElementById('sapDrug1Details').value = r.drug1Details || '';
-  document.getElementById('sapDrug2Name').value = r.drug2Name || '';
-  document.getElementById('sapDrug2Qty').value = r.drug2Qty || '';
-  document.getElementById('sapDrug2Details').value = r.drug2Details || '';
-
-  document.getElementById('sapHistoryPositiveTests').value = r.historyPositiveTests || '';
-  document.getElementById('sapHistoryDwi').value = r.historyDwi || '';
-  document.getElementById('sapPreviousTreatment').value = r.previousTreatment || '';
-  document.getElementById('sapPreviousTreatmentExplain').value = r.previousTreatmentExplain || '';
-  document.getElementById('sapProblemHistory').value = r.problemHistory || '';
-
-  document.getElementById('sapIntoxicated').value = r.intoxicated || '';
-  document.getElementById('sapOrientation').value = r.orientation || '';
-  document.getElementById('sapPhysicalPresentation').value = r.physicalPresentation || '';
-  document.getElementById('sapPresentationComments').value = r.presentationComments || '';
-  document.getElementById('sapOtherAddictionsComments').value = r.otherAddictionsComments || '';
-  document.getElementById('sapAcknowledgeProblem').value = r.acknowledgeProblem || '';
-  document.getElementById('sapDenial').value = r.denial || '';
-  document.getElementById('sapDenialComments').value = r.denialComments || '';
-
-  document.getElementById('sapDiagnosisList').value = r.diagnosisList || '';
-  document.getElementById('sapDiagnosisComments').value = r.diagnosisComments || '';
-  document.getElementById('sapVictimInfo').value = r.victimInfo || '';
-  document.getElementById('sapActionTaken').value = r.actionTaken || '';
-  document.getElementById('sapSafetyExplanation').value = r.safetyExplanation || '';
-  document.getElementById('sapPsychTxHistory').value = r.psychTxHistory || '';
-  document.getElementById('sapPsychMedHistory').value = r.psychMedHistory || '';
-  document.getElementById('sapCounselingHistory').value = r.counselingHistory || '';
-  document.getElementById('sapCurrentMeds').value = r.currentMeds || '';
-
-  document.getElementById('sapWeightChanges').value = r.weightChanges || '';
-  document.getElementById('sapImpairmentComments').value = r.impairmentComments || '';
-  document.getElementById('sapSupportSystem').value = r.supportSystem || '';
-  document.getElementById('sapMedicalHistory').value = r.medicalHistory || '';
-  document.getElementById('sapMedicalExplain').value = r.medicalExplain || '';
-  document.getElementById('sapMedicalMeds').value = r.medicalMeds || '';
-  document.getElementById('sapDoctorInfo').value = r.doctorInfo || '';
-  document.getElementById('sapLegalProblems').value = r.legalProblems || '';
-  document.getElementById('sapLegalExplain').value = r.legalExplain || '';
-  document.getElementById('sapCourtDate').value = r.courtDate || '';
-  document.getElementById('sapFinancialProblems').value = r.financialProblems || '';
-  document.getElementById('sapFinancialExplain').value = r.financialExplain || '';
-  document.getElementById('sapWorkIssues').value = r.workIssues || '';
-  document.getElementById('sapWorkExplain').value = r.workExplain || '';
-  document.getElementById('sapLosses').value = r.losses || '';
-  document.getElementById('sapLossesExplain').value = r.lossesExplain || '';
-
-  setCheckedValuesByName('sapDocsSigned', r.docsSigned || []);
-  setCheckedValuesByName('sapIdentifiedProblem', r.identifiedProblem || []);
-  setCheckedValuesByName('sapOtherAddictions', r.otherAddictions || []);
-  setCheckedValuesByName('sapSuicidal', r.suicidal || []);
-  setCheckedValuesByName('sapHomicidal', r.homicidal || []);
-  setCheckedValuesByName('sapImpairments', r.impairments || []);
-
-  const mastAnswers = safeParseJson(s.mastAnswers);
-  SAP_MAST_ITEMS.forEach(item => {
-    const answer = mastAnswers['mast_' + item.n];
-    if (answer) {
-      const el = document.querySelector(`input[name="sap_mast_${item.n}"][value="${answer}"]`);
-      if (el) el.checked = true;
-    }
-  });
-
-  const dastAnswers = safeParseJson(s.dastAnswers);
-  SAP_DAST_ITEMS.forEach(item => {
-    const answer = dastAnswers['dast_' + item.n];
-    if (answer) {
-      const el = document.querySelector(`input[name="sap_dast_${item.n}"][value="${answer}"]`);
-      if (el) el.checked = true;
-    }
-  });
-
-  if (sapSignaturePad) sapSignaturePad.clear();
-
-  selectedClientId = s.clientId || selectedClientId;
-  calculateSapScores();
-  buildSapReportPreview();
-  renderSapEvaluations();
-}
-
-function renderSapEvaluations() {
-  const box = document.getElementById('sapEvaluationsList');
-  if (!box) return;
-
-  const clientId = selectedClientId || (document.getElementById('sapClientId') ? document.getElementById('sapClientId').value : '');
-  const items = clientId ? state.sapEvaluations.filter(s => s.clientId === clientId) : state.sapEvaluations;
-
-  if (!items.length) {
-    box.innerHTML = '<div class="empty">No SAP evaluations saved yet.</div>';
-    return;
-  }
-
-  box.innerHTML = items.map(s => {
-    const c = state.clients.find(x => x.id === s.clientId);
-    return `<div class="mini-item">
-      <div style="display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;">
-        <strong>${escapeHtml(c ? c.name : s.employeeName || 'Unknown Client')}</strong>
-        <span class="small">${escapeHtml(formatDate(s.evalDate))} • ${escapeHtml(s.dotType || '')}</span>
-      </div>
-      <div style="margin-top:8px;"><strong>Reason:</strong> ${escapeHtml(s.reasonForAssessment || '—')}</div>
-      <div style="margin-top:8px;"><strong>MAST / DAST:</strong> ${escapeHtml(s.mastScore || '0')} / ${escapeHtml(s.dastScore || '0')}</div>
-      <div style="margin-top:8px;"><strong>Company:</strong> ${escapeHtml(s.company || '—')}</div>
-      <div class="row-actions">
-        <button class="secondary-btn open-sap-btn" data-sap-id="${s.id}" type="button">Open</button>
-      </div>
-    </div>`;
-  }).join('');
-
-  document.querySelectorAll('.open-sap-btn').forEach(btn => {
-    btn.addEventListener('click', function() {
-      loadSapIntoForm(btn.dataset.sapId);
-    });
-  });
-}
-    document.getElementById('sapForm').addEventListener('submit', saveSapEvaluation);
-
-document.getElementById('sapClientId').addEventListener('change', function() {
-  selectedClientId = this.value || selectedClientId;
-  syncSapClientContext();
-});
-
-document.getElementById('newSapForSelectedBtn').addEventListener('click', function() {
-  clearSapForm(true);
-});
-
-buildSapTables();
-
-sapSignaturePad = setupSignaturePad('sapSignatureCanvas', 'clearSapSignatureBtn', null);
-
-document.getElementById('sapEvalDate').valueAsDate = new Date();
-document.getElementById('sapSignatureDate').valueAsDate = new Date();
-
-document.addEventListener('input', function(e) {
-  if (e.target.closest('#sapForm')) {
-    calculateSapScores();
-  }
-});
-
-document.addEventListener('change', function(e) {
-  if (e.target.closest('#sapForm')) {
-    calculateSapScores();
-  }
-});
   </script>
 </body>
 </html>
