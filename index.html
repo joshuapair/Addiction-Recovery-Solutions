@@ -564,8 +564,14 @@
             <div class="field"><label class="label">Problem</label><textarea id="planProblem" required></textarea></div>
             <div class="field"><label class="label">Goal Template</label><select id="planGoalSelect"></select></div>
             <div class="field"><label class="label">Goal</label><textarea id="planGoal" required></textarea></div>
-            <div class="field"><label class="label">Objective Template</label><select id="planObjectivesSelect"></select></div>
-            <div class="field"><label class="label">Objectives</label><textarea id="planObjectives" required></textarea></div>
+            <div class="grid grid-3">
+              <div class="field"><label class="label">Objective 1 Template</label><select id="planObjective1Select"></select></div>
+              <div class="field"><label class="label">Objective 2 Template</label><select id="planObjective2Select"></select></div>
+              <div class="field"><label class="label">Objective 3 Template</label><select id="planObjective3Select"></select></div>
+            </div>
+            <div class="field"><label class="label">Objectives</label><textarea id="planObjectives" placeholder="1. Objective one
+2. Objective two
+3. Objective three" required></textarea></div>
             <div class="field"><label class="label">Intervention Template</label><select id="planInterventionsSelect"></select></div>
             <div class="field"><label class="label">Interventions</label><textarea id="planInterventions" required></textarea></div>
 
@@ -1170,14 +1176,14 @@
 
     const PLAN_OBJECTIVE_OPTIONS = [
       '',
-      'Client will identify at least 5 triggers for substance use.',
+      'Client will identify at least 5 personal triggers for substance use.',
       'Client will identify at least 5 coping skills to manage cravings.',
-      'Client will complete a written relapse prevention plan.',
-      'Client will attend all scheduled counseling sessions.',
-      'Client will participate in at least 1 support meeting weekly.',
       'Client will verbalize at least 3 negative consequences of substance use.',
+      'Client will complete a written relapse prevention plan.',
       'Client will identify supportive people and recovery resources.',
       'Client will demonstrate refusal skills in high-risk situations.',
+      'Client will attend all scheduled counseling sessions.',
+      'Client will participate in at least 1 support meeting weekly.',
       'Client will comply with drug testing / monitoring as required.'
     ];
 
@@ -1382,6 +1388,87 @@
       select.addEventListener('change', function() {
         if (select.value) textarea.value = select.value;
       });
+    }
+
+    function getPlanObjectiveSelectIds() {
+      return ['planObjective1Select', 'planObjective2Select', 'planObjective3Select'];
+    }
+
+    function populatePlanObjectiveSelects() {
+      const selectIds = getPlanObjectiveSelectIds();
+      const selections = {};
+
+      selectIds.forEach(function(id) {
+        const el = document.getElementById(id);
+        selections[id] = el ? el.value : '';
+      });
+
+      selectIds.forEach(function(id, index) {
+        const select = document.getElementById(id);
+        if (!select) return;
+
+        const currentValue = selections[id] || '';
+        const usedElsewhere = new Set(
+          selectIds
+            .filter(otherId => otherId !== id)
+            .map(otherId => selections[otherId])
+            .filter(Boolean)
+        );
+
+        const options = PLAN_OBJECTIVE_OPTIONS.filter(function(opt) {
+          return !opt || opt === currentValue || !usedElsewhere.has(opt);
+        });
+
+        select.innerHTML = options.map(function(opt) {
+          const text = opt || ('Select objective ' + (index + 1));
+          const selected = opt === currentValue ? ' selected' : '';
+          return `<option value="${escapeHtml(opt)}"${selected}>${escapeHtml(text)}</option>`;
+        }).join('');
+      });
+    }
+
+    function syncPlanObjectivesFromSelects() {
+      const textarea = document.getElementById('planObjectives');
+      if (!textarea) return;
+
+      const lines = getPlanObjectiveSelectIds()
+        .map(function(id) {
+          const el = document.getElementById(id);
+          return el ? el.value.trim() : '';
+        })
+        .filter(Boolean)
+        .map(function(value, index) {
+          const cleanValue = value.replace(/^\d+\.\s*/, '');
+          return (index + 1) + '. ' + cleanValue;
+        });
+
+      textarea.value = lines.join('\n');
+    }
+
+    function setupPlanObjectiveCascading() {
+      const selectIds = getPlanObjectiveSelectIds();
+
+      selectIds.forEach(function(id) {
+        const select = document.getElementById(id);
+        if (!select) return;
+
+        select.addEventListener('change', function() {
+          populatePlanObjectiveSelects();
+          syncPlanObjectivesFromSelects();
+        });
+      });
+
+      populatePlanObjectiveSelects();
+      syncPlanObjectivesFromSelects();
+    }
+
+    function resetPlanObjectiveCascading() {
+      getPlanObjectiveSelectIds().forEach(function(id) {
+        const select = document.getElementById(id);
+        if (select) select.value = '';
+      });
+      populatePlanObjectiveSelects();
+      syncPlanObjectivesFromSelects();
     }
 
     function setupSignaturePad(canvasId, clearBtnId, labelId) {
@@ -1717,6 +1804,7 @@
       try {
         await apiRequest('savePlan', plan);
         document.getElementById('planForm').reset();
+        resetPlanObjectiveCascading();
         if (planClientSignaturePad) planClientSignaturePad.clear();
         if (planCounselorSignaturePad) planCounselorSignaturePad.clear();
         await loadAllDataFromServer();
@@ -2592,13 +2680,12 @@ SAP Signature Date: ${sigDate}`;
     populateSelectOptions('diagnosis', DIAGNOSIS_OPTIONS, 'diagnosis');
     populateSelectOptions('planProblemSelect', PLAN_PROBLEM_OPTIONS, 'problem');
     populateSelectOptions('planGoalSelect', PLAN_GOAL_OPTIONS, 'goal');
-    populateSelectOptions('planObjectivesSelect', PLAN_OBJECTIVE_OPTIONS, 'objective');
     populateSelectOptions('planInterventionsSelect', PLAN_INTERVENTION_OPTIONS, 'intervention');
 
     wireTemplateSelect('planProblemSelect', 'planProblem');
     wireTemplateSelect('planGoalSelect', 'planGoal');
-    wireTemplateSelect('planObjectivesSelect', 'planObjectives');
     wireTemplateSelect('planInterventionsSelect', 'planInterventions');
+    setupPlanObjectiveCascading();
 
     clientSignaturePad = setupSignaturePad('clientSignatureCanvas', 'clearClientSignatureBtn', 'clientSignatureDateText');
     counselorSignaturePad = setupSignaturePad('counselorSignatureCanvas', 'clearCounselorSignatureBtn', 'counselorSignatureDateText');
