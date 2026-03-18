@@ -1121,6 +1121,7 @@
   </div>
 
   <script>
+    const APP_SCRIPT_URL = 'https://script.google.com/a/macros/addictionrecoverysolutions.org/s/AKfycbwS4yzK4DA96PBkqXddLSZHytYmUXv-W-NZKCIrVbTmdjbshY8cWfJGRjZqO0AZ3cSgeQ/exec';
     const MAX_FILE_SIZE = 4.5 * 1024 * 1024;
 
     const DIAGNOSIS_OPTIONS = [
@@ -1299,96 +1300,67 @@
       return 'badge badge-purple';
     }
 
-    function waitForAppsScriptRun(maxAttempts, delayMs) {
-      maxAttempts = maxAttempts || 40;
-      delayMs = delayMs || 100;
-
-      return new Promise(function(resolve, reject) {
-        function tryResolve(remaining) {
-          if (window.google && google.script && google.script.run) {
-            resolve(google.script.run);
-            return;
-          }
-
-          if (remaining <= 0) {
-            reject(new Error('This app must be served by Google Apps Script as Index.html so google.script.run is available.'));
-            return;
-          }
-
-          window.setTimeout(function() {
-            tryResolve(remaining - 1);
-          }, delayMs);
-        }
-
-        tryResolve(maxAttempts);
-      });
-    }
-
-    function apiRequest(action, payload) {
+    async function apiRequest(action, payload) {
       setStatus('Working...');
-      return new Promise(function(resolve, reject) {
-        const successHandler = function(result) {
-          setStatus('Ready');
-          resolve(result);
-        };
+      let response;
 
-        const failureHandler = function(error) {
-          setStatus('Error');
-          console.error('Apps Script call failed.', { action, error });
-          reject(new Error(error && error.message ? error.message : 'Server request failed.'));
-        };
-
-        waitForAppsScriptRun().then(function(scriptRun) {
-          const runner = scriptRun
-            .withSuccessHandler(successHandler)
-            .withFailureHandler(failureHandler);
-
-          switch (action) {
-            case 'ping':
-              runner.pingServer();
-              break;
-            case 'getAllData':
-              runner.getBootstrapData();
-              break;
-            case 'saveClient':
-              runner.saveClient(payload || {});
-              break;
-            case 'saveNote':
-              runner.saveNote(payload || {});
-              break;
-            case 'savePlan':
-              runner.savePlan(payload || {});
-              break;
-            case 'saveDocument':
-              runner.saveDocument(payload || {});
-              break;
-            case 'saveSapEvaluation':
-              runner.saveSapEvaluation(payload || {});
-              break;
-            case 'deleteClient':
-              runner.deleteClient(payload || {});
-              break;
-            case 'deleteNote':
-              runner.deleteNote(payload || {});
-              break;
-            case 'deletePlan':
-              runner.deletePlan(payload || {});
-              break;
-            case 'deleteDocument':
-              runner.deleteDocument(payload || {});
-              break;
-            case 'deleteSapEvaluation':
-              runner.deleteSapEvaluation(payload || {});
-              break;
-            default:
-              setStatus('Error');
-              reject(new Error('Unknown action: ' + action));
-          }
-        }).catch(function(err) {
-          setStatus('Error');
-          reject(err);
+      try {
+        response = await fetch(APP_SCRIPT_URL, {
+          method: 'POST',
+          mode: 'cors',
+          credentials: 'include',
+          headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+          body: JSON.stringify({ action, payload })
         });
-      });
+      } catch (err) {
+        setStatus('Error');
+        console.error('Apps Script network failure.', { action, url: APP_SCRIPT_URL, error: err });
+        throw new Error('Could not reach the Google Apps Script web app. No data was saved. Verify the /exec URL, deployment access, and browser/network permissions.');
+      }
+
+      const raw = await response.text();
+      let data = null;
+
+      try {
+        data = JSON.parse(raw);
+      } catch (err) {
+        const trimmed = (raw || '').trim();
+        const start = trimmed.indexOf('{');
+        const end = trimmed.lastIndexOf('}');
+        if (start !== -1 && end > start) {
+          try { data = JSON.parse(trimmed.slice(start, end + 1)); } catch (_) {}
+        }
+      }
+
+      if (!data) {
+        setStatus('Error');
+        console.error('Apps Script returned a non-JSON response.', {
+          action,
+          url: APP_SCRIPT_URL,
+          status: response.status,
+          statusText: response.statusText,
+          bodyPreview: (raw || '').slice(0, 300)
+        });
+        if (!response.ok) {
+          throw new Error(`Google Apps Script returned HTTP ${response.status}. Verify the web app deployment, permissions, and current /exec URL.`);
+        }
+        throw new Error('Google Apps Script returned an invalid response. Check the Apps Script deployment and execution logs.');
+      }
+
+      if (!response.ok || !data.ok) {
+        setStatus('Error');
+        console.error('Apps Script request failed.', {
+          action,
+          url: APP_SCRIPT_URL,
+          status: response.status,
+          statusText: response.statusText,
+          data: data
+        });
+        throw new Error(data.error || `Google Apps Script request failed with HTTP ${response.status}.`);
+      }
+
+      setStatus('Ready');
+      return data.result;
     }
 
     function showView(viewId) {

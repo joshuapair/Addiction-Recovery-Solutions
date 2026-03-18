@@ -42,6 +42,72 @@ function doGet() {
     .setXFrameOptionsMode(HtmlService.XFrameOptionsMode.DEFAULT);
 }
 
+function doPost(e) {
+  try {
+    requireAuth_();
+
+    const body = e && e.postData && e.postData.contents
+      ? JSON.parse(e.postData.contents)
+      : {};
+
+    const action = body.action || '';
+    const payload = body.payload || {};
+    let result = null;
+
+    switch (action) {
+      case 'ping':
+        result = pingServer();
+        break;
+      case 'getAllData':
+        result = getBootstrapData();
+        break;
+      case 'saveClient':
+        result = saveClient(payload);
+        break;
+      case 'saveNote':
+        result = saveNote(payload);
+        break;
+      case 'savePlan':
+        result = savePlan(payload);
+        break;
+      case 'saveDocument':
+        result = saveDocument(payload);
+        break;
+      case 'saveSapEvaluation':
+        result = saveSapEvaluation(payload);
+        break;
+      case 'deleteClient':
+        result = deleteClient(payload);
+        break;
+      case 'deleteNote':
+        result = deleteNote(payload);
+        break;
+      case 'deletePlan':
+        result = deletePlan(payload);
+        break;
+      case 'deleteDocument':
+        result = deleteDocument(payload);
+        break;
+      case 'deleteSapEvaluation':
+        result = deleteSapEvaluation(payload);
+        break;
+      default:
+        throw new Error('Unknown action: ' + action);
+    }
+
+    return ContentService
+      .createTextOutput(JSON.stringify({ ok: true, result: result }))
+      .setMimeType(ContentService.MimeType.JSON);
+  } catch (err) {
+    return ContentService
+      .createTextOutput(JSON.stringify({
+        ok: false,
+        error: err && err.message ? err.message : String(err)
+      }))
+      .setMimeType(ContentService.MimeType.JSON);
+  }
+}
+
 function include_(filename) {
   return HtmlService.createHtmlOutputFromFile(filename).getContent();
 }
