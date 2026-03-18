@@ -1329,6 +1329,9 @@
         const end = trimmed.lastIndexOf('}');
         if (start !== -1 && end > start) {
           try { data = JSON.parse(trimmed.slice(start, end + 1)); } catch (_) {}
+          try {
+            data = JSON.parse(trimmed.slice(start, end + 1));
+          } catch (_) {}
         }
       }
 
@@ -2652,6 +2655,10 @@ SAP Signature Date: ${sigDate}`;
         if (!selectedClientId && state.clients.length) {
           selectedClientId = state.clients[0].id;
         }
+        state = result || { clients: [], notes: [], plans: [], documents: [], sapEvaluations: [] };
+        if (!state.documents) state.documents = [];
+        if (!state.sapEvaluations) state.sapEvaluations = [];
+        if (!selectedClientId && state.clients.length) selectedClientId = state.clients[0].id;
         refreshAll();
       } catch (err) {
         setStatus('Error');
